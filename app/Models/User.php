@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -10,17 +12,38 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasUuids;
 
+    protected $table = 'users';
+
+    protected $guarded = ['id'];
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'password',
+        'no_telepon',
+        'tgl_lahir',
+        'gender',
+        'alamat',
+        'provinsi',
+        'kecamatan',
+        'kota',
+        'kode_pos',
+        'foto_profil',
+        'bio',
+        'kode_verif_email',
+        'status_verif_email',
+        'email_verified_at',
+        'file_cv',
+        'file_ktp',
+        'file_ttd',
+        'role',
+        'active_flag',
     ];
 
     /**
