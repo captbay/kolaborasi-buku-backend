@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('list_transaksi_bukus', function (Blueprint $table) {
+        Schema::create('list_transaksi_buku', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('transaksi_penjualan_buku_id')->constrained('transaksi_penjualan_buku')->cascadeOnDelete();
             $table->foreignUuid('buku_dijual_id')->constrained('buku_dijual')->cascadeOnDelete();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('list_transaksi_bukus');
+        Schema::dropIfExists('list_transaksi_buku');
     }
 };
