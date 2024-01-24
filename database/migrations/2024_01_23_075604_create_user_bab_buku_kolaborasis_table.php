@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignUuid('bab_buku_kolaborasi_id')->constrained('bab_buku_kolaborasi')->cascadeOnDelete();
-            $table->enum('status', ['DONE', 'PROGRESS', 'REVISI', 'REJECTED']);
+            $table->enum('status', ['DONE', 'PROGRESS', 'REVISI', 'REJECTED', 'UPLOADED']);
             $table->text('note')->nullable();
             $table->string('file_bab')->nullable();
             $table->timestamps();

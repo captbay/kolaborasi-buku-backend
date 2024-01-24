@@ -2,12 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\buku_dijual;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\testimoni_pembeli>
  */
-class TestimoniPembeliFactory extends Factory
+class testimoni_pembeliFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +19,10 @@ class TestimoniPembeliFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::all()->random()->id,
+            'buku_dijual_id' => buku_dijual::all()->random()->id,
+            'ulasan' => $this->faker->randomElement([$this->faker->text(), null]),
+            'rating' => $this->faker->numberBetween(1, 5),
         ];
     }
 }

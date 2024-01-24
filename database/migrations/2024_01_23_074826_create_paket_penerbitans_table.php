@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('nama');
             $table->integer('harga');
             $table->text('deskripsi');
-            $table->dateTime('durasi_mulai');
-            $table->dateTime('durasi_selesai');
+            $table->dateTime('waktu_mulai');
+            $table->dateTime('waktu_selesai');
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\paket_penerbitan>
  */
-class PaketPenerbitanFactory extends Factory
+class paket_penerbitanFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,11 @@ class PaketPenerbitanFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama' => $this->faker->word(),
+            'harga' => $this->faker->numberBetween(10000, 1000000),
+            'deskripsi' => $this->faker->paragraph(),
+            'waktu_mulai' => $this->faker->dateTime(),
+            'waktu_selesai' => $this->faker->dateTime(),
         ];
     }
 }

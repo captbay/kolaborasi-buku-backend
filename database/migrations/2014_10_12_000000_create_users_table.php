@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('provinsi');
             $table->string('kecamatan');
             $table->string('kota');
-            $table->integer('kode_pos');
+            $table->string('kode_pos');
             $table->string('foto_profil');
             $table->string('bio');
             $table->integer('kode_verif_email');

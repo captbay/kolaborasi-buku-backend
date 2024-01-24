@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\transaksi_paket_penerbitan>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\config_web>
  */
-class TransaksiPaketPenerbitanFactory extends Factory
+class config_webFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,8 @@ class TransaksiPaketPenerbitanFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'key' => $this->faker->word(),
+            'value' => $this->faker->url(),
         ];
     }
 }

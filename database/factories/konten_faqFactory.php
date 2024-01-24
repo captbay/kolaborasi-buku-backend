@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\bukudijual_penulis_pivot>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\konten_faq>
  */
-class BukudijualPenulisPivotFactory extends Factory
+class konten_faqFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,8 @@ class BukudijualPenulisPivotFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'judul' => $this->faker->word(),
+            'answer' => $this->faker->paragraph(),
         ];
     }
 }
