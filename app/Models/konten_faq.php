@@ -9,4 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class konten_faq extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $table = 'konten_faq';
+
+    protected $guarded = ['id'];
 }

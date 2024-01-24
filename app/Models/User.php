@@ -65,4 +65,58 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    // has many notifikasi
+    public function notifikasi()
+    {
+        return $this->hasMany(notifikasi::class);
+    }
+
+    // has many keranjang
+    public function keranjang()
+    {
+        return $this->hasMany(keranjang::class);
+    }
+
+    // has many testimoni_pembeli
+    public function testimoni_pembeli()
+    {
+        return $this->hasMany(testimoni_pembeli::class);
+    }
+
+    // has many buku_lunas_user
+    public function buku_lunas_user()
+    {
+        return $this->hasMany(buku_lunas_user::class);
+    }
+
+    // has many transaksi_penjualan_buku
+    public function transaksi_penjualan_buku()
+    {
+        return $this->hasMany(transaksi_penjualan_buku::class);
+    }
+
+    // has many transaksi_kolaborasi_buku
+    public function transaksi_kolaborasi_buku()
+    {
+        return $this->hasMany(transaksi_kolaborasi_buku::class);
+    }
+
+    // has many user_bab_buku_kolaborasi
+    public function user_bab_buku_kolaborasi()
+    {
+        return $this->hasMany(user_bab_buku_kolaborasi::class);
+    }
+
+    // has many buku_permohonan_terbit
+    public function buku_permohonan_terbit()
+    {
+        return $this->hasMany(buku_permohonan_terbit::class);
+    }
+
+    // has many transaksi_paket_penerbitan
+    public function transaksi_paket_penerbitan()
+    {
+        return $this->hasMany(transaksi_paket_penerbitan::class);
+    }
 }

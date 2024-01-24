@@ -9,4 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class config_web extends Model
 {
     use HasFactory, HasUuids;
+
+    protected $table = 'config_web';
+
+    protected $guarded = ['id'];
 }

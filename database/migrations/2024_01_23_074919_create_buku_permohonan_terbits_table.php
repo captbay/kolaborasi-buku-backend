@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('judul');
             $table->text('deskripsi');
-            $table->int('persen_bagi_hasil');
+            $table->integer('persen_bagi_hasil');
             $table->enum('status', ['ACCEPTED', 'REVIEW', 'REVISI', 'REJECTED']);
             $table->string('file_buku');
             $table->timestamps();
