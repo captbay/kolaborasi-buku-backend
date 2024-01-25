@@ -38,7 +38,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'kode_pos',
         'foto_profil',
         'bio',
-        'kode_verif_email',
         'status_verif_email',
         'email_verified_at',
         'file_cv',

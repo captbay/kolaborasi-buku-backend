@@ -38,7 +38,6 @@ class UserFactory extends Factory
             'kode_pos' => $this->faker->postcode(),
             'foto_profil' => $this->faker->imageUrl(),
             'bio' => $this->faker->text(),
-            'kode_verif_email' => $this->faker->randomNumber(),
             'status_verif_email' => $this->faker->randomElement([0, 1]), // 0 or 1
             'email_verified_at' => now(),
             'file_cv' => $this->faker->imageUrl(),
