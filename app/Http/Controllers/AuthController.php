@@ -34,7 +34,7 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Password false or user Not Found',
+                    'message' => 'Email atau password kamu salah!',
                 ], 404);
             }
 
@@ -52,7 +52,7 @@ class AuthController extends Controller
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Password false or user Not Found',
+                    'message' => 'Email atau password kamu salah!',
                 ], 404);
             }
         } catch (\Exception $e) {
@@ -100,7 +100,7 @@ class AuthController extends Controller
             if ($user) {
                 // return response
                 return response()->json([
-                    'message' => 'Register success',
+                    'message' => 'Pendaftaran Akun Berhasil!',
                 ], 201);
             }
         } catch (\Exception $e) {
