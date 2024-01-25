@@ -27,6 +27,7 @@ use App\Models\transaksi_penjualan_buku;
 use App\Models\User;
 use App\Models\user_bab_buku_kolaborasi;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -35,6 +36,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // make user admin
+        User::create([
+            'nama_depan' => 'admin',
+            'nama_belakang' => 'penerbitan',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('admin'),
+            'no_telepon' => '081234567890',
+            'role' => 'ADMIN',
+            'active_flag' => 1,
+        ]);
+
         User::factory(10)->create();
         kategori::factory(10)->create();
 

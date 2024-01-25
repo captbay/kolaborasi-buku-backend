@@ -24,12 +24,13 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'nama' => $this->faker->name(),
+            'nama_depan' => $this->faker->name(),
+            'nama_belakang' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
             'no_telepon' => $this->faker->phoneNumber(),
             'tgl_lahir' => $this->faker->date(),
-            'gender' => $this->faker->randomElement(['Pria', 'Wanita']), // 'L' or 'P
+            'gender' => $this->faker->randomElement(['Pria', 'Wanita', 'Memilih Untuk Tidak Diisi']), // 'L' or 'P
             'alamat' => $this->faker->address(),
             'provinsi' => $this->faker->state(),
             'kecamatan' => $this->faker->city(),
