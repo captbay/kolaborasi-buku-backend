@@ -93,6 +93,7 @@ return [
     'not_regex'            => 'Format :attribute tidak valid.',
     'numeric'              => ':attribute harus berupa angka.',
     'password'             => 'Kata sandi salah.',
+    'current_password'     => 'Kata sandi tidak sesuai.',
     'present'              => ':attribute wajib ada.',
     'regex'                => 'Format :attribute tidak valid.',
     'required'             => ':attribute wajib diisi.',
@@ -122,7 +123,7 @@ return [
     | Baris Bahasa untuk Validasi Kustom
     |---------------------------------------------------------------------------------------
     |
-    | Di sini Anda dapat menentukan pesan validasi untuk atribut sesuai keinginan dengan menggunakan 
+    | Di sini Anda dapat menentukan pesan validasi untuk atribut sesuai keinginan dengan menggunakan
     | konvensi "attribute.rule" dalam penamaan barisnya. Hal ini mempercepat dalam menentukan
     | baris bahasa kustom yang spesifik untuk aturan atribut yang diberikan.
     |
