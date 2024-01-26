@@ -33,8 +33,8 @@ return new class extends Migration
             $table->string('file_ktp')->nullable();
             $table->string('file_ttd')->nullable();
             $table->enum('role', ['ADMIN', 'CUSTOMER', 'MEMBER'])->default('CUSTOMER');
-            $table->integer('active_flag');
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

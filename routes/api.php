@@ -30,7 +30,6 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('resetPassword', [AuthController::class, 'resetPassword'])->middleware('guest')->name('password.reset');
 });
 
-
 // logout
 Route::group(['prefix' => 'auth', 'middleware' => ['auth:sanctum', 'verified']], function () {
     //logout

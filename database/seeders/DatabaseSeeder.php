@@ -43,8 +43,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => Hash::make('admin'),
             'no_telepon' => '081234567890',
+            'status_verif_email' => 1,
+            'email_verified_at' => now(),
             'role' => 'ADMIN',
-            'active_flag' => 1,
         ]);
 
         User::factory(10)->create();

@@ -43,8 +43,7 @@ class UserFactory extends Factory
             'file_cv' => $this->faker->imageUrl(),
             'file_ktp' => $this->faker->imageUrl(),
             'file_ttd' => $this->faker->imageUrl(),
-            'role' => $this->faker->randomElement(['ADMIN', 'CUSTOMER', 'MEMBER']), // 'ADMIN', 'CUSTOMER', 'MEMBER'
-            'active_flag' => $this->faker->randomElement([0, 1]), // '1', '0
+            'role' => $this->faker->randomElement(['CUSTOMER', 'MEMBER']), // 'ADMIN', 'CUSTOMER', 'MEMBER'
             'remember_token' => Str::random(10),
         ];
     }
