@@ -91,7 +91,14 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nama_depan', 'nama_belakang')
+                // show profile picture
+                Tables\Columns\ImageColumn::make('foto_profil')
+                    ->label('Foto Profil'),
+                Tables\Columns\TextColumn::make('nama_depan')
+                    ->label('Nama Lengkap')
+                    ->formatStateUsing(function ($state, User $user) {
+                        return $user->nama_depan . ' ' . $user->nama_belakang;
+                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
