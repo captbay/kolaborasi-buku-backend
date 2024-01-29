@@ -12,6 +12,10 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
+
+
+use function Livewire\wrap;
 
 class KategoriResource extends Resource
 {
@@ -24,10 +28,23 @@ class KategoriResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama')
-                    ->live()
                     ->unique(Kategori::class, 'nama', ignoreRecord: true)
                     ->required()->minLength(1)->maxLength(150)
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                        if ($operation !== 'create') {
+                            return;
+                        }
+
+                        $set('slug', Str::slug($state));
+                    })
                     ->required(),
+                Forms\Components\TextInput::make('slug')
+                    ->disabled()
+                    ->dehydrated()
+                    ->required()
+                    ->maxLength(255)
+                    ->unique(Kategori::class, 'slug', ignoreRecord: true),
                 Forms\Components\MarkdownEditor::make('deskripsi')
                     ->columnSpan('full')
                     ->required(),
