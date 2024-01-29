@@ -115,6 +115,14 @@ class UserResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('role')
+                    ->badge()
+                    ->color(
+                        fn (User $user) => match ($user->role) {
+                            'ADMIN' => 'primary',
+                            'CUSTOMER' => 'warning',
+                            'MEMBER' => 'success',
+                        }
+                    )
                     ->sortable()
                     ->searchable(),
             ])->defaultSort('created_at', 'desc')
