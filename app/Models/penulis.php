@@ -19,4 +19,10 @@ class penulis extends Model
     {
         return $this->hasMany(bukudijual_penulis_pivot::class, 'penulis_id');
     }
+
+    // belongs to many bukudijual
+    public function buku_dijual()
+    {
+        return $this->belongsToMany(buku_dijual::class, 'bukudijual_penulis_pivot', 'penulis_id', 'buku_dijual_id');
+    }
 }

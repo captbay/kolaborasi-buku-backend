@@ -12,8 +12,10 @@ class BukuDijualObserver
      */
     public function created(buku_dijual $buku_dijual): void
     {
-        if ($buku_dijual->isDirty('cover_buku')) {
-            Storage::disk('public')->delete($buku_dijual->getOriginal('cover_buku'));
+        $originalCover = $buku_dijual->getOriginal('cover_buku');
+
+        if ($buku_dijual->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
         }
     }
 
@@ -22,9 +24,10 @@ class BukuDijualObserver
      */
     public function updated(buku_dijual $buku_dijual): void
     {
-        // delete the old cover_buku from storage
-        if ($buku_dijual->isDirty('cover_buku')) {
-            Storage::disk('public')->delete($buku_dijual->getOriginal('cover_buku'));
+        $originalCover = $buku_dijual->getOriginal('cover_buku');
+
+        if ($buku_dijual->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
         }
     }
 
@@ -58,8 +61,10 @@ class BukuDijualObserver
 
     public function saved(buku_dijual $buku_dijual): void
     {
-        if ($buku_dijual->isDirty('cover_buku')) {
-            Storage::disk('public')->delete($buku_dijual->getOriginal('cover_buku'));
+        $originalCover = $buku_dijual->getOriginal('cover_buku');
+
+        if ($buku_dijual->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
         }
     }
 }

@@ -32,13 +32,19 @@ class buku_dijual extends Model
         return $this->hasMany(bukudijual_penulis_pivot::class);
     }
 
+    // has many penulisfrom bukudijual_penulis_pivot
+    public function penulis()
+    {
+        return $this->belongsToMany(penulis::class, 'bukudijual_penulis_pivot', 'buku_dijual_id', 'penulis_id');
+    }
+
     // has many storage_buku_dijual
     public function storage_buku_dijual()
     {
         return $this->hasMany(storage_buku_dijual::class);
     }
 
-    // has many keranjang 
+    // has many keranjang
     public function keranjang()
     {
         return $this->hasMany(keranjang::class);

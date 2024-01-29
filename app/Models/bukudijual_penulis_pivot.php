@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class bukudijual_penulis_pivot extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    // HasUuids;
 
     protected $table = 'bukudijual_penulis_pivot';
+
+    // auto create id
+    protected $primaryKey = 'id';
 
     protected $guarded = ['id'];
 
@@ -25,4 +29,7 @@ class bukudijual_penulis_pivot extends Model
     {
         return $this->belongsTo(penulis::class, 'penulis_id');
     }
+
+    // create auto created_at and auto updated_at
+    public $timestamps = true;
 }

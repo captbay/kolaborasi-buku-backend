@@ -12,9 +12,10 @@ class UserObserver
      */
     public function created(User $user): void
     {
-        //
-        if ($user->isDirty('foto_profil')) {
-            Storage::disk('public')->delete($user->getOriginal('foto_profil'));
+        $originalCover = $user->getOriginal('foto_profil');
+
+        if ($user->isDirty('foto_profil') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
         }
     }
 
@@ -23,7 +24,11 @@ class UserObserver
      */
     public function updated(User $user): void
     {
-        //
+        $originalCover = $user->getOriginal('foto_profil');
+
+        if ($user->isDirty('foto_profil') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
+        }
     }
 
     /**
@@ -54,8 +59,10 @@ class UserObserver
 
     public function saved(User $user): void
     {
-        if ($user->isDirty('foto_profil')) {
-            Storage::disk('public')->delete($user->getOriginal('foto_profil'));
+        $originalCover = $user->getOriginal('foto_profil');
+
+        if ($user->isDirty('foto_profil') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
         }
     }
 }
