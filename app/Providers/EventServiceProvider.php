@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\buku_dijual;
+use App\Models\User;
+use App\Observers\BukuDijualObserver;
+use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -25,7 +29,8 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        User::observe(UserObserver::class);
+        buku_dijual::observe(BukuDijualObserver::class);
     }
 
     /**

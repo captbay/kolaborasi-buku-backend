@@ -39,6 +39,7 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('tgl_lahir')
+                    ->maxDate('today')
                     ->required(),
                 Forms\Components\Select::make('gender')
                     ->options([
@@ -68,11 +69,12 @@ class UserResource extends Resource
                         'CUSTOMER' => 'CUSTOMER',
                         'MEMBER' => 'MEMBER',
                     ])
+                    ->live()
                     ->required(),
                 Forms\Components\FileUpload::make('foto_profil')
                     ->image()
                     ->directory('foto_profil')
-                    ->imageCropAspectRatio('1:1'),
+                    ->required(),
                 Forms\Components\Textarea::make('bio')
                     ->required()
                     ->maxLength(255),
@@ -115,7 +117,7 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('role')
                     ->sortable()
                     ->searchable(),
-            ])
+            ])->defaultSort('created_at', 'desc')
             ->filters([
                 Tables\Filters\TrashedFilter::make(),
             ])
