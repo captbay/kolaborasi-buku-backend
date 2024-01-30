@@ -19,7 +19,7 @@ class KategoriFactory extends Factory
     public function definition(): array
     {
 
-        $namas = $this->faker->sentence();
+        $namas = $this->faker->word();
 
         // make slug from juduls
         $slugs = Str::slug($namas);

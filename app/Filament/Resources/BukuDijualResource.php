@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\BukuDijualResource\Pages;
 use App\Filament\Resources\BukuDijualResource\RelationManagers;
 use App\Models\buku_dijual;
+use App\Models\kategori;
+use App\Models\penulis;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,6 +17,13 @@ use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\CheckboxColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Actions\Action;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Get;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 
 class BukuDijualResource extends Resource
 {
@@ -31,6 +40,10 @@ class BukuDijualResource extends Resource
     // protected static ?int $navigationSort = 3;
 
     protected static ?string $navigationIcon = 'heroicon-s-book-open';
+
+    // navigation groups
+
+    protected static ?string $navigationGroup = 'Buku Dijual';
 
     public static function form(Form $form): Form
     {
@@ -68,32 +81,48 @@ class BukuDijualResource extends Resource
 
                         Forms\Components\Section::make('File')
                             ->schema([
-                                // SpatieMediaLibraryFileUpload::make('media')
-                                //     ->collection('cover-buku')
-                                //     ->multiple()
-                                //     ->maxFiles(5)
-                                //     ->hiddenLabel(),
                                 Forms\Components\FileUpload::make('cover_buku')
                                     ->required()
+                                    ->openable()
                                     ->image()
                                     ->directory('cover_buku'),
-                                Forms\Components\FileUpload::make('storage_buku_dijual')
-                                    ->relationship('storage_buku_dijual', 'file_name')
-                                    ->multiple()
-                                    ->required()
-                                    ->image()
-                                    ->directory('storage_buku'),
-                            ]),
 
-                        Forms\Components\Section::make('Harga Buku')
-                            ->schema([
-                                Forms\Components\TextInput::make('harga')
-                                    ->numeric()
-                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
+                                Repeater::make('file_buku')
+                                    ->relationship('storage_buku_dijual')
+                                    ->label('File Buku')
+                                    ->schema([
+                                        Forms\Components\Select::make('tipe')
+                                            ->required()
+                                            ->preload()
+                                            ->required()
+                                            ->live()
+                                            ->options([
+                                                'IMAGE' => 'Image',
+                                                'PDF' => 'Pdf',
+                                            ]),
+
+                                        Forms\Components\FileUpload::make('nama_generate')
+                                            ->label('Upload Gambar untuk preview buku')
+                                            ->required()
+                                            ->openable()
+                                            ->hidden(fn (Get $get): bool => $get('tipe') != 'IMAGE')
+                                            ->image()
+                                            ->storeFileNamesIn('nama_file')
+                                            ->directory('buku_storage'),
+
+                                        Forms\Components\FileUpload::make('nama_generate')
+                                            ->label('Upload File Buku PDF (final version)')
+                                            ->required()
+                                            ->openable()
+                                            ->hidden(fn (Get $get): bool => $get('tipe') != 'PDF')
+                                            ->acceptedFileTypes(['application/pdf'])
+                                            ->storeFileNamesIn('nama_file')
+                                            ->directory('buku_storage'),
+                                    ])
+                                    ->defaultItems(1)
+                                    ->hiddenLabel()
                                     ->required(),
-
-                            ])
-                            ->columns(2),
+                            ]),
 
                         Forms\Components\Section::make('Detail Buku')
                             ->schema([
@@ -127,13 +156,33 @@ class BukuDijualResource extends Resource
 
                 Forms\Components\Group::make()
                     ->schema([
-                        Forms\Components\Select::make('penulis_id')
-                            ->relationship('penulis', 'nama')
-                            ->multiple()
-                            ->preload()
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('nama')
+                        Forms\Components\Section::make('Harga Buku')
+                            ->schema([
+                                Forms\Components\TextInput::make('harga')
+                                    ->numeric()
+                                    ->label(false)
+                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
                                     ->required(),
+                            ]),
+
+                        Forms\Components\Section::make('Penulis')
+                            ->schema([
+                                Forms\Components\Select::make('penulis_id')
+                                    ->relationship('penulis', 'nama')
+                                    ->multiple()
+                                    ->preload()
+                                    ->label(false)
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('nama')
+                                            ->unique(penulis::class, 'nama', ignoreRecord: true)
+                                            ->required(),
+                                    ])
+                                    ->createOptionAction(function (Action $action) {
+                                        return $action
+                                            ->modalHeading('Buat Data Penulis')
+                                            ->modalSubmitActionLabel('Buat penulis')
+                                            ->modalWidth('lg');
+                                    }),
                             ]),
 
                         Forms\Components\Section::make('Kategori')
@@ -142,15 +191,16 @@ class BukuDijualResource extends Resource
                                     ->relationship('kategori', 'nama')
                                     ->searchable()
                                     ->preload()
+                                    ->label(false)
                                     ->required(),
                             ]),
 
                         Forms\Components\Section::make('Status')
                             ->schema([
                                 Forms\Components\Toggle::make('active_flag')
-                                    ->label('Ditampilkan atau tidak')
+                                    ->label('Dipublish atau tidak')
                                     ->helperText('Jika tidak aktif maka buku ini akan disembunyikan pada tampilan penjualan buku')
-                                    ->default(true),
+                                    ->default(1),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -170,6 +220,7 @@ class BukuDijualResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('harga')
                     ->searchable()
+                    ->money('idr')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('kategori.nama')
                     ->searchable()
@@ -178,11 +229,27 @@ class BukuDijualResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bukudijual_penulis_pivot.penulis.nama')
-                    ->wrap()
+                    // ->wrap()
+                    ->bulleted()
                     ->searchable()
                     ->sortable(),
-                CheckboxColumn::make('active_flag')
-                    ->label('Ditampilkan'),
+                TextColumn::make('active_flag')
+                    ->badge()
+                    ->formatStateUsing(function ($state, buku_dijual $buku_dijual) {
+                        return match ($buku_dijual->active_flag) {
+                            1 => 'Iya',
+                            0 => 'Tidak',
+                        };
+                    })
+                    ->color(
+                        fn (buku_dijual $buku_dijual) => match ($buku_dijual->active_flag) {
+                            1 => 'success',
+                            0 => 'warning',
+                        }
+                    )
+                    ->label('Dipublish')
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -193,7 +260,14 @@ class BukuDijualResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                TernaryFilter::make('active_flag')
+                    ->label('Dipublish atau tidak'),
+                SelectFilter::make('kategori_id')
+                    ->label('kategori')
+                    ->placeholder('Semua Kategori')
+                    ->options(
+                        kategori::all()->pluck('nama', 'id')
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -209,7 +283,7 @@ class BukuDijualResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            // RelationManagers\StorageBukuDijualRelationManager::class,
         ];
     }
 

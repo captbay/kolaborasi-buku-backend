@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\buku_dijual;
+use App\Models\storage_buku_dijual;
 use App\Models\User;
 use App\Observers\BukuDijualObserver;
+use App\Observers\StorageBukuDijualObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -31,6 +33,7 @@ class EventServiceProvider extends ServiceProvider
     {
         User::observe(UserObserver::class);
         buku_dijual::observe(BukuDijualObserver::class);
+        storage_buku_dijual::observe(StorageBukuDijualObserver::class);
     }
 
     /**
