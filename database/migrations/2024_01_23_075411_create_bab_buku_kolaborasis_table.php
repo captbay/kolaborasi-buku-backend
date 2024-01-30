@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('harga');
             $table->integer('durasi_pembuatan');
             $table->text('deskripsi');
-            $table->integer('active_flag');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }

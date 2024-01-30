@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignUuid('buku_dijual_id')->constrained('buku_dijual')->cascadeOnDelete();
             $table->text('ulasan')->nullable();
             $table->integer('rating');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->text('judul');
             $table->text('answer');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('jumlah_bab');
             $table->string('bahasa');
             $table->string('file_sertifikasi')->nullable();
-            $table->integer('active_flag');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }

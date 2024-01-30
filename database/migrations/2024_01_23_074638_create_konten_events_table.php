@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('file');
             $table->dateTime('waktu_mulai');
             $table->dateTime('waktu_selesai');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }

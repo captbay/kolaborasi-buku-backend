@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('key');
             $table->string('value');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }

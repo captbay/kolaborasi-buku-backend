@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('jumlah_halaman');
             $table->string('bahasa');
             $table->string('penerbit');
-            $table->integer('active_flag');
+            $table->boolean('active_flag');
             $table->timestamps();
         });
     }
