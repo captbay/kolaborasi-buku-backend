@@ -36,7 +36,15 @@ class BukuDijualObserver
      */
     public function deleted(buku_dijual $buku_dijual): void
     {
-        if (!is_null($buku_dijual->cover_buku)) {
+        if (!is_null($buku_dijual->cover_buku || !is_null($buku_dijual->storage_buku_dijual()->get('nama_generate')))) {
+            // get all the name_generate
+            $name_generate = $buku_dijual->storage_buku_dijual()->get('nama_generate');
+            // foreach name_generate
+            foreach ($name_generate as $name) {
+                // delete the file
+                Storage::disk('public')->delete($name['nama_generate']);
+            }
+
             Storage::disk('public')->delete($buku_dijual->cover_buku);
         }
     }

@@ -24,6 +24,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
+use Illuminate\Support\Facades\Storage;
 
 class BukuDijualResource extends Resource
 {
@@ -120,7 +121,6 @@ class BukuDijualResource extends Resource
                                             ->directory('buku_storage'),
                                     ])
                                     ->defaultItems(1)
-                                    ->hiddenLabel()
                                     ->required(),
                             ]),
 
@@ -200,7 +200,7 @@ class BukuDijualResource extends Resource
                                 Forms\Components\Toggle::make('active_flag')
                                     ->label('Dipublish atau tidak')
                                     ->helperText('Jika tidak aktif maka buku ini akan disembunyikan pada tampilan penjualan buku')
-                                    ->default(1),
+                                    ->default(0),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -272,11 +272,29 @@ class BukuDijualResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function ($record) {
+                        // get all the name_generate
+                        $name_generate = $record->storage_buku_dijual()->get('nama_generate');
+                        // foreach name_generate
+                        foreach ($name_generate as $name) {
+                            // delete the file
+                            Storage::disk('public')->delete($name['nama_generate']);
+                        }
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->before(function ($record) {
+                            // get all the name_generate
+                            $name_generate = $record->storage_buku_dijual()->get('nama_generate');
+                            // foreach name_generate
+                            foreach ($name_generate as $name) {
+                                // delete the file
+                                Storage::disk('public')->delete($name['nama_generate']);
+                            }
+                        }),
                 ]),
             ]);
     }
