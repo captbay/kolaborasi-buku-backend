@@ -271,17 +271,21 @@ class BukuDijualResource extends Resource
                     ),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
-                    ->before(function ($record) {
-                        // get all the name_generate
-                        $name_generate = $record->storage_buku_dijual()->get('nama_generate');
-                        // foreach name_generate
-                        foreach ($name_generate as $name) {
-                            // delete the file
-                            Storage::disk('public')->delete($name['nama_generate']);
-                        }
-                    }),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->before(function ($record) {
+                            // get all the name_generate
+                            $name_generate = $record->storage_buku_dijual()->get('nama_generate');
+                            // foreach name_generate
+                            foreach ($name_generate as $name) {
+                                // delete the file
+                                Storage::disk('public')->delete($name['nama_generate']);
+                            }
+                        }),
+                ])->iconButton()
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

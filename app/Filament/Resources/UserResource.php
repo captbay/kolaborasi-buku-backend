@@ -65,7 +65,6 @@ class UserResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Select::make('role')
                     ->options([
-                        'ADMIN' => 'ADMIN',
                         'CUSTOMER' => 'CUSTOMER',
                         'MEMBER' => 'MEMBER',
                     ])
@@ -73,17 +72,25 @@ class UserResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('foto_profil')
                     ->image()
+                    ->openable()
+                    ->downloadable()
                     ->directory('foto_profil')
                     ->required(),
                 Forms\Components\Textarea::make('bio')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\FileUpload::make('file_cv')
+                    ->openable()
+                    ->downloadable()
                     ->directory('file_cv'),
                 Forms\Components\FileUpload::make('file_ktp')
+                    ->openable()
+                    ->downloadable()
                     ->image()
                     ->directory('file_ktp'),
                 Forms\Components\FileUpload::make('file_ttd')
+                    ->openable()
+                    ->downloadable()
                     ->image()
                     ->directory('file_ttd'),
             ]);
@@ -130,10 +137,13 @@ class UserResource extends Resource
                 Tables\Filters\TrashedFilter::make(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ForceDeleteAction::make(),
-                Tables\Actions\RestoreAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\ForceDeleteAction::make(),
+                    Tables\Actions\RestoreAction::make(),
+                ])->iconButton()
             ])
             ->query(function (User $query) {
                 return $query->whereNot('role', auth()->user()->role);
