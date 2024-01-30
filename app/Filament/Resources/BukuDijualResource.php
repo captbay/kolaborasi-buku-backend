@@ -213,6 +213,7 @@ class BukuDijualResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_buku')
+                    ->size(40)
                     ->label('Cover Buku'),
                 Tables\Columns\TextColumn::make('judul')
                     ->wrap()
