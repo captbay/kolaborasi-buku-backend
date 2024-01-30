@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('storage_buku_dijual', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('buku_dijual_id')->constrained('buku_dijual')->cascadeOnDelete();
-            $table->enum('tipe', ['IMAGE', 'PDF']);
+            $table->enum('tipe', ['IMAGE'])->default('IMAGE');
             $table->string('nama_file');
             $table->string('nama_generate');
             $table->timestamps();

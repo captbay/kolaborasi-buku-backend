@@ -19,6 +19,7 @@ class config_webFactory extends Factory
         return [
             'key' => $this->faker->word(),
             'value' => $this->faker->url(),
+            'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }
 }

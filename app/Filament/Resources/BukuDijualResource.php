@@ -88,37 +88,25 @@ class BukuDijualResource extends Resource
                                     ->image()
                                     ->directory('cover_buku'),
 
-                                Repeater::make('file_buku')
-                                    ->relationship('storage_buku_dijual')
-                                    ->label('File Buku')
-                                    ->schema([
-                                        Forms\Components\Select::make('tipe')
-                                            ->required()
-                                            ->preload()
-                                            ->required()
-                                            ->live()
-                                            ->options([
-                                                'IMAGE' => 'Image',
-                                                'PDF' => 'Pdf',
-                                            ]),
+                                Forms\Components\FileUpload::make('file_buku')
+                                    ->label('Upload File Buku PDF (final version)')
+                                    ->required()
+                                    ->openable()
+                                    ->acceptedFileTypes(['application/pdf'])
+                                    ->storeFileNamesIn('nama_file_buku')
+                                    ->directory('buku_final_storage'),
 
+                                Repeater::make('preview_buku')
+                                    ->relationship('storage_buku_dijual')
+                                    ->label('File Preview Buku')
+                                    ->schema([
                                         Forms\Components\FileUpload::make('nama_generate')
                                             ->label('Upload Gambar untuk preview buku')
                                             ->required()
                                             ->openable()
-                                            ->hidden(fn (Get $get): bool => $get('tipe') != 'IMAGE')
                                             ->image()
                                             ->storeFileNamesIn('nama_file')
-                                            ->directory('buku_storage'),
-
-                                        Forms\Components\FileUpload::make('nama_generate')
-                                            ->label('Upload File Buku PDF (final version)')
-                                            ->required()
-                                            ->openable()
-                                            ->hidden(fn (Get $get): bool => $get('tipe') != 'PDF')
-                                            ->acceptedFileTypes(['application/pdf'])
-                                            ->storeFileNamesIn('nama_file')
-                                            ->directory('buku_storage'),
+                                            ->directory('buku_preview_storage'),
                                     ])
                                     ->defaultItems(1)
                                     ->required(),
@@ -213,7 +201,7 @@ class BukuDijualResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\ImageColumn::make('cover_buku')
-                    ->size(40)
+                    ->size(80)
                     ->label('Cover Buku'),
                 Tables\Columns\TextColumn::make('judul')
                     ->wrap()
@@ -230,7 +218,6 @@ class BukuDijualResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bukudijual_penulis_pivot.penulis.nama')
-                    // ->wrap()
                     ->bulleted()
                     ->searchable()
                     ->sortable(),

@@ -28,6 +28,7 @@ class konten_eventFactory extends Factory
             'file' => $files,
             'waktu_mulai' => $this->faker->dateTime(),
             'waktu_selesai' => $this->faker->dateTime(),
+            'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }
 }

@@ -11,7 +11,7 @@ class UserOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Total Users', User::count()),
+            Stat::make('Total Users', User::where('role', '!=', 'ADMIN')->count()),
             Stat::make('Total Member', User::where('role', 'MEMBER')->count()),
             Stat::make('Total Customer', User::where('role', 'CUSTOMER')->count()),
         ];

@@ -23,6 +23,7 @@ class testimoni_pembeliFactory extends Factory
             'buku_dijual_id' => buku_dijual::all()->random()->id,
             'ulasan' => $this->faker->randomElement([$this->faker->text(), null]),
             'rating' => $this->faker->numberBetween(1, 5),
+            'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }
 }

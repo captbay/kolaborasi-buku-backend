@@ -34,6 +34,8 @@ class buku_dijualFactory extends Factory
             'jumlah_halaman' => $this->faker->numberBetween(100, 500),
             'bahasa' => $this->faker->randomElement(['Indonesaia', 'Inggris', 'Spanyol']),
             'penerbit' => $this->faker->company(),
+            'nama_file_buku' => $this->faker->word() . '.pdf',
+            'file_buku' => $this->faker->imageUrl(),
             'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }

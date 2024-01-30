@@ -17,22 +17,11 @@ class storage_buku_dijualFactory extends Factory
      */
     public function definition(): array
     {
-        $tipes = $this->faker->randomElement(["IMAGE", "PDF"]);
-
-        if ($tipes == "IMAGE") {
-            $nama_file = $this->faker->randomElement([$this->faker->word() . ".jpg", $this->faker->word() . ".png"]);
-        } else {
-            $nama_file = $this->faker->randomElement([$this->faker->word() . ".pdf"]);
-        }
-
-        // generate name
-        $nama_generate = buku_dijual::all()->random()->judul . "_" . $this->faker->word() . "." . $this->faker->fileExtension();
-
         return [
             'buku_dijual_id' => buku_dijual::all()->random()->id,
-            'tipe' => $tipes,
-            'nama_file' => $nama_file,
-            'nama_generate' => $nama_generate,
+            'tipe' => "IMAGE",
+            'nama_file' => $this->faker->word() . '.jpg',
+            'nama_generate' => $this->faker->imageUrl(),
         ];
     }
 }

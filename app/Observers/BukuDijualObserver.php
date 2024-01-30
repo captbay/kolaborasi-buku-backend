@@ -13,8 +13,12 @@ class BukuDijualObserver
     public function created(buku_dijual $buku_dijual): void
     {
         $originalCover = $buku_dijual->getOriginal('cover_buku');
+        $originalCover = $buku_dijual->getOriginal('file_buku');
 
         if ($buku_dijual->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
+        }
+        if ($buku_dijual->isDirty('file_buku') && $originalCover !== null) {
             Storage::disk('public')->delete($originalCover);
         }
     }
@@ -25,8 +29,12 @@ class BukuDijualObserver
     public function updated(buku_dijual $buku_dijual): void
     {
         $originalCover = $buku_dijual->getOriginal('cover_buku');
+        $originalCover = $buku_dijual->getOriginal('file_buku');
 
         if ($buku_dijual->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
+        }
+        if ($buku_dijual->isDirty('file_buku') && $originalCover !== null) {
             Storage::disk('public')->delete($originalCover);
         }
     }
@@ -36,7 +44,7 @@ class BukuDijualObserver
      */
     public function deleted(buku_dijual $buku_dijual): void
     {
-        if (!is_null($buku_dijual->cover_buku || !is_null($buku_dijual->storage_buku_dijual()->get('nama_generate')))) {
+        if (!is_null($buku_dijual->cover_buku) || !is_null($buku_dijual->file_buku) || !is_null($buku_dijual->storage_buku_dijual()->get('nama_generate'))) {
             // get all the name_generate
             $name_generate = $buku_dijual->storage_buku_dijual()->get('nama_generate');
             // foreach name_generate
@@ -46,6 +54,7 @@ class BukuDijualObserver
             }
 
             Storage::disk('public')->delete($buku_dijual->cover_buku);
+            Storage::disk('public')->delete($buku_dijual->file_buku);
         }
     }
 
@@ -65,13 +74,22 @@ class BukuDijualObserver
         if (!is_null($buku_dijual->cover_buku)) {
             Storage::disk('public')->delete($buku_dijual->cover_buku);
         }
+
+        if (!is_null($buku_dijual->file_buku)) {
+            Storage::disk('public')->delete($buku_dijual->file_buku);
+        }
     }
 
     public function saved(buku_dijual $buku_dijual): void
     {
         $originalCover = $buku_dijual->getOriginal('cover_buku');
+        $originalCover = $buku_dijual->getOriginal('file_buku');
 
         if ($buku_dijual->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
+        }
+
+        if ($buku_dijual->isDirty('file_buku') && $originalCover !== null) {
             Storage::disk('public')->delete($originalCover);
         }
     }
