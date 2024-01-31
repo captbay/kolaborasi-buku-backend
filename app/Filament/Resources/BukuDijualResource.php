@@ -86,7 +86,7 @@ class BukuDijualResource extends Resource
                                     ->required()
                                     ->openable()
                                     ->image()
-                                    ->directory('cover_buku'),
+                                    ->directory('cover_buku_dijual'),
 
                                 Forms\Components\FileUpload::make('file_buku')
                                     ->label('Upload File Buku PDF (final version)')
