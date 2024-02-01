@@ -86,6 +86,7 @@ class BukuDijualResource extends Resource
                                     ->required()
                                     ->openable()
                                     ->image()
+                                    ->imageEditor()
                                     ->directory('cover_buku_dijual'),
 
                                 Forms\Components\FileUpload::make('file_buku')
@@ -105,6 +106,7 @@ class BukuDijualResource extends Resource
                                             ->required()
                                             ->openable()
                                             ->image()
+                                            ->imageEditor()
                                             ->storeFileNamesIn('nama_file')
                                             ->directory('buku_preview_storage'),
                                     ])
@@ -259,7 +261,7 @@ class BukuDijualResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\ViewAction::make()->slideOver(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
                         ->before(function ($record) {
@@ -274,6 +276,7 @@ class BukuDijualResource extends Resource
                 ])->iconButton()
 
             ])
+            ->recordUrl(false)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('status', ['DONE', 'PROGRESS', 'REVISI', 'REJECTED', 'UPLOADED']);
             $table->text('note')->nullable();
             $table->string('file_bab')->nullable();
+            $table->timestamp('datetime_deadline')->nullable();
             $table->timestamps();
         });
     }

@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Models\penulis;
+use App\Models\user_bab_buku_kolaborasi;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
@@ -117,6 +118,38 @@ class BukuKolaborasiResource extends Resource
                                             ->columnSpan('full')
                                             ->required(),
 
+                                        Repeater::make('user_bab_buku_kolaborasi')
+                                            ->relationship()
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('file_bab')
+                                                    // ->default(fn ($state) => user_bab_buku_kolaborasi::where('bab_buku_kolaborasi_id', $state)->first()?->file_bab)
+                                                    ->helperText('* File bab yang sudah dikerjakan oleh member (diupload oleh member)')
+                                                    ->disabled()
+                                                    ->label(false)
+                                                    ->openable()
+                                                    ->downloadable()
+                                                    ->columnSpan('full')
+                                                    ->acceptedFileTypes(['application/pdf'])
+                                                    ->directory('file_buku_bab_kolaborasi'),
+                                            ])
+                                            ->label('File Bab')
+                                            ->addable(false)
+                                            ->deleteAction(
+                                                fn (Action $action) => $action->disabled(),
+                                            )
+                                            ->mutateRelationshipDataBeforeFillUsing(function (array $data): array {
+                                                // only return user_bab_buku_kolaborasi where status == DONE to repeater filament
+                                                if ($data['status'] !== 'DONE') {
+                                                    return [];
+                                                }
+
+                                                return $data;
+                                            })
+                                            ->hiddenOn('create')
+                                            ->columnSpan('full'),
+
+
+
                                         Forms\Components\Toggle::make('active_flag')
                                             ->label('Dipublish atau tidak')
                                             ->helperText('Jika tidak aktif maka bab ini akan disembunyikan pada tampilan kolaborasi buku')
@@ -145,6 +178,7 @@ class BukuKolaborasiResource extends Resource
                                     ->required()
                                     ->openable()
                                     ->image()
+                                    ->imageEditor()
                                     ->directory('cover_buku_kolaborasi'),
 
                                 Forms\Components\FileUpload::make('file_sertifikasi')

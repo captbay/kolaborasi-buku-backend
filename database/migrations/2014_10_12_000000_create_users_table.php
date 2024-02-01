@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->uuid('id')->primary();
+            $table->string('nama_lengkap')->virtualAs('concat(nama_depan, \' \', nama_belakang)');
             $table->string('nama_depan');
             $table->string('nama_belakang');
             $table->string('email')->unique();

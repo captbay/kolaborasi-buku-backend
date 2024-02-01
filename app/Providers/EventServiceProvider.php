@@ -6,9 +6,11 @@ use App\Models\buku_dijual;
 use App\Models\buku_kolaborasi;
 use App\Models\storage_buku_dijual;
 use App\Models\User;
+use App\Models\user_bab_buku_kolaborasi;
 use App\Observers\BukuDijualObserver;
 use App\Observers\BukuKolaborasiObserver;
 use App\Observers\StorageBukuDijualObserver;
+use App\Observers\UserBabBukuKolaborasiObserver;
 use App\Observers\UserObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -36,6 +38,7 @@ class EventServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         buku_dijual::observe(BukuDijualObserver::class);
         buku_kolaborasi::observe(BukuKolaborasiObserver::class);
+        user_bab_buku_kolaborasi::observe(UserBabBukuKolaborasiObserver::class);
         storage_buku_dijual::observe(StorageBukuDijualObserver::class);
     }
 

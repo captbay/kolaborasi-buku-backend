@@ -72,6 +72,7 @@ class UserResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('foto_profil')
                     ->image()
+                    ->imageEditor()
                     ->openable()
                     ->downloadable()
                     ->directory('foto_profil')
@@ -87,11 +88,13 @@ class UserResource extends Resource
                     ->openable()
                     ->downloadable()
                     ->image()
+                    ->imageEditor()
                     ->directory('file_ktp'),
                 Forms\Components\FileUpload::make('file_ttd')
                     ->openable()
                     ->downloadable()
                     ->image()
+                    ->imageEditor()
                     ->directory('file_ttd'),
             ]);
     }
@@ -138,7 +141,7 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\ViewAction::make()->slideOver(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
@@ -148,6 +151,7 @@ class UserResource extends Resource
             ->query(function (User $query) {
                 return $query->whereNot('role', auth()->user()->role);
             })
+            ->recordUrl(false)
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
