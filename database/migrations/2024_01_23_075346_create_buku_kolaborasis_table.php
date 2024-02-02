@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('bahasa');
             $table->string('file_sertifikasi')->nullable();
             $table->boolean('active_flag');
+            $table->boolean('dijual')->default(0);
             $table->timestamps();
         });
     }

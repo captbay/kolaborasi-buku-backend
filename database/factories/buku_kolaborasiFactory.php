@@ -33,6 +33,7 @@ class buku_kolaborasiFactory extends Factory
             'bahasa' => $this->faker->word(),
             'file_sertifikasi' => $this->faker->imageUrl(),
             'active_flag' => $this->faker->boolean(),
+            'dijual' => 0,
         ];
     }
 }
