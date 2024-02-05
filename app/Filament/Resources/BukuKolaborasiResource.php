@@ -106,6 +106,7 @@ class BukuKolaborasiResource extends Resource
                                         Forms\Components\TextInput::make('harga')
                                             ->label('Harga')
                                             ->columnSpan(3)
+                                            ->minValue(1)
                                             ->numeric()
                                             ->required(),
 
@@ -332,6 +333,7 @@ class BukuKolaborasiResource extends Resource
                             Forms\Components\TextInput::make('harga')
                                 ->numeric()
                                 ->label('Harga Buku')
+                                ->minValue(1)
                                 ->required(),
                             Repeater::make('preview_buku')
                                 ->label('File Preview Buku')

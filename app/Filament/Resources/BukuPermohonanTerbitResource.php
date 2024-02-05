@@ -27,7 +27,7 @@ class BukuPermohonanTerbitResource extends Resource
 
     protected static ?string $title = 'Buku Permohonan Terbit';
 
-    // protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     // navigation groups
 
