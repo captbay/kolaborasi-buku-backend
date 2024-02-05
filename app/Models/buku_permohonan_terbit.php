@@ -20,8 +20,8 @@ class buku_permohonan_terbit extends Model
         return $this->hasMany(transaksi_paket_penerbitan::class);
     }
 
-    // belongs to users
-    public function users()
+    // belongs to user
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
