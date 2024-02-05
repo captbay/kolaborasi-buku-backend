@@ -165,6 +165,7 @@ class UserBabBukuKolaborasiResource extends Resource
                     ->formatStateUsing(function ($state, user_bab_buku_kolaborasi $user) {
                         return $user->user->nama_depan . ' ' . $user->user->nama_belakang;
                     })
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bab_buku_kolaborasi.buku_kolaborasi.judul')
                     ->label('Judul Buku')
@@ -175,8 +176,11 @@ class UserBabBukuKolaborasiResource extends Resource
                     ->label('Judul Bab')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('bab_buku_kolaborasi.durasi_pembuatan')
-                    ->label('Durasi Hari Pembuatan')
+                Tables\Columns\TextColumn::make('datetime_deadline')
+                    ->label('Tanggal Waktu Deadline')
+                    ->formatStateUsing(function (user_bab_buku_kolaborasi $user) {
+                        return Carbon::parse($user->datetime_deadline)->format('d F Y // H:i');
+                    })
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')

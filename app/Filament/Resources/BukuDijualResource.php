@@ -134,8 +134,6 @@ class BukuDijualResource extends Resource
                                     ->options([
                                         'Indonesia' => 'Indonesia',
                                         'Inggris' => 'Inggris',
-                                        'Belanda' => 'Belanda',
-                                        'Prancis' => 'Prancis',
                                     ])
                                     ->live()
                                     ->required(),
@@ -151,7 +149,6 @@ class BukuDijualResource extends Resource
                                 Forms\Components\TextInput::make('harga')
                                     ->numeric()
                                     ->label(false)
-                                    ->rules(['regex:/^\d{1,6}(\.\d{0,2})?$/'])
                                     ->required(),
                             ]),
 
@@ -265,6 +262,11 @@ class BukuDijualResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
                         ->before(function ($record) {
+                            // if not have storage_buku_dijual
+                            if (!$record->storage_buku_dijual()->exists()) {
+                                return;
+                            }
+
                             // get all the name_generate
                             $name_generate = $record->storage_buku_dijual()->get('nama_generate');
                             // foreach name_generate
@@ -281,6 +283,11 @@ class BukuDijualResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->before(function ($record) {
+                            // if not have storage_buku_dijual
+                            if (!$record->storage_buku_dijual()->exists()) {
+                                return;
+                            }
+
                             // get all the name_generate
                             $name_generate = $record->storage_buku_dijual()->get('nama_generate');
                             // foreach name_generate

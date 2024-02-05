@@ -108,6 +108,7 @@ class UserResource extends Resource
                     ->label('Foto Profil'),
                 Tables\Columns\TextColumn::make('nama_depan')
                     ->label('Nama Lengkap')
+                    ->sortable()
                     ->formatStateUsing(function ($state, User $user) {
                         return $user->nama_depan . ' ' . $user->nama_belakang;
                     })
