@@ -83,7 +83,8 @@ class FaqResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])->defaultSort('created_at', 'desc')
             ->filters([
-                //
+                Tables\Filters\TernaryFilter::make('active_flag')
+                    ->label('Dipublish atau tidak'),
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
