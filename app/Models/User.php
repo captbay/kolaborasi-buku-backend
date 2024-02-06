@@ -88,7 +88,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     }
 
     // has many keranjang
-    public function keranjang()
+    public function keranjangs()
     {
         return $this->hasMany(keranjang::class);
     }

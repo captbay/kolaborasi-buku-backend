@@ -45,7 +45,7 @@ class buku_dijual extends Model
     }
 
     // has many keranjang
-    public function keranjang()
+    public function keranjangs()
     {
         return $this->hasMany(keranjang::class);
     }
