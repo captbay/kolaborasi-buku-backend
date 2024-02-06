@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\FaqResource\Pages;
-use App\Filament\Resources\FaqResource\RelationManagers;
-use App\Models\Faq;
-use App\Models\konten_faq;
+use App\Filament\Resources\ConfigWebResource\Pages;
+use App\Filament\Resources\ConfigWebResource\RelationManagers;
+use App\Models\config_web;
+use App\Models\ConfigWeb;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -14,21 +14,21 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class FaqResource extends Resource
+class ConfigWebResource extends Resource
 {
-    protected static ?string $model = konten_faq::class;
+    protected static ?string $model = config_web::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
+    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
-    protected static ?string $navigationLabel = 'FAQ';
+    protected static ?string $navigationLabel = 'Config';
 
-    protected static ?string $label = 'FAQ';
+    protected static ?string $label = 'Config';
 
-    protected static ?string $slug = 'faq';
+    protected static ?string $slug = 'config';
 
-    protected static ?string $title = 'FAQ';
+    protected static ?string $title = 'Config';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 3;
 
     // navigation groups
 
@@ -38,13 +38,13 @@ class FaqResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('judul')
+                Forms\Components\TextInput::make('key')
                     ->required()
                     ->columnSpan('full')
                     ->maxLength(255)
-                    ->unique(konten_faq::class, 'judul', ignoreRecord: true),
+                    ->unique(config_web::class, 'key', ignoreRecord: true),
 
-                Forms\Components\MarkdownEditor::make('answer')
+                Forms\Components\MarkdownEditor::make('value')
                     ->columnSpan('full')
                     ->required(),
 
@@ -61,11 +61,11 @@ class FaqResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('judul')
+                Tables\Columns\TextColumn::make('key')
                     ->wrap()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('answer')
+                Tables\Columns\TextColumn::make('value')
                     ->wrap()
                     ->searchable()
                     ->sortable(),
@@ -110,9 +110,9 @@ class FaqResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListFaqs::route('/'),
-            'create' => Pages\CreateFaq::route('/create'),
-            'edit' => Pages\EditFaq::route('/{record}/edit'),
+            'index' => Pages\ListConfigWebs::route('/'),
+            'create' => Pages\CreateConfigWeb::route('/create'),
+            'edit' => Pages\EditConfigWeb::route('/{record}/edit'),
         ];
     }
 }
