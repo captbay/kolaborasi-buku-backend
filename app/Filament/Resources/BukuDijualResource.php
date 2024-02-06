@@ -220,23 +220,10 @@ class BukuDijualResource extends Resource
                     ->bulleted()
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('active_flag')
-                    ->badge()
-                    ->formatStateUsing(function ($state, buku_dijual $buku_dijual) {
-                        return match ($buku_dijual->active_flag) {
-                            1 => 'Iya',
-                            0 => 'Tidak',
-                        };
-                    })
-                    ->color(
-                        fn (buku_dijual $buku_dijual) => match ($buku_dijual->active_flag) {
-                            1 => 'success',
-                            0 => 'warning',
-                        }
-                    )
+                Tables\Columns\IconColumn::make('active_flag')
                     ->label('Dipublish')
-                    ->sortable()
-                    ->searchable(),
+                    ->boolean()
+                    ->summarize(Tables\Columns\Summarizers\Count::make()->icons()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

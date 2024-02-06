@@ -257,23 +257,10 @@ class BukuKolaborasiResource extends Resource
                 Tables\Columns\TextColumn::make('jumlah_bab')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('active_flag')
-                    ->badge()
-                    ->formatStateUsing(function ($state, buku_kolaborasi $buku_kolaborasi) {
-                        return match ($buku_kolaborasi->active_flag) {
-                            1 => 'Iya',
-                            0 => 'Tidak',
-                        };
-                    })
-                    ->color(
-                        fn (buku_kolaborasi $buku_kolaborasi) => match ($buku_kolaborasi->active_flag) {
-                            1 => 'success',
-                            0 => 'warning',
-                        }
-                    )
+                Tables\Columns\IconColumn::make('active_flag')
                     ->label('Dipublish')
-                    ->sortable()
-                    ->searchable(),
+                    ->boolean()
+                    ->summarize(Tables\Columns\Summarizers\Count::make()->icons()),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
