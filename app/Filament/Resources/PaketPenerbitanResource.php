@@ -19,7 +19,7 @@ class PaketPenerbitanResource extends Resource
 {
     protected static ?string $model = paket_penerbitan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static ?string $navigationIcon = 'heroicon-s-banknotes';
 
     protected static ?string $navigationLabel = 'Paket Penerbitan';
 

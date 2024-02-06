@@ -18,7 +18,7 @@ class ConfigWebResource extends Resource
 {
     protected static ?string $model = config_web::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+    protected static ?string $navigationIcon = 'heroicon-s-wrench-screwdriver';
 
     protected static ?string $navigationLabel = 'Config';
 

@@ -17,7 +17,7 @@ class BukuPermohonanTerbitResource extends Resource
 {
     protected static ?string $model = buku_permohonan_terbit::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-arrow-up-on-square-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-arrow-up-on-square-stack';
 
     protected static ?string $navigationLabel = 'Buku Permohonan Terbit';
 

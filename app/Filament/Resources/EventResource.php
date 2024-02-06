@@ -20,7 +20,7 @@ class EventResource extends Resource
 {
     protected static ?string $model = konten_event::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-photo';
+    protected static ?string $navigationIcon = 'heroicon-s-photo';
 
     protected static ?string $navigationLabel = 'Galeri Foto';
 

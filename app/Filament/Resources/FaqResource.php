@@ -18,7 +18,7 @@ class FaqResource extends Resource
 {
     protected static ?string $model = konten_faq::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
+    protected static ?string $navigationIcon = 'heroicon-s-question-mark-circle';
 
     protected static ?string $navigationLabel = 'FAQ';
 
