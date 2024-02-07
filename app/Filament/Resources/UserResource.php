@@ -7,6 +7,7 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -72,6 +73,7 @@ class UserResource extends Resource
                         'MEMBER' => 'MEMBER',
                     ])
                     ->live()
+                    ->disabled()
                     ->required(),
                 Forms\Components\FileUpload::make('foto_profil')
                     ->image()
@@ -150,6 +152,63 @@ class UserResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\ForceDeleteAction::make(),
                     Tables\Actions\RestoreAction::make(),
+                    Tables\Actions\Action::make('Verifikasi')
+                        ->hidden(function (User $user, array $data) {
+                            if ($user->deleted_at != null) {
+                                return true;
+                            }
+
+                            if ($user->role == 'MEMBER') {
+                                return true;
+                            }
+
+                            if ($user->role == 'ADMIN') {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Verifikasi Customer')
+                        ->modalDescription('Apakah anda yakin ingin melakukan verifikasi customer ini, agar menjadi member?')
+                        ->modalSubmitActionLabel('iya, verifikasi')
+                        ->color('success')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('success')
+                        ->action(
+                            function (user $user, array $data): void {
+                                if ($user->role == 'MEMBER') {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title('Customer ini sudah menjadi member')
+                                        ->send();
+
+                                    return;
+                                }
+
+                                if ($user->file_cv == null || $user->file_ktp == null || $user->file_ttd == null) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title('Customer ini belum melengkapi data')
+                                        ->send();
+
+                                    return;
+                                }
+
+                                //  update role to member
+                                $user->update([
+                                    'role' => 'MEMBER',
+                                ]);
+
+                                Notification::make()
+                                    ->success()
+                                    ->title('Customer berhasil diverifikasi')
+                                    ->send();
+
+                                return;
+                            }
+                        ),
                 ])->iconButton()
             ])
             ->query(function (User $query) {
