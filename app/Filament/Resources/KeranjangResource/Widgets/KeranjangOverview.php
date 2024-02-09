@@ -15,10 +15,11 @@ class KeranjangOverview extends BaseWidget
         $totalKeranjangBulanLalu = Keranjang::whereMonth('created_at', date('m', strtotime('-1 month')))->count();
         $totalKeranjangBulanIni = Keranjang::whereMonth('created_at', date('m'))->count();
 
+        $kenaikan = ($totalKeranjangBulanIni - $totalKeranjangBulanLalu);
         if ($totalKeranjangBulanLalu == 0) {
             $totalKeranjangBulanLalu = 1;
         }
-        $kenaikan = ($totalKeranjangBulanIni - $totalKeranjangBulanLalu) / $totalKeranjangBulanLalu * 100;
+        $kenaikan = ($kenaikan / $totalKeranjangBulanLalu) * 100;
 
 
         return [
