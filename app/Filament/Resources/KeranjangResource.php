@@ -65,7 +65,7 @@ class KeranjangResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.nama_lengkap')
                     ->label('Nama')
-                    ->toggleable(false)
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

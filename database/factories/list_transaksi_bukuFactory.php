@@ -20,7 +20,7 @@ class list_transaksi_bukuFactory extends Factory
     {
         return [
             'transaksi_penjualan_buku_id' => transaksi_penjualan_buku::all()->random()->id,
-            'buku_dijual_id' => buku_dijual::all()->random()->id,
+            'buku_dijual_id' => buku_dijual::all()->unique()->random()->id,
         ];
     }
 }

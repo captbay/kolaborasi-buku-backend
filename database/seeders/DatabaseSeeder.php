@@ -59,8 +59,8 @@ class DatabaseSeeder extends Seeder
         bukudijual_penulis_pivot::factory(10)->create();
         buku_lunas_user::factory(10)->create();
         storage_buku_dijual::factory(10)->create();
-        transaksi_penjualan_buku::factory(10)->create();
-        list_transaksi_buku::factory(10)->create();
+        transaksi_penjualan_buku::factory(20)->create();
+        list_transaksi_buku::factory(30)->create();
 
         // config web
         konten_event::factory(10)->create();
@@ -70,13 +70,13 @@ class DatabaseSeeder extends Seeder
         // paket penerbitan
         paket_penerbitan::factory(10)->create();
         buku_permohonan_terbit::factory(10)->create();
-        transaksi_paket_penerbitan::factory(10)->create();
+        transaksi_paket_penerbitan::factory(20)->create();
 
         // buku kolaborasi
         buku_kolaborasi::factory(10)->create();
         bab_buku_kolaborasi::factory(10)->create();
         user_bab_buku_kolaborasi::factory(10)->create();
-        transaksi_kolaborasi_buku::factory(10)->create();
+        transaksi_kolaborasi_buku::factory(20)->create();
 
         // notifikasi
         notifikasi::factory(10)->create();

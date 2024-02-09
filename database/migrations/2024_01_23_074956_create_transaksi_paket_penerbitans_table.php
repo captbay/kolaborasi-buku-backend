@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignUuid('buku_permohonan_terbit_id')->constrained('buku_permohonan_terbit')->cascadeOnDelete();
             $table->string('no_transaksi');
             $table->string('total_harga');
-            $table->enum('status', ['DONE', 'PROGRESS', 'FAILED']);
+            $table->enum('status', ['DONE', 'PROGRESS', 'FAILED', 'UPLOADED']);
             $table->string('foto_bukti_bayar')->nullable();
             $table->dateTime('date_time_lunas')->nullable();
             $table->timestamps();

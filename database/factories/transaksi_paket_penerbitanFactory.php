@@ -19,7 +19,7 @@ class transaksi_paket_penerbitanFactory extends Factory
      */
     public function definition(): array
     {
-        $status = $this->faker->randomElement(['DONE', 'PROGRESS', 'FAILED']);
+        $status = $this->faker->randomElement(['DONE', 'PROGRESS', 'FAILED', 'UPLOADED']);
 
         if ($status == 'DONE') {
             $date_time_lunas = $this->faker->dateTime();
