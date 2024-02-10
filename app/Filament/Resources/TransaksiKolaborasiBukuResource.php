@@ -107,6 +107,15 @@ class TransaksiKolaborasiBukuResource extends Resource
                     ->label('Nama Lengkap')
                     ->sortable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('bab_buku_kolaborasi.buku_kolaborasi.judul')
+                    ->label('Judul Buku')
+                    ->wrap()
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('bab_buku_kolaborasi.no_bab')
+                    ->label('No Bab')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('bab_buku_kolaborasi.judul')
                     ->label('Judul Bab')
                     ->searchable()
