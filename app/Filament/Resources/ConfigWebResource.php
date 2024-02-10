@@ -44,9 +44,32 @@ class ConfigWebResource extends Resource
                     ->maxLength(255)
                     ->unique(config_web::class, 'key', ignoreRecord: true),
 
-                Forms\Components\MarkdownEditor::make('value')
+                Forms\Components\Select::make('tipe')
                     ->columnSpan('full')
+                    ->options([
+                        'IMAGE' => 'Image',
+                        'TEXT' => 'Text',
+                    ])
+                    ->live(onBlur: true)
                     ->required(),
+
+                Forms\Components\Section::make('Value')
+                    ->schema([
+                        Forms\Components\TextInput::make('value')
+                            ->required()
+                            ->columnSpan('full')
+                            ->maxLength(255)
+                            ->hidden(fn (Forms\Get $get) => $get('tipe') !== 'TEXT'),
+
+                        Forms\Components\FileUpload::make('value')
+                            ->label('image')
+                            ->required()
+                            ->openable()
+                            ->image()
+                            ->imageEditor()
+                            ->hidden(fn (Forms\Get $get) => $get('tipe') !== 'IMAGE')
+                            ->directory('config_web'),
+                    ])->description('Pilih dahulu tipe'),
 
                 Forms\Components\Section::make('Status')
                     ->schema([
@@ -62,6 +85,10 @@ class ConfigWebResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('key')
+                    ->wrap()
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('tipe')
                     ->wrap()
                     ->searchable()
                     ->sortable(),

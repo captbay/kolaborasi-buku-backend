@@ -5,12 +5,16 @@ namespace App\Providers;
 use App\Models\buku_dijual;
 use App\Models\buku_kolaborasi;
 use App\Models\buku_permohonan_terbit;
+use App\Models\config_web;
+use App\Models\konten_event;
 use App\Models\storage_buku_dijual;
 use App\Models\User;
 use App\Models\user_bab_buku_kolaborasi;
 use App\Observers\BukuDijualObserver;
 use App\Observers\BukuKolaborasiObserver;
 use App\Observers\BukuPermohonanTerbitObserver;
+use App\Observers\ConfigWebObserver;
+use App\Observers\KontenEventObserver;
 use App\Observers\StorageBukuDijualObserver;
 use App\Observers\UserBabBukuKolaborasiObserver;
 use App\Observers\UserObserver;
@@ -43,6 +47,8 @@ class EventServiceProvider extends ServiceProvider
         user_bab_buku_kolaborasi::observe(UserBabBukuKolaborasiObserver::class);
         storage_buku_dijual::observe(StorageBukuDijualObserver::class);
         buku_permohonan_terbit::observe(BukuPermohonanTerbitObserver::class);
+        config_web::observe(ConfigWebObserver::class);
+        konten_event::observe(KontenEventObserver::class);
     }
 
     /**

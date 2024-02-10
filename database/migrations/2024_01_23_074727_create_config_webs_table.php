@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('config_web', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('key');
+            $table->string('tipe');
             $table->string('value');
             $table->boolean('active_flag');
             $table->timestamps();
