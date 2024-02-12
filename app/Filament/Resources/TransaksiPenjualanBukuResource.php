@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransaksiPenjualanBukuResource\Pages;
 use App\Filament\Resources\TransaksiPenjualanBukuResource\RelationManagers;
+use App\Models\buku_lunas_user;
 use App\Models\transaksi_penjualan_buku;
 use App\Models\TransaksiPenjualanBuku;
 use Carbon\Carbon;
@@ -194,6 +195,14 @@ class TransaksiPenjualanBukuResource extends Resource
                                 'status' => 'DONE',
                                 'date_time_lunas' => Carbon::now(),
                             ]);
+
+                            // foreach $transaksi->list_transaksi_buku to create buku_lunas_user
+                            foreach ($transaksi->list_transaksi_buku as $buku) {
+                                buku_lunas_user::create([
+                                    'user_id' => $transaksi->user_id,
+                                    'buku_dijual_id' => $buku['buku_dijual_id']
+                                ]);
+                            }
 
                             Notification::make()
                                 ->success()
