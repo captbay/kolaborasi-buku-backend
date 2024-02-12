@@ -12,6 +12,7 @@
         "filament/filament": "3.2",
         "filament/widgets": "3.2",
         "guzzlehttp/guzzle": "^7.2",
+        "ibrahimbougaoua/filament-rating-star": "^1.0",
         "laravel-lang/locales": "^2.5",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.3",

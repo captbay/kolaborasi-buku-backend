@@ -12,6 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use IbrahimBougaoua\FilamentRatingStar\Columns\RatingStarColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -35,13 +36,6 @@ class TestimoniPembeliResource extends Resource
 
     protected static ?string $navigationGroup = 'Buku Dijual';
 
-    // public static function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             //
-    //         ]);
-    // }
 
     public static function table(Table $table): Table
     {
@@ -65,7 +59,7 @@ class TestimoniPembeliResource extends Resource
                 Tables\Columns\TextColumn::make('ulasan')
                     ->wrap()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('rating')
+                RatingStarColumn::make('rating')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('active_flag')
@@ -86,13 +80,7 @@ class TestimoniPembeliResource extends Resource
                     ->label('Dipublish atau tidak'),
             ])
             ->actions([
-                // Tables\Actions\ActionGroup::make([
-                // Tables\Actions\ViewAction::make()->slideOver(),
-                // Tables\Actions\EditAction::make(),
-                // Tables\Actions\DeleteAction::make(),
-                // ])
-
-                Tables\Actions\Action::make('Hide')
+                Tables\Actions\Action::make('Sembunyi')
                     ->hidden(function (testimoni_pembeli $testimoni_pembeli, array $data) {
                         if ($testimoni_pembeli->active_flag == 0) {
                             return true;
@@ -101,9 +89,9 @@ class TestimoniPembeliResource extends Resource
                         return false;
                     })
                     ->requiresConfirmation()
-                    ->modalHeading('Nonaktifkan Testimoni Pembeli')
+                    ->modalHeading('Sembunyikan Testimoni Pembeli')
                     ->modalDescription('Apakah anda yakin ingin menonaktifkan testimoni pembeli ini?')
-                    ->modalSubmitActionLabel('iya, nonaktifkan')
+                    ->modalSubmitActionLabel('iya, sembunyikan')
                     ->color('danger')
                     ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
                     ->icon('heroicon-s-x-circle')
@@ -113,7 +101,7 @@ class TestimoniPembeliResource extends Resource
                             if ($testimoni_pembeli->active_flag == 0) {
                                 Notification::make()
                                     ->danger()
-                                    ->title('Testimoni pembeli sudah dinonaktifkan')
+                                    ->title('Testimoni pembeli sudah disembunyikan')
                                     ->send();
 
                                 return;
@@ -126,7 +114,48 @@ class TestimoniPembeliResource extends Resource
 
                             Notification::make()
                                 ->success()
-                                ->title('Testimoni pembeli berhasil dinonaktifkan')
+                                ->title('Testimoni pembeli berhasil disembunyikan')
+                                ->send();
+
+                            return;
+                        }
+                    ),
+
+                Tables\Actions\Action::make('Tampil')
+                    ->hidden(function (testimoni_pembeli $testimoni_pembeli, array $data) {
+                        if ($testimoni_pembeli->active_flag == 1) {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Tampilkan Testimoni Pembeli')
+                    ->modalDescription('Apakah anda yakin ingin mengaktifkan testimoni pembeli ini?')
+                    ->modalSubmitActionLabel('iya, tampilkan')
+                    ->color('success')
+                    ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                    ->icon('heroicon-s-check-circle')
+                    ->modalIconColor('success')
+                    ->action(
+                        function (testimoni_pembeli $testimoni_pembeli, array $data): void {
+                            if ($testimoni_pembeli->active_flag == 1) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Testimoni pembeli sudah ditampilkan')
+                                    ->send();
+
+                                return;
+                            }
+
+                            //  nonaktifkan testimoni pembeli
+                            $testimoni_pembeli->update([
+                                'active_flag' => 1,
+                            ]);
+
+                            Notification::make()
+                                ->success()
+                                ->title('Testimoni pembeli berhasil ditampilkan')
                                 ->send();
 
                             return;
