@@ -37,7 +37,7 @@ class KeranjangOverview extends BaseWidget
             ),
             Stat::make(
                 'Total Buku Yang Ingin Dibeli',
-                Keranjang::with('buku_dijual')->count()
+                Keranjang::whereHas('buku_dijual')->count()
             ),
         ];
     }

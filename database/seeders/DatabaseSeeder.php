@@ -54,10 +54,10 @@ class DatabaseSeeder extends Seeder
         // buku dijual
         penulis::factory(10)->create();
         buku_dijual::factory(20)->create();
-        keranjang::factory(10)->create();
+        keranjang::factory(20)->create();
         testimoni_pembeli::factory(10)->create();
         bukudijual_penulis_pivot::factory(10)->create();
-        buku_lunas_user::factory(10)->create();
+        buku_lunas_user::factory(20)->create();
         storage_buku_dijual::factory(10)->create();
         transaksi_penjualan_buku::factory(20)->create();
         list_transaksi_buku::factory(30)->create();

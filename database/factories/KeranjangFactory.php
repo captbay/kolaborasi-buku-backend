@@ -19,8 +19,8 @@ class KeranjangFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'buku_dijual_id' => buku_dijual::factory(),
+            'user_id' => User::all()->random()->id,
+            'buku_dijual_id' => buku_dijual::all()->random()->id,
         ];
     }
 }
