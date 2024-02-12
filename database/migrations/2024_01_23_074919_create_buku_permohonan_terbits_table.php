@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->integer('persen_bagi_hasil');
             $table->enum('status', ['ACCEPTED', 'REVIEW', 'REVISI', 'REJECTED']);
+            $table->string('cover_buku');
             $table->string('file_buku');
             $table->timestamps();
         });

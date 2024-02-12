@@ -12,6 +12,12 @@ class BukuPermohonanTerbitObserver
      */
     public function created(buku_permohonan_terbit $buku_permohonan_terbit): void
     {
+        $originalCover = $buku_permohonan_terbit->getOriginal('cover_buku');
+
+        if ($buku_permohonan_terbit->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
+        }
+
         $originalCover = $buku_permohonan_terbit->getOriginal('file_buku');
 
         if ($buku_permohonan_terbit->isDirty('file_buku') && $originalCover !== null) {
@@ -24,6 +30,12 @@ class BukuPermohonanTerbitObserver
      */
     public function updated(buku_permohonan_terbit $buku_permohonan_terbit): void
     {
+        $originalCover = $buku_permohonan_terbit->getOriginal('cover_buku');
+
+        if ($buku_permohonan_terbit->isDirty('cover_buku') && $originalCover !== null) {
+            Storage::disk('public')->delete($originalCover);
+        }
+
         $originalCover = $buku_permohonan_terbit->getOriginal('file_buku');
 
         if ($buku_permohonan_terbit->isDirty('file_buku') && $originalCover !== null) {
@@ -36,6 +48,10 @@ class BukuPermohonanTerbitObserver
      */
     public function deleted(buku_permohonan_terbit $buku_permohonan_terbit): void
     {
+        if (!is_null($buku_permohonan_terbit->cover_buku)) {
+            Storage::disk('public')->delete($buku_permohonan_terbit->cover_buku);
+        }
+
         if (!is_null($buku_permohonan_terbit->file_buku)) {
             Storage::disk('public')->delete($buku_permohonan_terbit->file_buku);
         }
@@ -54,6 +70,10 @@ class BukuPermohonanTerbitObserver
      */
     public function forceDeleted(buku_permohonan_terbit $buku_permohonan_terbit): void
     {
+        if (!is_null($buku_permohonan_terbit->cover_buku)) {
+            Storage::disk('public')->delete($buku_permohonan_terbit->cover_buku);
+        }
+
         if (!is_null($buku_permohonan_terbit->file_buku)) {
             Storage::disk('public')->delete($buku_permohonan_terbit->file_buku);
         }

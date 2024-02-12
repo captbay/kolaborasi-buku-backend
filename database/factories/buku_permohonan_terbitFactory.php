@@ -25,6 +25,7 @@ class buku_permohonan_terbitFactory extends Factory
             'deskripsi' => $this->faker->paragraph(),
             'persen_bagi_hasil' => $this->faker->numberBetween(1, 50),
             'status' => $status,
+            'cover_buku' => $this->faker->imageUrl(),
             'file_buku' => $this->faker->imageUrl(),
         ];
     }

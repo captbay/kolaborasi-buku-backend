@@ -428,7 +428,6 @@ class BukuKolaborasiResource extends Resource
                                         'penerbit' => env('APP_NAME'),
                                         'nama_file_buku' => $buku_kolaborasi->judul . '.pdf', // 'buku_final_storage/' . $buku_kolaborasi->judul . '.pdf
                                         'file_buku' => 'buku_final_storage/' . $buku_kolaborasi->judul . '.pdf',
-                                        'jumlah_bab' => $buku_kolaborasi->jumlah_bab,
                                         'active_flag' => 0,
                                     ]);
 
@@ -457,7 +456,7 @@ class BukuKolaborasiResource extends Resource
 
                                         Notification::make()
                                             ->success()
-                                            ->title('Buku berhasil dijual, Silahkan menambah data selengkapnya di menu buku dijual sebeum upload')
+                                            ->title('Buku berhasil dijual, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
                                             ->send();
 
                                         return;
