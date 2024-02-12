@@ -111,12 +111,9 @@ class UserResource extends Resource
                 // show profile picture
                 Tables\Columns\ImageColumn::make('foto_profil')
                     ->label('Foto Profil'),
-                Tables\Columns\TextColumn::make('nama_depan')
+                Tables\Columns\TextColumn::make('nama_lengkap')
                     ->label('Nama Lengkap')
                     ->sortable()
-                    ->formatStateUsing(function ($state, User $user) {
-                        return $user->nama_depan . ' ' . $user->nama_belakang;
-                    })
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),

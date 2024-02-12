@@ -160,11 +160,8 @@ class UserBabBukuKolaborasiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.nama_depan')
+                Tables\Columns\TextColumn::make('user.nama_lengkap')
                     ->label('Nama Lengkap')
-                    ->formatStateUsing(function ($state, user_bab_buku_kolaborasi $user) {
-                        return $user->user->nama_depan . ' ' . $user->user->nama_belakang;
-                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('bab_buku_kolaborasi.buku_kolaborasi.judul')

@@ -44,11 +44,8 @@ class TestimoniPembeliResource extends Resource
                 Tables\Columns\ImageColumn::make('buku_dijual.cover_buku')
                     ->size(80)
                     ->label('Cover Buku'),
-                Tables\Columns\TextColumn::make('user.nama_depan')
+                Tables\Columns\TextColumn::make('user.nama_lengkap')
                     ->label('Nama Lengkap')
-                    ->formatStateUsing(function ($state, testimoni_pembeli $testi) {
-                        return $testi->user->nama_lengkap;
-                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('buku_dijual.judul')

@@ -206,7 +206,7 @@ class TransaksiPenjualanBukuResource extends Resource
 
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil diverifikasi')
+                                ->title('Transaksi berhasil diverifikasi, buku sudah diberikan kepada ' . $transaksi->user->nama_lengkap)
                                 ->send();
 
                             return;

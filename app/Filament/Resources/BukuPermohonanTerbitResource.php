@@ -134,11 +134,8 @@ class BukuPermohonanTerbitResource extends Resource
                 Tables\Columns\ImageColumn::make('cover_buku')
                     ->size(80)
                     ->label('Cover Buku'),
-                Tables\Columns\TextColumn::make('user.nama_depan')
+                Tables\Columns\TextColumn::make('user.nama_lengkap')
                     ->label('Nama Lengkap')
-                    ->formatStateUsing(function ($state, buku_permohonan_terbit $buku_permohonan_terbit) {
-                        return $buku_permohonan_terbit->user->nama_depan . ' ' . $buku_permohonan_terbit->user->nama_belakang;
-                    })
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('judul')

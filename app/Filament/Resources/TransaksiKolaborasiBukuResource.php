@@ -6,6 +6,7 @@ use App\Filament\Resources\TransaksiKolaborasiBukuResource\Pages;
 use App\Filament\Resources\TransaksiKolaborasiBukuResource\RelationManagers;
 use App\Models\transaksi_kolaborasi_buku;
 use App\Models\TransaksiKolaborasiBuku;
+use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -205,9 +206,18 @@ class TransaksiKolaborasiBukuResource extends Resource
                                 'date_time_lunas' => Carbon::now(),
                             ]);
 
+                            user_bab_buku_kolaborasi::create([
+                                'user_id' => $transaksi->user_id,
+                                'bab_buku_kolaborasi_id' => $transaksi->bab_buku_kolaborasi_id,
+                                'status' => 'PROGRESS',
+                                'note' => 'Selamat mengerjakan, jangan lupa deadline nya ya :)',
+                                'file_bab' => NULL,
+                                'datetime_deadline' => Carbon::now()->addDays($transaksi->bab_buku_kolaborasi->durasi_pembuatan)->format('Y-m-d H:i:s'),
+                            ]);
+
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil diverifikasi')
+                                ->title('Transaksi berhasil diverifikasi, bab untuk ' . $transaksi->user->nama_lengkap . ' sudah ditambahkan')
                                 ->send();
 
                             return;
