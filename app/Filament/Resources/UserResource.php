@@ -43,6 +43,7 @@ class UserResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('tgl_lahir')
+                    ->native(false)
                     ->maxDate('today')
                     ->required(),
                 Forms\Components\Select::make('gender')

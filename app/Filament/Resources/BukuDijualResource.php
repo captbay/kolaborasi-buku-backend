@@ -121,6 +121,7 @@ class BukuDijualResource extends Resource
                                     ->maxLength(255),
 
                                 Forms\Components\DatePicker::make('tanggal_terbit')
+                                    ->native(false)
                                     ->maxDate('today')
                                     ->required(),
                                 Forms\Components\TextInput::make('jumlah_halaman')
