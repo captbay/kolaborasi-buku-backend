@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notifikasi', function (Blueprint $table) {
+        Schema::create('notifications', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
-            $table->enum('tipe', ['PEMBELIAN', 'KOLABORASI', 'PENERBITAN']);
-            $table->string('tabel_id');
-            $table->string('judul');
-            $table->text('pesan');
-            $table->enum('status', ['NEW', 'OPENED']);
+            $table->string('type');
+            $table->uuidMorphs('notifiable');
+            $table->text('data');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notifikasi');
+        Schema::dropIfExists('notifications');
     }
 };

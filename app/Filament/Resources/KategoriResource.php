@@ -49,7 +49,7 @@ class KategoriResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->unique(Kategori::class, 'slug', ignoreRecord: true),
-                Forms\Components\MarkdownEditor::make('deskripsi')
+                Forms\Components\Textarea::make('deskripsi')
                     ->columnSpan('full')
                     ->required(),
             ]);

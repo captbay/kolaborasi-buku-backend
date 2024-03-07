@@ -16,7 +16,6 @@ use App\Models\keranjang;
 use App\Models\konten_event;
 use App\Models\konten_faq;
 use App\Models\list_transaksi_buku;
-use App\Models\notifikasi;
 use App\Models\paket_penerbitan;
 use App\Models\penulis;
 use App\Models\storage_buku_dijual;
@@ -27,6 +26,7 @@ use App\Models\transaksi_penjualan_buku;
 use App\Models\User;
 use App\Models\user_bab_buku_kolaborasi;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -78,7 +78,89 @@ class DatabaseSeeder extends Seeder
         user_bab_buku_kolaborasi::factory(10)->create();
         transaksi_kolaborasi_buku::factory(20)->create();
 
-        // notifikasi
-        notifikasi::factory(10)->create();
+        // make notification seeder
+        // type
+        // notifiable_type
+        // notifiable_id
+        // data
+
+        $data = [
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+            [
+                'type' => 'Anda Berhasil Masuk',
+                'notifiable_type' => 'App\Models\User',
+                'notifiable_id' => User::all()->random()->id,
+                'data' => json_encode([
+                    'title' => 'Selamat Datang',
+                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                ])
+            ],
+        ];
+
+        foreach ($data as $d) {
+            DB::table('notifications')->insert([
+                'id' => \Ramsey\Uuid\Uuid::uuid4(),
+                'type' => $d['type'],
+                'notifiable_type' => $d['notifiable_type'],
+                'notifiable_id' => $d['notifiable_id'],
+                'data' => $d['data'],
+                'read_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

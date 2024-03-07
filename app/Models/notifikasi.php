@@ -10,7 +10,7 @@ class notifikasi extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $table = 'notifikasi';
+    protected $table = 'notifications';
 
     protected $guarded = ['id'];
 

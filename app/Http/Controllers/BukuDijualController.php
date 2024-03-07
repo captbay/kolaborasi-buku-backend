@@ -8,19 +8,76 @@ use Illuminate\Http\Request;
 class BukuDijualController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * TODO: implement filter, search, dll ini belum selesai
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        try {
+            // get the most count buku_dijual in list_transasksi_buku
+            $data = buku_dijual::with('kategori', 'testimoni_pembeli')
+                ->withCount('list_transaksi_buku')
+                ->where('active_flag', '1')
+                ->orderBy('created_at', 'desc');
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+            if ($request->has("limit")) {
+                $data->limit($request->limit);
+            }
+
+            if ($request->has("bookAds")) {
+                if ($request->bookAds == "true") {
+                    $data->orderBy('list_transaksi_buku_count', 'asc');
+                }
+            }
+
+            $data = $data->get();
+
+            if ($request->bookAds == "true") {
+                $data = $data->map(function ($item) use ($request) {
+                    return [
+                        'id' => $item->id,
+                        'slug' => $item->slug,
+                        'judul' => $item->judul,
+                        'kategori' => $item->kategori->nama,
+                        'deskripsi' => $item->deskripsi,
+                        'cover_buku' => $item->cover_buku,
+                        'is_bookAds' => $request->bookAds,
+                    ];
+                });
+            } else {
+                // filter only needed data
+                $data = $data->map(function ($item) use ($request) {
+                    return [
+                        'id' => $item->id,
+                        'slug' => $item->slug,
+                        'judul' => $item->judul,
+                        'harga' => $item->harga,
+                        'kategori' => $item->kategori->nama,
+                        'cover_buku' => $item->cover_buku,
+                        'pembeli' => $item->list_transaksi_buku_count == 0 ? 0 : $item->list_transaksi_buku_count,
+                        'is_bookAds' => $request->bookAds,
+                    ];
+                });
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'error',
+                'data' => $e->getMessage()
+            ], 500);
+        }
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'error',
+                'data' => 'buku_dijual not found'
+            ], 404);
+        }
+
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'buku all retrieved successfully.',
+            'data' => $data
+        ], 200);
     }
 
     /**
@@ -31,19 +88,56 @@ class BukuDijualController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, buku_dijual $buku_dijual)
+    // toptenterlaris
+    public function bestseller()
     {
-        //
-    }
+        try {
+            // get the most count buku_dijual in list_transasksi_buku
+            $data = buku_dijual::with('kategori', 'testimoni_pembeli')
+                ->withCount('list_transaksi_buku')
+                ->whereHas('list_transaksi_buku', function ($query) {
+                    $query->orderBy('created_at', 'desc');
+                })
+                ->where('active_flag', '1')
+                ->orderBy('list_transaksi_buku_count', 'desc')
+                ->limit(10)
+                ->get();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(buku_dijual $buku_dijual)
-    {
-        //
+            // filter only needed data
+            $data = $data->map(function ($item) {
+                // count avarage rating of all tesimoni_pembeli data
+                $rating = $item->testimoni_pembeli->avg('rating');
+
+                return [
+                    'id' => $item->id,
+                    'slug' => $item->slug,
+                    'judul' => $item->judul,
+                    'harga' => $item->harga,
+                    'kategori' => $item->kategori->nama,
+                    'cover_buku' => $item->cover_buku,
+                    'pembeli' => $item->list_transaksi_buku_count,
+                    'rating' => $rating,
+                ];
+            });
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'error',
+                'data' => $e->getMessage()
+            ], 500);
+        }
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'error',
+                'data' => 'buku_dijual not found'
+            ], 404);
+        }
+
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'buku best seller retrieved successfully.',
+            'data' => $data
+        ], 200);
     }
 }

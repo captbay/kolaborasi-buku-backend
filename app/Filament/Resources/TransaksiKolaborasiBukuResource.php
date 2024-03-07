@@ -215,9 +215,12 @@ class TransaksiKolaborasiBukuResource extends Resource
                                 'datetime_deadline' => Carbon::now()->addDays($transaksi->bab_buku_kolaborasi->durasi_pembuatan)->format('Y-m-d H:i:s'),
                             ]);
 
+                            $recipient = auth()->user();
+
                             Notification::make()
                                 ->success()
                                 ->title('Transaksi berhasil diverifikasi, bab untuk ' . $transaksi->user->nama_lengkap . ' sudah ditambahkan')
+                                ->sendToDatabase($recipient)
                                 ->send();
 
                             return;
