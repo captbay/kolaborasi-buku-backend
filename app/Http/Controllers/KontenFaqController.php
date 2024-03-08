@@ -12,38 +12,28 @@ class KontenFaqController extends Controller
      */
     public function index()
     {
-        //
-    }
+        // get the resource
+        try {
+            $data = konten_faq::where('active_flag', 1)->orderBy('created_at', 'desc')->get();
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'error',
+                'data' => $e->getMessage()
+            ], 500);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if ($data->isEmpty()) {
+            return response()->json([
+                'message' => 'error',
+                'data' => 'event not found'
+            ], 404);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(konten_faq $konten_faq)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, konten_faq $konten_faq)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(konten_faq $konten_faq)
-    {
-        //
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'konten_event retrieved successfully.',
+            'data' => $data
+        ], 200);
     }
 }
