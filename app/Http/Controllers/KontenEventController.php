@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\konten_event;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class KontenEventController extends Controller
@@ -14,7 +15,11 @@ class KontenEventController extends Controller
     {
         // get the resource
         try {
-            $konten_event = konten_event::where('active_flag', 1)->where('tipe', 'IMAGE')->get();
+            $konten_event = konten_event::where('active_flag', 1)
+                ->where('waktu_mulai', '<=', Carbon::now())
+                ->where('waktu_selesai', '>=', Carbon::now())
+                ->where('tipe', 'IMAGE')
+                ->get();
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'error',

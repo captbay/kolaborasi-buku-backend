@@ -5,6 +5,7 @@ use App\Http\Controllers\BukuDijualController;
 use App\Http\Controllers\BukuKolaborasiController;
 use App\Http\Controllers\KontenEventController;
 use App\Http\Controllers\KontenFaqController;
+use App\Http\Controllers\PaketPenerbitanController;
 use App\Http\Controllers\TestimoniPembeliController;
 use Illuminate\Support\Facades\Route;
 
@@ -79,4 +80,10 @@ Route::group(['prefix' => 'testimoni'], function () {
 Route::group(['prefix' => 'faq'], function () {
     // get all faq
     Route::get('all', [KontenFaqController::class, 'index']);
+});
+
+// paket
+Route::group(['prefix' => 'paket'], function () {
+    // get all paket
+    Route::get('all', [PaketPenerbitanController::class, 'index']);
 });

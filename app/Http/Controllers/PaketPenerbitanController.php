@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\paket_penerbitan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PaketPenerbitanController extends Controller
@@ -12,38 +13,32 @@ class PaketPenerbitanController extends Controller
      */
     public function index()
     {
-        //
-    }
+        // get the resource
+        try {
+            $data = paket_penerbitan::select('id', 'nama', 'harga', 'deskripsi')
+                ->where('waktu_mulai', '<=', Carbon::now())
+                ->where('waktu_selesai', '>=', Carbon::now())
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'error',
+                'data' => $e->getMessage()
+            ], 500);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if ($data->isEmpty()) {
+            return response()->json([
+                'message' => 'error',
+                'data' => 'event not found'
+            ], 404);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(paket_penerbitan $paket_penerbitan)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, paket_penerbitan $paket_penerbitan)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(paket_penerbitan $paket_penerbitan)
-    {
-        //
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'konten_event retrieved successfully.',
+            'data' => $data
+        ], 200);
     }
 }
