@@ -14,6 +14,7 @@ class CreateBukuDijual extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['slug'] = Str::slug($data['judul']);
+        $data['penerbit'] = env('APP_NAME');
 
         return $data;
     }
