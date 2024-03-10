@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BukuDijualResource\Pages;
-use App\Filament\Resources\BukuDijualResource\RelationManagers;
 use App\Models\buku_dijual;
 use App\Models\kategori;
 use App\Models\penulis;
@@ -13,15 +12,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Tables\Columns\CheckboxColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Get;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Illuminate\Support\Facades\Storage;
@@ -67,18 +59,11 @@ class BukuDijualResource extends Resource
                                     })
                                     ->unique(buku_dijual::class, 'judul', ignoreRecord: true),
 
-                                Forms\Components\TextInput::make('slug')
-                                    ->disabled()
-                                    ->dehydrated()
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->unique(buku_dijual::class, 'slug', ignoreRecord: true),
-
-                                Forms\Components\MarkdownEditor::make('deskripsi')
+                                Forms\Components\Textarea::make('deskripsi')
                                     ->columnSpan('full')
                                     ->required(),
                             ])
-                            ->columns(2),
+                            ->columns(1),
 
                         Forms\Components\Section::make('File')
                             ->schema([

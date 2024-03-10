@@ -43,16 +43,11 @@ class KategoriResource extends Resource
                         $set('slug', Str::slug($state));
                     })
                     ->required(),
-                Forms\Components\TextInput::make('slug')
-                    ->disabled()
-                    ->dehydrated()
-                    ->required()
-                    ->maxLength(255)
-                    ->unique(Kategori::class, 'slug', ignoreRecord: true),
+
                 Forms\Components\Textarea::make('deskripsi')
                     ->columnSpan('full')
                     ->required(),
-            ]);
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table

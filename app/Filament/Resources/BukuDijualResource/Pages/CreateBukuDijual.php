@@ -3,15 +3,20 @@
 namespace App\Filament\Resources\BukuDijualResource\Pages;
 
 use App\Filament\Resources\BukuDijualResource;
-use App\Models\bukudijual_penulis_pivot;
-use App\Models\penulis;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
 
 class CreateBukuDijual extends CreateRecord
 {
     protected static string $resource = BukuDijualResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['slug'] = Str::slug($data['judul']);
+
+        return $data;
+    }
 
     // protected function handleRecordCreation(array $data): Model
     // {

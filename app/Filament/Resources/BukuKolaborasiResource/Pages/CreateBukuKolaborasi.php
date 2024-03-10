@@ -3,14 +3,20 @@
 namespace App\Filament\Resources\BukuKolaborasiResource\Pages;
 
 use App\Filament\Resources\BukuKolaborasiResource;
-use App\Models\bab_buku_kolaborasi;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+
 
 class CreateBukuKolaborasi extends CreateRecord
 {
     protected static string $resource = BukuKolaborasiResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['slug'] = Str::slug($data['judul']);
+
+        return $data;
+    }
 
     protected function getRedirectUrl(): string
     {
