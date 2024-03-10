@@ -46,34 +46,35 @@ class EventResource extends Resource
                         Forms\Components\Select::make('tipe')
                             ->label(false)
                             ->options([
-                                'IMAGE' => 'Image',
-                                'VIDEO' => 'Video',
+                                'IMAGE' => 'Gambar',
+                                // 'VIDEO' => 'Video',
                             ])
+                            ->default('IMAGE')
                             ->live(onBlur: true)
                             ->required(),
                     ]),
 
                 Forms\Components\Section::make('File')
                     ->schema([
-                        Forms\Components\FileUpload::make('file')
-                            ->label('video')
-                            ->openable()
-                            ->required()
-                            ->acceptedFileTypes(['video/mp4'])
-                            ->preserveFilenames()
-                            ->maxSize(12288)
-                            ->hidden(fn (Forms\Get $get) => $get('tipe') !== 'VIDEO')
-                            ->directory('galeri_config_file/video'),
+                        // Forms\Components\FileUpload::make('file')
+                        //     ->label('video')
+                        //     ->openable()
+                        //     ->required()
+                        //     ->acceptedFileTypes(['video/mp4'])
+                        //     ->preserveFilenames()
+                        //     ->maxSize(12288)
+                        //     ->hidden(fn (Forms\Get $get) => $get('tipe') !== 'VIDEO')
+                        //     ->directory('galeri_config_file/video'),
 
                         Forms\Components\FileUpload::make('file')
-                            ->label('image')
+                            ->label('Gambar')
                             ->required()
                             ->openable()
                             ->image()
                             ->imageEditor()
                             ->hidden(fn (Forms\Get $get) => $get('tipe') !== 'IMAGE')
                             ->directory('galeri_config_file/image'),
-                    ])->description('Pilih dahulu tipe'),
+                    ])->description('Tipe file'),
 
                 Forms\Components\Section::make('Tanggal Waktu Mulai')
                     ->schema([

@@ -16,16 +16,9 @@ class konten_eventFactory extends Factory
      */
     public function definition(): array
     {
-        $tipes = $this->faker->randomElement(["IMAGE", "VIDEO"]);
-
-        if ($tipes == "IMAGE") {
-            $files = $this->faker->randomElement([$this->faker->word() . ".jpg", $this->faker->word() . ".png"]);
-        } else {
-            $files = $this->faker->randomElement([$this->faker->word() . ".mp4"]);
-        }
         return [
-            'tipe' => $tipes,
-            'file' => $files,
+            'tipe' => 'IMAGE',
+            'file' => '/cover_buku.jpg',
             'waktu_mulai' => $this->faker->dateTime(),
             'waktu_selesai' => $this->faker->dateTime(),
             'active_flag' => $this->faker->numberBetween(0, 1),
