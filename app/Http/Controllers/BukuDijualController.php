@@ -14,25 +14,78 @@ class BukuDijualController extends Controller
     {
         try {
             // get the most count buku_dijual in list_transasksi_buku
-            $data = buku_dijual::with('kategori', 'testimoni_pembeli')
+            $data = buku_dijual::with('kategori', 'testimoni_pembeli', 'penulis')
                 ->withCount('list_transaksi_buku')
-                ->where('active_flag', '1')
-                ->orderBy('created_at', 'desc');
+                ->where('active_flag', '1');
 
-            if ($request->has("limit")) {
-                $data->limit($request->limit);
+            // filter by kategori
+            if ($request->has("kategori")) {
+                if ($request->kategori != "semua") {
+                    $data->whereHas('kategori', function ($query) use ($request) {
+                        $query->where('slug', $request->kategori);
+                    });
+                }
             }
 
+            // search
+            if ($request->has("search")) {
+                // search by penulis nama, and judul buku
+                if ($request->search != "") {
+                    $data->where(function ($query) use ($request) {
+                        $query->WhereHas('penulis', function ($query) use ($request) {
+                            $query->where('nama', 'like', '%' . $request->search . '%');
+                        })
+                            ->orWhere('judul', 'like', '%' . $request->search . '%');
+                    });
+
+                    // if kategori is also filtered, sync the search with kategori filter
+                    if ($request->has("kategori") && $request->kategori != "semua") {
+                        $data->whereHas('kategori', function ($query) use ($request) {
+                            $query->where('slug', $request->kategori);
+                        });
+                    }
+                }
+            }
+
+            // filter by range harga
+            if ($request->has("hargaMin") && $request->has("hargaMax")) {
+                if ($request->hargaMin > $request->hargaMax) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'hargaMin must be less than hargaMax',
+                        'data' => $data->paginate($request->limit)
+                    ], 400);
+                } else if ($request->hargaMin != 0 || $request->hargaMax != 0 || $request->hargaMin != null || $request->hargaMax != null) {
+                    $data->whereBetween('harga', [$request->hargaMin, $request->hargaMax]);
+                }
+            }
+
+            // ads
             if ($request->has("bookAds")) {
                 if ($request->bookAds == "true") {
                     $data->orderBy('list_transaksi_buku_count', 'asc');
                 }
             }
 
-            $data = $data->get();
+            // order
+            if ($request->has("order")) {
+                if ($request->order == "terlaris") {
+                    $data->orderBy('list_transaksi_buku_count', 'desc');
+                } else if ($request->order == "terbaru") {
+                    $data->orderBy('created_at', 'desc');
+                } else if ($request->order == "termurah") {
+                    $data->orderBy('harga', 'asc');
+                } else if ($request->order == "termahal") {
+                    $data->orderBy('harga', 'desc');
+                }
+            } else {
+                $data->orderBy('created_at', 'desc');
+            }
+
+            $data = $data->paginate($request->limit);
 
             if ($request->bookAds == "true") {
-                $data = $data->map(function ($item) use ($request) {
+                $data = $data->through(function ($item) use ($request) {
                     return [
                         'id' => $item->id,
                         'slug' => $item->slug,
@@ -40,12 +93,11 @@ class BukuDijualController extends Controller
                         'kategori' => $item->kategori->nama,
                         'deskripsi' => $item->deskripsi,
                         'cover_buku' => $item->cover_buku,
-                        'is_bookAds' => $request->bookAds,
                     ];
                 });
             } else {
                 // filter only needed data
-                $data = $data->map(function ($item) use ($request) {
+                $data = $data->through(function ($item) {
                     return [
                         'id' => $item->id,
                         'slug' => $item->slug,
@@ -54,7 +106,6 @@ class BukuDijualController extends Controller
                         'kategori' => $item->kategori->nama,
                         'cover_buku' => $item->cover_buku,
                         'pembeli' => $item->list_transaksi_buku_count == 0 ? 0 : $item->list_transaksi_buku_count,
-                        'is_bookAds' => $request->bookAds,
                     ];
                 });
             }

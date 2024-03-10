@@ -12,38 +12,29 @@ class KategoriController extends Controller
      */
     public function index()
     {
-        //
-    }
+        // get the resource
+        try {
+            $data = kategori::select('id', 'nama', 'slug')
+                ->get();
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'error',
+                'data' => $e->getMessage()
+            ], 500);
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        if ($data->isEmpty()) {
+            return response()->json([
+                'message' => 'error',
+                'data' => 'data not found'
+            ], 404);
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(kategori $kategori)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, kategori $kategori)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(kategori $kategori)
-    {
-        //
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'data retrieved successfully.',
+            'data' => $data
+        ], 200);
     }
 }

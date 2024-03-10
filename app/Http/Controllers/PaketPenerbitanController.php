@@ -30,14 +30,14 @@ class PaketPenerbitanController extends Controller
         if ($data->isEmpty()) {
             return response()->json([
                 'message' => 'error',
-                'data' => 'event not found'
+                'data' => 'paket not found'
             ], 404);
         }
 
         // return the resource
         return response()->json([
             'success' => true,
-            'message' => 'konten_event retrieved successfully.',
+            'message' => 'paket retrieved successfully.',
             'data' => $data
         ], 200);
     }

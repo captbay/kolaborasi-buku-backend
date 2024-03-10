@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukuDijualController;
 use App\Http\Controllers\BukuKolaborasiController;
+use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KontenEventController;
 use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
@@ -70,18 +71,28 @@ Route::group([
     Route::get('all', [KontenEventController::class, 'index']);
 });
 
+//* DONE!
 // testimoni
 Route::group(['prefix' => 'testimoni'], function () {
     // get all testimoni
     Route::get('all', [TestimoniPembeliController::class, 'index']);
 });
 
+//* DONE!
+// testimoni
+Route::group(['prefix' => 'kategori'], function () {
+    // get all testimoni
+    Route::get('all', [KategoriController::class, 'index']);
+});
+
+//* DONE!
 // FAQ
 Route::group(['prefix' => 'faq'], function () {
     // get all faq
     Route::get('all', [KontenFaqController::class, 'index']);
 });
 
+//* DONE!
 // paket
 Route::group(['prefix' => 'paket'], function () {
     // get all paket
