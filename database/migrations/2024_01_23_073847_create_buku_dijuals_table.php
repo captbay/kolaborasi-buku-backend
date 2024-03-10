@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('penerbit');
             $table->string('nama_file_buku');
             $table->string('file_buku');
+            $table->string('isbn');
             $table->boolean('active_flag');
             $table->timestamps();
         });

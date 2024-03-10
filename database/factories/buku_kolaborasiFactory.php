@@ -27,7 +27,7 @@ class buku_kolaborasiFactory extends Factory
             'kategori_id' => kategori::all()->random()->id,
             'slug' => $slugs,
             'judul' => $juduls,
-            'cover_buku' => $this->faker->imageUrl(),
+            'cover_buku' => '/cover_buku.jpg',
             'deskripsi' => $this->faker->paragraph(),
             'jumlah_bab' => $this->faker->numberBetween(1, 10),
             'bahasa' => $this->faker->word(),

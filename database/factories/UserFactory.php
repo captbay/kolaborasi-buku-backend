@@ -36,13 +36,13 @@ class UserFactory extends Factory
             'kecamatan' => $this->faker->city(),
             'kota' => $this->faker->city(),
             'kode_pos' => $this->faker->postcode(),
-            'foto_profil' => $this->faker->imageUrl(),
+            'foto_profil' => '/cover_buku.jpg',
             'bio' => $this->faker->text(),
             'status_verif_email' => $this->faker->randomElement([0, 1]), // 0 or 1
             'email_verified_at' => now(),
-            'file_cv' => $this->faker->imageUrl(),
-            'file_ktp' => $this->faker->imageUrl(),
-            'file_ttd' => $this->faker->imageUrl(),
+            'file_cv' => '/buku_final_temp.pdf',
+            'file_ktp' => '/buku_final_temp.pdf',
+            'file_ttd' => '/buku_final_temp.pdf',
             'role' => $this->faker->randomElement(['CUSTOMER', 'MEMBER']), // 'ADMIN', 'CUSTOMER', 'MEMBER'
             'remember_token' => Str::random(10),
         ];

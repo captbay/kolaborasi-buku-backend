@@ -29,13 +29,14 @@ class buku_dijualFactory extends Factory
             'judul' => $juduls,
             'harga' => $this->faker->numberBetween(10000, 100000),
             'tanggal_terbit' => $this->faker->date(),
-            'cover_buku' => $this->faker->imageUrl(),
+            'cover_buku' => "/cover_buku.jpg",
             'deskripsi' => $this->faker->paragraph(),
             'jumlah_halaman' => $this->faker->numberBetween(100, 500),
             'bahasa' => $this->faker->randomElement(['Indonesaia', 'Inggris', 'Spanyol']),
             'penerbit' => $this->faker->company(),
             'nama_file_buku' => $this->faker->word() . '.pdf',
-            'file_buku' => $this->faker->imageUrl(),
+            'file_buku' => '/buku_final_temp.pdf',
+            'isbn' => $this->faker->isbn13(),
             'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }
