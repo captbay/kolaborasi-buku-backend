@@ -16,6 +16,7 @@ use App\Models\keranjang;
 use App\Models\konten_event;
 use App\Models\konten_faq;
 use App\Models\list_transaksi_buku;
+use App\Models\mou;
 use App\Models\paket_penerbitan;
 use App\Models\penulis;
 use App\Models\storage_buku_dijual;
@@ -78,12 +79,18 @@ class DatabaseSeeder extends Seeder
         user_bab_buku_kolaborasi::factory(10)->create();
         transaksi_kolaborasi_buku::factory(20)->create();
 
-        // make notification seeder
-        // type
-        // notifiable_type
-        // notifiable_id
-        // data
+        // mou
+        DB::table('mou')->insert([
+            'id' => \Ramsey\Uuid\Uuid::uuid4(),
+            'nama' => "MOU Template 2024",
+            'deskripsi' => "template perjanjian kerjasama penerbitan buku yang dibutuhkan sebagai syarat penerbitan dilakukan sebagai sebuah kesepakatan antara penulis dan penerbit",
+            'file_mou' => '/buku_final_temp.pdf',
+            'active_flag' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
 
+        // make notification seeder
         $data = [
             [
                 'type' => 'Anda Berhasil Masuk',

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('status', ['ACCEPTED', 'REVIEW', 'REVISI', 'REJECTED']);
             $table->string('cover_buku');
             $table->string('file_buku');
+            $table->string('file_mou');
             $table->timestamps();
         });
     }
