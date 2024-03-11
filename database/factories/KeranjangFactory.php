@@ -19,7 +19,7 @@ class KeranjangFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::all()->random()->id,
+            'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'buku_dijual_id' => buku_dijual::all()->random()->id,
         ];
     }

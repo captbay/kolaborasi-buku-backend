@@ -26,7 +26,7 @@ class transaksi_kolaborasi_bukuFactory extends Factory
             $date_time_lunas = null;
         }
         return [
-            'user_id' => User::all()->random()->id,
+            'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'bab_buku_kolaborasi_id' => bab_buku_kolaborasi::all()->random()->id,
             'no_transaksi' => "K" . $this->faker->randomNumber(1, 1000),
             'total_harga' => $this->faker->numberBetween(10000, 1000000),

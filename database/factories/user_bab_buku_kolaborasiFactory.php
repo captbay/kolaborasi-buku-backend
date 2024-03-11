@@ -19,7 +19,7 @@ class user_bab_buku_kolaborasiFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::all()->random()->id,
+            'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'bab_buku_kolaborasi_id' => bab_buku_kolaborasi::all()->random()->id,
             'status' => $this->faker->randomElement(['DONE', 'PROGRESS', 'REVISI', 'REJECTED', 'UPLOADED']),
             'note' => $this->faker->randomElement([$this->faker->word(), null]),

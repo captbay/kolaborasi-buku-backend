@@ -26,7 +26,7 @@ class transaksi_penjualan_bukuFactory extends Factory
         }
 
         return [
-            'user_id' => User::all()->random()->id,
+            'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'no_transaksi' => "P" . $this->faker->randomNumber(1, 1000),
             'total_harga' => $this->faker->numberBetween(10000, 1000000),
             'status' => $status,

@@ -28,7 +28,7 @@ class transaksi_paket_penerbitanFactory extends Factory
         }
 
         return [
-            'user_id' => User::all()->random()->id,
+            'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'paket_penerbitan_id' => paket_penerbitan::all()->random()->id,
             'buku_permohonan_terbit_id' => buku_permohonan_terbit::all()->random()->id,
             'no_transaksi' => "T" . $this->faker->randomNumber(1, 1000),

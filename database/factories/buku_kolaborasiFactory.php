@@ -31,7 +31,7 @@ class buku_kolaborasiFactory extends Factory
             'deskripsi' => $this->faker->paragraph(),
             'jumlah_bab' => $this->faker->numberBetween(1, 10),
             'bahasa' => $this->faker->word(),
-            'file_sertifikasi' => $this->faker->imageUrl(),
+            'file_mou' => '/buku_final_temp.pdf',
             'active_flag' => $this->faker->boolean(),
             'dijual' => 0,
         ];
