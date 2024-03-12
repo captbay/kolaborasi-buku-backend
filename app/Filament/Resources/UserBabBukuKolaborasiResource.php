@@ -127,8 +127,8 @@ class UserBabBukuKolaborasiResource extends Resource
                                 'PROGRESS' => 'Progress',
                                 'UPLOADED' => 'Uploaded',
                                 'REVISI' => 'Revisi',
-                                'DONE' => 'Done',
-                                'REJECTED' => 'Rejected',
+                                'DONE' => 'Terima',
+                                'REJECTED' => 'Ditolak',
                             ])
                             ->live()
                             ->required(),

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->enum('status', ['ACCEPTED', 'REVIEW', 'REVISI', 'REJECTED']);
             $table->string('cover_buku');
             $table->string('file_buku');
-            $table->string('file_mou');
+            $table->string('file_mou')->nullable();
+            $table->boolean('dijual')->default(0);
             $table->timestamps();
         });
     }

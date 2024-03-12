@@ -28,6 +28,7 @@ class buku_permohonan_terbitFactory extends Factory
             'cover_buku' => '/cover_buku.jpg',
             'file_buku' => '/buku_final_temp.pdf',
             'file_mou' => '/buku_final_temp.pdf',
+            'dijual' => 0,
         ];
     }
 }

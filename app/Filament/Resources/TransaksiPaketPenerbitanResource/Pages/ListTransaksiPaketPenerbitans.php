@@ -22,7 +22,7 @@ class ListTransaksiPaketPenerbitans extends ListRecords
     public function getTabs(): array
     {
         return [
-            'All' => Tab::make(),
+            'Semua' => Tab::make(),
             'Progress' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'PROGRESS')),
             'Uploaded' => Tab::make()

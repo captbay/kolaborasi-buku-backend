@@ -22,15 +22,17 @@ class ListBukuPermohonanTerbits extends ListRecords
     public function getTabs(): array
     {
         return [
-            'All' => Tab::make(),
+            'Semua' => Tab::make(),
             'Review' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVIEW')),
             'Revisi' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVISI')),
-            'Rejected' => Tab::make()
+            'Ditolak' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REJECTED')),
-            'Accepted' => Tab::make()
+            'Siap Terbit' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'ACCEPTED')),
+            'Sudah Diterbitkan' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('dijual', 1)),
         ];
     }
 }

@@ -172,11 +172,11 @@ class BukuKolaborasiResource extends Resource
                                     ->imageEditor()
                                     ->directory('cover_buku_kolaborasi'),
 
-                                Forms\Components\FileUpload::make('file_sertifikasi')
-                                    ->label('Upload file sertifikat kalau sudah ada')
+                                Forms\Components\FileUpload::make('file_mou')
+                                    ->label('Upload file MOU')
                                     ->openable()
                                     ->acceptedFileTypes(['application/pdf'])
-                                    ->directory('sertifikasi_buku_kolaborasi'),
+                                    ->directory('mou_buku_kolaborasi'),
                             ]),
 
                         Forms\Components\Section::make('Kategori')
@@ -319,6 +319,11 @@ class BukuKolaborasiResource extends Resource
                                 ->imageEditor()
                                 ->directory('cover_buku_dijual'),
 
+                            Forms\Components\TextInput::make('isbn')
+                                ->label('ISBN')
+                                ->required()
+                                ->maxLength(255),
+
                             Repeater::make('preview_buku')
                                 ->label('File Preview Buku')
                                 ->schema([
@@ -333,6 +338,14 @@ class BukuKolaborasiResource extends Resource
                                 ])
                                 ->defaultItems(1)
                                 ->required(),
+
+                            Forms\Components\FileUpload::make('file_buku')
+                                ->label('Upload File Buku PDF (final version)')
+                                ->required()
+                                ->openable()
+                                ->acceptedFileTypes(['application/pdf'])
+                                ->storeFileNamesIn('nama_file_buku')
+                                ->directory('buku_final_storage'),
                         ])
                         ->action(
                             function (buku_kolaborasi $buku_kolaborasi, array $data): void {
@@ -387,12 +400,8 @@ class BukuKolaborasiResource extends Resource
                                 }
 
                                 // ngehitung halaman pdf ambil dari store tempatnya
-                                $pdftext = file_get_contents(base_path('public/storage/buku_final_storage/' . $buku_kolaborasi->judul . '.pdf'));
+                                $pdftext = file_get_contents(public_path('storage/' . $data['file_buku']));
                                 $jumlah_halaman = preg_match_all("/\/Page\W/", $pdftext, $matches);
-
-                                // split name of $buku_kolaborasi->cover_buku
-                                $cover_buku = explode('/', $buku_kolaborasi->cover_buku);
-                                $cover_buku = end($cover_buku);
 
                                 // make buku_dijual
                                 $buku_dijual = buku_dijual::create([
@@ -401,13 +410,14 @@ class BukuKolaborasiResource extends Resource
                                     'slug' => $buku_kolaborasi->slug,
                                     'harga' => $data['harga'],
                                     'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
-                                    'cover_buku' => 'cover_buku_dijual/' . $cover_buku,
+                                    'cover_buku' => $data['cover_buku'],
                                     'deskripsi' => $buku_kolaborasi->deskripsi,
                                     'jumlah_halaman' => $jumlah_halaman,
                                     'bahasa' => $buku_kolaborasi->bahasa,
                                     'penerbit' => env('APP_NAME'),
-                                    'nama_file_buku' => $buku_kolaborasi->judul . '.pdf', // 'buku_final_storage/' . $buku_kolaborasi->judul . '.pdf
-                                    'file_buku' => 'buku_final_storage/' . $buku_kolaborasi->judul . '.pdf',
+                                    'nama_file_buku' => $data['nama_file_buku'],
+                                    'file_buku' => $data['file_buku'],
+                                    'isbn' => $data['isbn'],
                                     'active_flag' => 0,
                                 ]);
 

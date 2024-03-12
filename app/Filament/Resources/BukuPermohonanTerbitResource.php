@@ -63,17 +63,18 @@ class BukuPermohonanTerbitResource extends Resource
                             ->imageEditor()
                             ->directory('cover_buku_permohonan_terbit'),
 
+                        Forms\Components\FileUpload::make('file_buku')
+                            ->label('Upload File Buku PDF (final version)')
+                            ->required()
+                            ->openable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('buku_permohonan_terbit'),
 
-                        Forms\Components\Section::make('File')
-                            ->schema([
-                                Forms\Components\FileUpload::make('file_buku')
-                                    ->label('Upload File Buku PDF (final version)')
-                                    ->required()
-                                    ->openable()
-                                    ->acceptedFileTypes(['application/pdf'])
-                                    ->directory('buku_permohonan_terbit'),
-                            ]),
-
+                        Forms\Components\FileUpload::make('file_mou')
+                            ->label('Upload file MOU')
+                            ->openable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('mou_buku_permohonan_penerbitan'),
 
                     ])
                     ->columnSpan(['lg' => 2]),
@@ -105,8 +106,8 @@ class BukuPermohonanTerbitResource extends Resource
                                     ->options([
                                         'REVIEW' => 'Review',
                                         'REVISI' => 'Revisi',
-                                        'ACCEPTED' => 'Accepted',
-                                        'REJECTED' => 'Rejected',
+                                        'ACCEPTED' => 'Siap Jual',
+                                        'REJECTED' => 'Ditolak',
                                     ])
                                     ->live()
                                     ->required(),
@@ -179,8 +180,8 @@ class BukuPermohonanTerbitResource extends Resource
                     Tables\Actions\DeleteAction::make(),
                     Tables\Actions\Action::make('Terbitkan')
                         ->slideOver()
-                        ->hidden(function (buku_permohonan_terbit $buku_permohonan_terbit, array $data) {
-                            if ($buku_permohonan_terbit->status != 'REVIEW' && $buku_permohonan_terbit->status != 'REVISI') {
+                        ->hidden(function (buku_permohonan_terbit $buku_permohonan_terbit) {
+                            if ($buku_permohonan_terbit->status != 'ACCEPTED') {
                                 return true;
                             }
 
@@ -188,7 +189,7 @@ class BukuPermohonanTerbitResource extends Resource
                         })
                         ->requiresConfirmation()
                         ->modalHeading('Terbitkan Buku')
-                        ->modalDescription('Apakah anda yakin ingin menerbitkan buku ini?')
+                        ->modalDescription('Apakah anda yakin ingin menerbitkan buku ini? Pastikan file buku sudah benar')
                         ->modalSubmitActionLabel('iya, terbitkan')
                         ->color('success')
                         ->modalIcon('heroicon-o-book-open')
@@ -202,6 +203,7 @@ class BukuPermohonanTerbitResource extends Resource
                                 ->required(),
 
                             Forms\Components\Select::make('kategori_id')
+                                ->label('Kategori')
                                 ->options(kategori::all()->pluck('nama', 'id'))
                                 ->searchable()
                                 ->preload()
@@ -214,6 +216,18 @@ class BukuPermohonanTerbitResource extends Resource
                                     'Inggris' => 'Inggris',
                                 ])
                                 ->required(),
+
+                            Forms\Components\FileUpload::make('cover_buku')
+                                ->required()
+                                ->openable()
+                                ->image()
+                                ->imageEditor()
+                                ->directory('cover_buku_dijual'),
+
+                            Forms\Components\TextInput::make('isbn')
+                                ->label('ISBN')
+                                ->required()
+                                ->maxLength(255),
 
                             Forms\Components\Repeater::make('preview_buku')
                                 ->label('File Preview Buku')
@@ -232,7 +246,7 @@ class BukuPermohonanTerbitResource extends Resource
                         ])
                         ->action(
                             function (buku_permohonan_terbit $buku_permohonan_terbit, array $data): void {
-                                if ($buku_permohonan_terbit->status == 'ACCEPTED') {
+                                if ($buku_permohonan_terbit->dijual == 1) {
                                     Notification::make()
                                         ->danger()
                                         ->title('Buku sudah diterbitkan')
@@ -241,17 +255,9 @@ class BukuPermohonanTerbitResource extends Resource
                                     return;
                                 }
 
-                                // split name of $buku_permohonan_terbit->cover_buku
-                                $cover_buku = explode('/', $buku_permohonan_terbit->cover_buku);
-                                $cover_buku = end($cover_buku);
-
                                 // split name of $buku_permohonan_terbit->file_buku
                                 $file_buku = explode('/', $buku_permohonan_terbit->file_buku);
                                 $file_buku = end($file_buku);
-
-                                // copy file $buku_permohonan_terbit->cover_buku to public/storage/cover_buku_dijual
-                                File::ensureDirectoryExists(base_path('public/storage/cover_buku_dijual'));
-                                File::copy(base_path('public/storage/' . $buku_permohonan_terbit->cover_buku), base_path('public/storage/cover_buku_dijual/' . $cover_buku));
 
                                 // copy file $buku_permohonan_terbit->file_buku to public/storage/buku_final_storage
                                 File::ensureDirectoryExists(base_path('public/storage/buku_final_storage'));
@@ -268,13 +274,14 @@ class BukuPermohonanTerbitResource extends Resource
                                     'slug' => Str::slug($buku_permohonan_terbit->judul),
                                     'harga' => $data['harga'],
                                     'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
-                                    'cover_buku' => 'cover_buku_dijual/' . $cover_buku,
+                                    'cover_buku' => $data['cover_buku'],
                                     'deskripsi' => $buku_permohonan_terbit->deskripsi,
                                     'jumlah_halaman' => $jumlah_halaman,
                                     'bahasa' => $data['bahasa'],
                                     'penerbit' => env('APP_NAME'),
                                     'nama_file_buku' => $buku_permohonan_terbit->judul . '.pdf', // 'buku_final_storage/' . $buku_permohonan_terbit->judul . '.pdf
                                     'file_buku' => 'buku_final_storage/' . $file_buku,
+                                    'isbn' => $data['isbn'],
                                     'active_flag' => 0,
                                 ]);
 
@@ -295,7 +302,7 @@ class BukuPermohonanTerbitResource extends Resource
                                 if ($buku_dijual) {
                                     // update buku_permohonan_terbit
                                     $buku_permohonan_terbit->update([
-                                        'status' => 'ACCEPTED',
+                                        'dijual' => 1,
                                     ]);
 
                                     Notification::make()

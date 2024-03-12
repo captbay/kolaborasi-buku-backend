@@ -101,6 +101,10 @@ class BukuDijualResource extends Resource
 
                         Forms\Components\Section::make('Detail Buku')
                             ->schema([
+                                Forms\Components\TextInput::make('isbn')
+                                    ->label('ISBN')
+                                    ->required()
+                                    ->maxLength(255),
 
                                 Forms\Components\DatePicker::make('tanggal_terbit')
                                     ->native(false)

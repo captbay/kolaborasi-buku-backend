@@ -24,7 +24,7 @@ class ListBukuKolaborasis extends ListRecords
     public function getTabs(): array
     {
         return [
-            'All' => Tab::make(),
+            'Semua' => Tab::make(),
             'Proses' => Tab::make()
                 ->modifyQueryUsing(
                     function (buku_kolaborasi $buku_kolaborasi) {

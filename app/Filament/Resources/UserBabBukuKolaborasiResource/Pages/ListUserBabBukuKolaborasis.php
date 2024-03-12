@@ -23,14 +23,14 @@ class ListUserBabBukuKolaborasis extends ListRecords
     public function getTabs(): array
     {
         return [
-            'All' => Tab::make(),
+            'Semua' => Tab::make(),
             'Uploaded' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'UPLOADED')),
             'Revisi' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVISI')),
             'Done' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'DONE')),
-            'Rejected' => Tab::make()
+            'Ditolak' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REJECTED')),
         ];
     }
