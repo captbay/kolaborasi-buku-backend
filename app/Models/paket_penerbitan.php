@@ -19,4 +19,10 @@ class paket_penerbitan extends Model
     {
         return $this->hasMany(transaksi_paket_penerbitan::class);
     }
+
+    // has many jasa_paket_penerbitan
+    public function jasa_paket_penerbitan()
+    {
+        return $this->hasMany(jasa_paket_penerbitan::class);
+    }
 }

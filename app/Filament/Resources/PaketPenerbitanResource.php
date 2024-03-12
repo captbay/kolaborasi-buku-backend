@@ -53,10 +53,27 @@ class PaketPenerbitanResource extends Resource
                                     ->minValue(1)
                                     ->required(),
 
-                                Forms\Components\MarkdownEditor::make('deskripsi')
+                                Forms\Components\TextArea::make('deskripsi')
                                     ->columnSpan('full')
                                     ->required(),
                             ])->columns(2),
+
+                        Forms\Components\Section::make('Jasa Apa Saja Yang Didapatkan')
+                            ->schema([
+                                Forms\Components\Repeater::make('jasa_paket_penerbitan')
+                                    ->relationship()
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nama')
+                                            ->required()
+                                            ->hiddenLabel()
+                                            ->maxLength(255)
+                                            ->unique(paket_penerbitan::class, 'nama', ignoreRecord: true),
+                                    ])
+                                    ->minItems(1)
+                                    ->hiddenLabel()
+                                    ->required(),
+
+                            ])
                     ])
                     ->columnSpan(['lg' => 2]),
 

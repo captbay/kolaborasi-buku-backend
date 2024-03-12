@@ -11,6 +11,7 @@ use App\Models\buku_lunas_user;
 use App\Models\buku_permohonan_terbit;
 use App\Models\bukudijual_penulis_pivot;
 use App\Models\config_web;
+use App\Models\jasa_paket_penerbitan;
 use App\Models\kategori;
 use App\Models\keranjang;
 use App\Models\konten_event;
@@ -70,6 +71,7 @@ class DatabaseSeeder extends Seeder
 
         // paket penerbitan
         paket_penerbitan::factory(10)->create();
+        jasa_paket_penerbitan::factory(20)->create();
         buku_permohonan_terbit::factory(10)->create();
         transaksi_paket_penerbitan::factory(20)->create();
 
