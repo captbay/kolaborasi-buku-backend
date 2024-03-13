@@ -209,10 +209,25 @@ class TransaksiPaketPenerbitanResource extends Resource
                                 'date_time_lunas' => Carbon::now(),
                             ]);
 
+                            $recipientAdmin = auth()->user();
+
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil diverifikasi')
+                                ->title('Transaksi paket berhasil diverifikasi, buku untuk ' . $transaksi->user->nama_lengkap . ' sudah ditambahkan')
+                                ->sendToDatabase($recipientAdmin)
                                 ->send();
+
+                            $recipientUser = $transaksi->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Transaksi paket berhasil dengan ID '
+                                        . $transaksi->no_transaksi .
+                                        ' , buku anda akan segera diproses'
+                                )
+                                ->sendToDatabase($recipientUser);
 
                             return;
                         }

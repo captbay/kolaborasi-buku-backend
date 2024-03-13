@@ -10,6 +10,7 @@ use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -215,13 +216,25 @@ class TransaksiKolaborasiBukuResource extends Resource
                                 'datetime_deadline' => Carbon::now()->addDays($transaksi->bab_buku_kolaborasi->durasi_pembuatan)->format('Y-m-d H:i:s'),
                             ]);
 
-                            $recipient = auth()->user();
+                            $recipientAdmin = auth()->user();
 
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil diverifikasi, bab untuk ' . $transaksi->user->nama_lengkap . ' sudah ditambahkan')
-                                ->sendToDatabase($recipient)
+                                ->title('Transaksi kolaborasi berhasil diverifikasi, bab yang ditulis untuk ' . $transaksi->user->nama_lengkap . ' sudah ditambahkan')
+                                ->sendToDatabase($recipientAdmin)
                                 ->send();
+
+                            $recipientUser = $transaksi->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Transaksi kolaborasi berhasil dengan ID '
+                                        . $transaksi->no_transaksi .
+                                        ' , bab yang ditulis sudah ditambahkan, selamat mengerjakan!'
+                                )
+                                ->sendToDatabase($recipientUser);
 
                             return;
                         }

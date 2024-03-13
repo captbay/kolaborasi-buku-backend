@@ -3,10 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransaksiPenjualanBukuResource\Pages;
-use App\Filament\Resources\TransaksiPenjualanBukuResource\RelationManagers;
 use App\Models\buku_lunas_user;
 use App\Models\transaksi_penjualan_buku;
-use App\Models\TransaksiPenjualanBuku;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,8 +12,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class TransaksiPenjualanBukuResource extends Resource
 {
@@ -204,10 +200,25 @@ class TransaksiPenjualanBukuResource extends Resource
                                 ]);
                             }
 
+                            $recipientAdmin = auth()->user();
+
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil diverifikasi, buku sudah diberikan kepada ' . $transaksi->user->nama_lengkap)
+                                ->title('Transaksi pembelian buku berhasil diverifikasi, ' . $transaksi->user->nama_lengkap . ' sudah lunas')
+                                ->sendToDatabase($recipientAdmin)
                                 ->send();
+
+                            $recipientUser = $transaksi->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Transaksi pembelian buku berhasil dengan ID '
+                                        . $transaksi->no_transaksi .
+                                        ' , buku anda sudah masuk ke dalam daftar buku yang sudah anda beli. Terima kasih!'
+                                )
+                                ->sendToDatabase($recipientUser);
 
                             return;
                         }

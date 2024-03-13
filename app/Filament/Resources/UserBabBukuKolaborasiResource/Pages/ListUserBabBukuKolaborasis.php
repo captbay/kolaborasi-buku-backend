@@ -24,6 +24,8 @@ class ListUserBabBukuKolaborasis extends ListRecords
     {
         return [
             'Semua' => Tab::make(),
+            'Proses' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'PROGRESS')),
             'Uploaded' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'UPLOADED')),
             'Revisi' => Tab::make()
