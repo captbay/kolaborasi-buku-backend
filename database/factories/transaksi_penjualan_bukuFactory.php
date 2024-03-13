@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,7 +21,7 @@ class transaksi_penjualan_bukuFactory extends Factory
         $status = $this->faker->randomElement(['DONE', 'PROGRESS', 'FAILED', 'UPLOADED']);
 
         if ($status == 'DONE') {
-            $date_time_lunas = $this->faker->dateTime();
+            $date_time_lunas = Carbon::now();
         } else {
             $date_time_lunas = null;
         }

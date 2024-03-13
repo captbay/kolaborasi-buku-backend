@@ -5,6 +5,7 @@ namespace Database\Factories;
 use App\Models\buku_permohonan_terbit;
 use App\Models\paket_penerbitan;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ class transaksi_paket_penerbitanFactory extends Factory
         $status = $this->faker->randomElement(['DONE', 'PROGRESS', 'FAILED', 'UPLOADED']);
 
         if ($status == 'DONE') {
-            $date_time_lunas = $this->faker->dateTime();
+            $date_time_lunas = Carbon::now();
         } else {
             $date_time_lunas = null;
         }
