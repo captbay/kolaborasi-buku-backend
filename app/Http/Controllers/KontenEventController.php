@@ -29,9 +29,10 @@ class KontenEventController extends Controller
 
         if ($konten_event->isEmpty()) {
             return response()->json([
-                'message' => 'error',
-                'data' => 'event not found'
-            ], 404);
+                'success' => false,
+                'message' => 'data is empty',
+                'data' => []
+            ], 200);
         }
 
         // return the resource

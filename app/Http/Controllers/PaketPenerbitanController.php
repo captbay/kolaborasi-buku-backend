@@ -16,6 +16,9 @@ class PaketPenerbitanController extends Controller
         // get the resource
         try {
             $data = paket_penerbitan::select('id', 'nama', 'harga', 'deskripsi')
+                ->with('jasa_paket_penerbitan', function ($query) {
+                    $query->select('paket_penerbitan_id', 'nama');
+                })
                 ->where('waktu_mulai', '<=', Carbon::now())
                 ->where('waktu_selesai', '>=', Carbon::now())
                 ->orderBy('created_at', 'desc')
@@ -29,9 +32,10 @@ class PaketPenerbitanController extends Controller
 
         if ($data->isEmpty()) {
             return response()->json([
-                'message' => 'error',
-                'data' => 'paket not found'
-            ], 404);
+                'success' => false,
+                'message' => 'data is empty',
+                'data' => []
+            ], 200);
         }
 
         // return the resource

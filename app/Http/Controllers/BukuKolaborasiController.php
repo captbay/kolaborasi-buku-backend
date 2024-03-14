@@ -15,16 +15,52 @@ class BukuKolaborasiController extends Controller
         try {
             // get the most count buku_dijual in list_transasksi_buku
             $data = buku_kolaborasi::with('kategori')
-                ->where('active_flag', '1')
-                ->orderBy('created_at', 'desc');
+                ->where('active_flag', '1');
 
-            if ($request->has("limit")) {
-                $data->limit($request->limit);
+            // filter by kategori
+            if ($request->has("kategori")) {
+                if ($request->kategori != "semua") {
+                    $data->whereHas('kategori', function ($query) use ($request) {
+                        $query->where('slug', $request->kategori);
+                    });
+                }
             }
-            $data = $data->get();
+
+            // search
+            if ($request->has("search")) {
+                // search by penulis nama, and judul buku
+                if ($request->search != "") {
+                    $data->where('judul', 'like', '%' . $request->search . '%');
+
+                    // if kategori is also filtered, sync the search with kategori filter
+                    if ($request->has("kategori") && $request->kategori != "semua") {
+                        $data->whereHas('kategori', function ($query) use ($request) {
+                            $query->where('slug', $request->kategori);
+                        });
+                    }
+                }
+            }
+
+            // order
+            if ($request->has("order")) {
+                if ($request->order == "terbaru") {
+                    $data->orderBy('created_at', 'desc');
+                }
+                // else if ($request->order == "terlaris") {
+                //     $data->orderBy('list_transaksi_buku_count', 'desc');
+                // } else  if ($request->order == "termurah") {
+                //     $data->orderBy('harga', 'asc');
+                // } else if ($request->order == "termahal") {
+                //     $data->orderBy('harga', 'desc');
+                // }
+            } else {
+                $data->orderBy('created_at', 'desc');
+            }
+
+            $data = $data->paginate($request->limit);
 
             // filter only needed data
-            $data = $data->map(function ($item) {
+            $data = $data->through(function ($item) {
                 return [
                     'id' => $item->id,
                     'slug' => $item->slug,

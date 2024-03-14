@@ -25,9 +25,10 @@ class KategoriController extends Controller
 
         if ($data->isEmpty()) {
             return response()->json([
-                'message' => 'error',
-                'data' => 'data not found'
-            ], 404);
+                'success' => false,
+                'message' => 'data is empty',
+                'data' => []
+            ], 200);
         }
 
         // return the resource

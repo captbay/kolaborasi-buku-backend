@@ -98,6 +98,9 @@ class BukuDijualController extends Controller
             } else {
                 // filter only needed data
                 $data = $data->through(function ($item) {
+                    // count rating from testimoni_pembeli
+                    $rating = $item->testimoni_pembeli->avg('rating');
+
                     return [
                         'id' => $item->id,
                         'slug' => $item->slug,
@@ -106,6 +109,7 @@ class BukuDijualController extends Controller
                         'kategori' => $item->kategori->nama,
                         'cover_buku' => $item->cover_buku,
                         'pembeli' => $item->list_transaksi_buku_count == 0 ? 0 : $item->list_transaksi_buku_count,
+                        'rating' => $rating
                     ];
                 });
             }
