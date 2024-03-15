@@ -20,11 +20,16 @@ class transaksi_paket_penerbitanFactory extends Factory
      */
     public function definition(): array
     {
-        $status = $this->faker->randomElement(['DONE', 'PROGRESS', 'FAILED', 'UPLOADED']);
+        $status = $this->faker->randomElement(['REVIEW', 'TERIMA DRAFT', 'DP UPLOADED', 'DP TIDAK SAH', 'INPUT ISBN', 'DRAFT SELESAI', 'PELUNASAN UPLOADED', 'PELUNASAN TIDAK SAH', 'SIAP TERBIT']);
 
-        if ($status == 'DONE') {
+        if ($status == 'SIAP TERBIT') {
+            $date_time_dp_lunas = Carbon::now();
             $date_time_lunas = Carbon::now();
+        } else if ($status == 'INPUT ISBN') {
+            $date_time_dp_lunas = Carbon::now();
+            $date_time_lunas = null;
         } else {
+            $date_time_dp_lunas = null;
             $date_time_lunas = null;
         }
 
@@ -35,8 +40,11 @@ class transaksi_paket_penerbitanFactory extends Factory
             'no_transaksi' => "T" . $this->faker->randomNumber(1, 1000),
             'total_harga' => $this->faker->numberBetween(10000, 1000000),
             'status' => $status,
-            'foto_bukti_bayar' => $this->faker->imageUrl(),
+            'dp_upload' => "/cover_buku.jpg",
+            'pelunasan_upload' => "/cover_buku.jpg",
+            'date_time_dp_lunas' => $date_time_dp_lunas,
             'date_time_lunas' => $date_time_lunas,
+            'note' => $this->faker->randomElement([$this->faker->paragraph(), null]),
         ];
     }
 }

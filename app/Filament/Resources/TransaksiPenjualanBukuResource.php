@@ -46,6 +46,12 @@ class TransaksiPenjualanBukuResource extends Resource
                                 Forms\Components\TextInput::make('date_time_lunas')
                                     ->label('Tanggal Lunas'),
                                 Forms\Components\TextInput::make('no_transaksi'),
+                                Forms\Components\FileUpload::make('foto_bukti_bayar')
+                                    ->label('Bukti Bayar')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->columnSpan('full')
+                                    ->disabled(),
                                 Forms\Components\Fieldset::make('Data Pembeli')
                                     ->relationship('user')
                                     ->schema([

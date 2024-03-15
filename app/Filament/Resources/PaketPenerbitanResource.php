@@ -29,7 +29,7 @@ class PaketPenerbitanResource extends Resource
 
     protected static ?string $title = 'Paket Penerbitan';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     // navigation groups
 
@@ -109,7 +109,7 @@ class PaketPenerbitanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama')
-                    ->label('Nama Lengkap')
+                    ->label('Nama Paket')
                     ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('harga')

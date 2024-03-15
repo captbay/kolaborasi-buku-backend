@@ -16,12 +16,11 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('judul');
             $table->text('deskripsi');
-            $table->integer('persen_bagi_hasil');
-            $table->enum('status', ['ACCEPTED', 'REVIEW', 'REVISI', 'REJECTED']);
             $table->string('cover_buku');
             $table->string('file_buku');
             $table->string('file_mou')->nullable();
             $table->boolean('dijual')->default(0);
+            $table->string('isbn')->nullable();
             $table->timestamps();
         });
     }

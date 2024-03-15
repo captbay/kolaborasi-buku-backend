@@ -108,8 +108,8 @@ class BukuDijualResource extends Resource
 
                                 Forms\Components\DatePicker::make('tanggal_terbit')
                                     ->native(false)
-                                    ->maxDate('today')
                                     ->required(),
+
                                 Forms\Components\TextInput::make('jumlah_halaman')
                                     ->label('Jumlah Halaman')
                                     ->numeric()

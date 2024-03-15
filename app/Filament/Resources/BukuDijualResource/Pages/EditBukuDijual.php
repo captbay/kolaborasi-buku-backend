@@ -6,6 +6,8 @@ use App\Filament\Resources\BukuDijualResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
 
 class EditBukuDijual extends EditRecord
 {
@@ -25,6 +27,14 @@ class EditBukuDijual extends EditRecord
                     }
                 }),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['slug'] = Str::slug($data['judul']);
+        $data['penerbit'] = env('APP_NAME');
+
+        return $data;
     }
 
     protected function getRedirectUrl(): string

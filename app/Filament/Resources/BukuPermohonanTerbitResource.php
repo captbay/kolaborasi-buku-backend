@@ -3,21 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\BukuPermohonanTerbitResource\Pages;
-use App\Filament\Resources\BukuPermohonanTerbitResource\RelationManagers;
-use App\Models\buku_dijual;
 use App\Models\buku_permohonan_terbit;
-use App\Models\kategori;
-use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class BukuPermohonanTerbitResource extends Resource
 {
@@ -33,7 +25,7 @@ class BukuPermohonanTerbitResource extends Resource
 
     protected static ?string $title = 'Buku Permohonan Terbit';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     // navigation groups
 
@@ -52,7 +44,7 @@ class BukuPermohonanTerbitResource extends Resource
                                     ->maxLength(255)
                                     ->unique(buku_permohonan_terbit::class, 'judul', ignoreRecord: true),
 
-                                Forms\Components\MarkdownEditor::make('deskripsi')
+                                Forms\Components\TextArea::make('deskripsi')
                                     ->required(),
                             ]),
 
@@ -83,7 +75,7 @@ class BukuPermohonanTerbitResource extends Resource
                 Forms\Components\Group::make()
                     ->schema([
 
-                        Forms\Components\Section::make('Member')
+                        Forms\Components\Section::make('Detail')
                             ->schema([
                                 Forms\Components\Select::make('user_id')
                                     ->relationship(
@@ -93,33 +85,13 @@ class BukuPermohonanTerbitResource extends Resource
                                     )
                                     ->searchable()
                                     ->preload()
-                                    ->label(false)
+                                    ->label('Nama Member Yang Mengajukan')
                                     ->required(),
-                            ]),
 
-                        Forms\Components\Section::make('Status')
-                            ->schema([
-                                Forms\Components\Select::make('status')
-                                    ->label(false)
-                                    ->searchable()
-                                    ->default('REVIEW')
-                                    ->options([
-                                        'REVIEW' => 'Review',
-                                        'REVISI' => 'Revisi',
-                                        'ACCEPTED' => 'Siap Jual',
-                                        'REJECTED' => 'Ditolak',
-                                    ])
-                                    ->live()
-                                    ->required(),
-                            ]),
-
-                        Forms\Components\Section::make('Persen Bagi Hasil')
-                            ->schema([
-                                Forms\Components\TextInput::make('persen_bagi_hasil')
-                                    ->numeric()
-                                    ->label(false)
-                                    ->helperText('Dalam persen (%)')
-                                    ->required(),
+                                Forms\Components\TextInput::make('isbn')
+                                    ->label('ISBN')
+                                    ->required()
+                                    ->unique(buku_permohonan_terbit::class, 'isbn', ignoreRecord: true),
                             ]),
                     ])
                     ->columnSpan(['lg' => 1]),
@@ -149,18 +121,6 @@ class BukuPermohonanTerbitResource extends Resource
                     ->wrap()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(
-                        fn (buku_permohonan_terbit $buku_permohonan_terbit) => match ($buku_permohonan_terbit->status) {
-                            'ACCEPTED' => 'success',
-                            'REVIEW' => 'info',
-                            'REVISI' => 'warning',
-                            'REJECTED' => 'danger',
-                        }
-                    )
-                    ->sortable()
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -174,154 +134,15 @@ class BukuPermohonanTerbitResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->slideOver(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\Action::make('Terbitkan')
-                        ->slideOver()
-                        ->hidden(function (buku_permohonan_terbit $buku_permohonan_terbit) {
-                            if ($buku_permohonan_terbit->status != 'ACCEPTED') {
-                                return true;
-                            }
+                Tables\Actions\ViewAction::make()->slideOver(),
+                Tables\Actions\DeleteAction::make()
+                    ->hidden(function (buku_permohonan_terbit $buku_permohonan_terbit) {
+                        if ($buku_permohonan_terbit->dijual != 1) {
+                            return true;
+                        }
 
-                            return false;
-                        })
-                        ->requiresConfirmation()
-                        ->modalHeading('Terbitkan Buku')
-                        ->modalDescription('Apakah anda yakin ingin menerbitkan buku ini? Pastikan file buku sudah benar')
-                        ->modalSubmitActionLabel('iya, terbitkan')
-                        ->color('success')
-                        ->modalIcon('heroicon-o-book-open')
-                        ->icon('heroicon-o-book-open')
-                        ->modalIconColor('success')
-                        ->form([
-                            Forms\Components\TextInput::make('harga')
-                                ->numeric()
-                                ->label('Harga Buku')
-                                ->minValue(1)
-                                ->required(),
-
-                            Forms\Components\Select::make('kategori_id')
-                                ->label('Kategori')
-                                ->options(kategori::all()->pluck('nama', 'id'))
-                                ->searchable()
-                                ->preload()
-                                ->required(),
-
-                            Forms\Components\Select::make('bahasa')
-                                ->searchable()
-                                ->options([
-                                    'Indonesia' => 'Indonesia',
-                                    'Inggris' => 'Inggris',
-                                ])
-                                ->required(),
-
-                            Forms\Components\FileUpload::make('cover_buku')
-                                ->required()
-                                ->openable()
-                                ->image()
-                                ->imageEditor()
-                                ->directory('cover_buku_dijual'),
-
-                            Forms\Components\TextInput::make('isbn')
-                                ->label('ISBN')
-                                ->required()
-                                ->maxLength(255),
-
-                            Forms\Components\Repeater::make('preview_buku')
-                                ->label('File Preview Buku')
-                                ->schema([
-                                    Forms\Components\FileUpload::make('nama_generate')
-                                        ->label('Upload Gambar untuk preview buku')
-                                        ->required()
-                                        ->openable()
-                                        ->image()
-                                        ->imageEditor()
-                                        ->storeFileNamesIn('nama_file')
-                                        ->directory('buku_preview_storage'),
-                                ])
-                                ->defaultItems(1)
-                                ->required(),
-                        ])
-                        ->action(
-                            function (buku_permohonan_terbit $buku_permohonan_terbit, array $data): void {
-                                if ($buku_permohonan_terbit->dijual == 1) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Buku sudah diterbitkan')
-                                        ->send();
-
-                                    return;
-                                }
-
-                                // split name of $buku_permohonan_terbit->file_buku
-                                $file_buku = explode('/', $buku_permohonan_terbit->file_buku);
-                                $file_buku = end($file_buku);
-
-                                // copy file $buku_permohonan_terbit->file_buku to public/storage/buku_final_storage
-                                File::ensureDirectoryExists(base_path('public/storage/buku_final_storage'));
-                                File::copy(base_path('public/storage/' . $buku_permohonan_terbit->file_buku), base_path('public/storage/buku_final_storage/' . $file_buku));
-
-                                // get jumlah halaman in pdf
-                                $pdftext = file_get_contents(base_path('public/storage/buku_final_storage/' . $file_buku));
-                                $jumlah_halaman = preg_match_all("/\/Page\W/", $pdftext, $matches);
-
-                                // make buku_dijual
-                                $buku_dijual = buku_dijual::create([
-                                    'kategori_id' => $data['kategori_id'],
-                                    'judul' => $buku_permohonan_terbit->judul,
-                                    'slug' => Str::slug($buku_permohonan_terbit->judul),
-                                    'harga' => $data['harga'],
-                                    'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
-                                    'cover_buku' => $data['cover_buku'],
-                                    'deskripsi' => $buku_permohonan_terbit->deskripsi,
-                                    'jumlah_halaman' => $jumlah_halaman,
-                                    'bahasa' => $data['bahasa'],
-                                    'penerbit' => env('APP_NAME'),
-                                    'nama_file_buku' => $buku_permohonan_terbit->judul . '.pdf', // 'buku_final_storage/' . $buku_permohonan_terbit->judul . '.pdf
-                                    'file_buku' => 'buku_final_storage/' . $file_buku,
-                                    'isbn' => $data['isbn'],
-                                    'active_flag' => 0,
-                                ]);
-
-                                // make storage_buku_dijual from $data['preview_buku']
-                                foreach ($data['preview_buku'] as $key => $value) {
-                                    $buku_dijual->storage_buku_dijual()->create([
-                                        'tipe' => 'IMAGE',
-                                        'nama_file' => $value['nama_file'],
-                                        'nama_generate' => $value['nama_generate'],
-                                    ]);
-                                }
-
-                                // make penulis from penulis in buku_permohonan_terbit
-                                $buku_dijual->penulis()->create([
-                                    'nama' => $buku_permohonan_terbit->user->nama_lengkap,
-                                ]);
-
-                                if ($buku_dijual) {
-                                    // update buku_permohonan_terbit
-                                    $buku_permohonan_terbit->update([
-                                        'dijual' => 1,
-                                    ]);
-
-                                    Notification::make()
-                                        ->success()
-                                        ->title('Buku berhasil dijual, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
-                                        ->send();
-
-                                    return;
-                                }
-
-                                Notification::make()
-                                    ->danger()
-                                    ->title('Proses Gagal, coba ulangi beberapa saat lagi')
-                                    ->send();
-
-                                return;
-                            }
-                        ),
-                ])->iconButton()
+                        return false;
+                    }),
             ])
             ->recordUrl(false)
             ->bulkActions([

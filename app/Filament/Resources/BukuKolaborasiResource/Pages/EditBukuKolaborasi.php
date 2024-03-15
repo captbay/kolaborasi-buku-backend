@@ -4,6 +4,7 @@ namespace App\Filament\Resources\BukuKolaborasiResource\Pages;
 
 use App\Filament\Resources\BukuKolaborasiResource;
 use Filament\Actions;
+use Illuminate\Support\Str;
 use Filament\Resources\Pages\EditRecord;
 
 class EditBukuKolaborasi extends EditRecord
@@ -15,6 +16,13 @@ class EditBukuKolaborasi extends EditRecord
         return [
             Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['slug'] = Str::slug($data['judul']);
+
+        return $data;
     }
 
     protected function getRedirectUrl(): string

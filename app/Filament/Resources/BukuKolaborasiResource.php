@@ -270,15 +270,88 @@ class BukuKolaborasiResource extends Resource
                     ),
             ])
             ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()->slideOver(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
-                    Tables\Actions\Action::make('Jual Buku')
-                        ->slideOver()
-                        ->hidden(function (buku_kolaborasi $buku_kolaborasi, array $data) {
-                            if ($buku_kolaborasi->dijual == 1) {
+                Tables\Actions\Action::make('Jual Buku')
+                    ->slideOver()
+                    ->hidden(function (buku_kolaborasi $buku_kolaborasi, array $data) {
+                        if ($buku_kolaborasi->dijual == 1) {
+                            return true;
+                        }
+
+                        // get bab_buku_kolaborasi
+                        $bab_buku_kolaborasi = bab_buku_kolaborasi::with([
+                            'user_bab_buku_kolaborasi' => fn ($query) => $query->where('status', 'DONE')
+                        ])
+                            ->where('buku_kolaborasi_id', $buku_kolaborasi->id)
+                            ->get();
+
+                        // for rech to check if user_bab_buku_kolaborasi is array []
+                        foreach ($bab_buku_kolaborasi as $key => $babData) {
+                            if (count($babData->user_bab_buku_kolaborasi) == 0) {
                                 return true;
+                            }
+                        }
+
+                        return false;
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Buku Akan Dijual')
+                    ->modalDescription('Apakah sudah yakin ingin dijual? Buku ini akan dipindahkan ke Buku Dijual')
+                    ->modalSubmitActionLabel('iya, jual buku')
+                    ->color('success')
+                    ->modalIcon('heroicon-o-book-open')
+                    ->icon('heroicon-o-book-open')
+                    ->modalIconColor('success')
+                    ->form([
+                        Forms\Components\TextInput::make('harga')
+                            ->numeric()
+                            ->label('Harga Buku')
+                            ->minValue(1)
+                            ->required(),
+
+                        Forms\Components\FileUpload::make('cover_buku')
+                            ->required()
+                            ->openable()
+                            ->image()
+                            ->imageEditor()
+                            ->directory('cover_buku_dijual'),
+
+                        Forms\Components\TextInput::make('isbn')
+                            ->label('ISBN')
+                            ->required()
+                            ->maxLength(255),
+
+                        Repeater::make('preview_buku')
+                            ->label('File Preview Buku')
+                            ->schema([
+                                Forms\Components\FileUpload::make('nama_generate')
+                                    ->label('Upload Gambar untuk preview buku')
+                                    ->required()
+                                    ->openable()
+                                    ->image()
+                                    ->imageEditor()
+                                    ->storeFileNamesIn('nama_file')
+                                    ->directory('buku_preview_storage'),
+                            ])
+                            ->defaultItems(1)
+                            ->required(),
+
+                        Forms\Components\FileUpload::make('file_buku')
+                            ->label('Upload File Buku PDF (final version)')
+                            ->required()
+                            ->openable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->storeFileNamesIn('nama_file_buku')
+                            ->directory('buku_final_storage'),
+                    ])
+                    ->action(
+                        function (buku_kolaborasi $buku_kolaborasi, array $data): void {
+                            if ($buku_kolaborasi->dijual == 1) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Buku sudah dijual')
+                                    ->send();
+
+                                return;
                             }
 
                             // get bab_buku_kolaborasi
@@ -291,83 +364,27 @@ class BukuKolaborasiResource extends Resource
                             // for rech to check if user_bab_buku_kolaborasi is array []
                             foreach ($bab_buku_kolaborasi as $key => $babData) {
                                 if (count($babData->user_bab_buku_kolaborasi) == 0) {
-                                    return true;
-                                }
-                            }
-
-                            return false;
-                        })
-                        ->requiresConfirmation()
-                        ->modalHeading('Buku Akan Dijual')
-                        ->modalDescription('Apakah sudah yakin ingin dijual? Buku ini akan dipindahkan ke Buku Dijual')
-                        ->modalSubmitActionLabel('iya, jual buku')
-                        ->color('success')
-                        ->modalIcon('heroicon-o-book-open')
-                        ->icon('heroicon-o-book-open')
-                        ->modalIconColor('success')
-                        ->form([
-                            Forms\Components\TextInput::make('harga')
-                                ->numeric()
-                                ->label('Harga Buku')
-                                ->minValue(1)
-                                ->required(),
-
-                            Forms\Components\FileUpload::make('cover_buku')
-                                ->required()
-                                ->openable()
-                                ->image()
-                                ->imageEditor()
-                                ->directory('cover_buku_dijual'),
-
-                            Forms\Components\TextInput::make('isbn')
-                                ->label('ISBN')
-                                ->required()
-                                ->maxLength(255),
-
-                            Repeater::make('preview_buku')
-                                ->label('File Preview Buku')
-                                ->schema([
-                                    Forms\Components\FileUpload::make('nama_generate')
-                                        ->label('Upload Gambar untuk preview buku')
-                                        ->required()
-                                        ->openable()
-                                        ->image()
-                                        ->imageEditor()
-                                        ->storeFileNamesIn('nama_file')
-                                        ->directory('buku_preview_storage'),
-                                ])
-                                ->defaultItems(1)
-                                ->required(),
-
-                            Forms\Components\FileUpload::make('file_buku')
-                                ->label('Upload File Buku PDF (final version)')
-                                ->required()
-                                ->openable()
-                                ->acceptedFileTypes(['application/pdf'])
-                                ->storeFileNamesIn('nama_file_buku')
-                                ->directory('buku_final_storage'),
-                        ])
-                        ->action(
-                            function (buku_kolaborasi $buku_kolaborasi, array $data): void {
-                                if ($buku_kolaborasi->dijual == 1) {
                                     Notification::make()
                                         ->danger()
-                                        ->title('Buku sudah dijual')
+                                        ->title('Bab buku belum lengkap')
                                         ->send();
 
                                     return;
                                 }
+                            }
 
-                                // get bab_buku_kolaborasi
-                                $bab_buku_kolaborasi = bab_buku_kolaborasi::with([
-                                    'user_bab_buku_kolaborasi' => fn ($query) => $query->where('status', 'DONE')
-                                ])
-                                    ->where('buku_kolaborasi_id', $buku_kolaborasi->id)
-                                    ->get();
+                            $hargaCount = 0;
 
-                                // for rech to check if user_bab_buku_kolaborasi is array []
-                                foreach ($bab_buku_kolaborasi as $key => $babData) {
-                                    if (count($babData->user_bab_buku_kolaborasi) == 0) {
+                            $penulis = array();
+
+                            // forech $bab_buku_kolaborasi to merge pdf file_buku in user_bab_buku_kolaborasi
+                            foreach ($bab_buku_kolaborasi as $key => $babData) {
+                                foreach ($babData->user_bab_buku_kolaborasi as $key => $bab_buku) {
+                                    if ($bab_buku->status == 'DONE') {
+                                        $hargaCount += $babData->harga;
+
+                                        $penulis[] = $bab_buku->user->nama_lengkap;
+                                    } else {
                                         Notification::make()
                                             ->danger()
                                             ->title('Bab buku belum lengkap')
@@ -376,90 +393,73 @@ class BukuKolaborasiResource extends Resource
                                         return;
                                     }
                                 }
+                            }
 
-                                $hargaCount = 0;
+                            // ngehitung halaman pdf ambil dari store tempatnya
+                            $pdftext = file_get_contents(public_path('storage/' . $data['file_buku']));
+                            $jumlah_halaman = preg_match_all("/\/Page\W/", $pdftext, $matches);
 
-                                $penulis = array();
+                            // make buku_dijual
+                            $buku_dijual = buku_dijual::create([
+                                'kategori_id' => $buku_kolaborasi->kategori_id,
+                                'judul' => $buku_kolaborasi->judul,
+                                'slug' => $buku_kolaborasi->slug,
+                                'harga' => $data['harga'],
+                                'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
+                                'cover_buku' => $data['cover_buku'],
+                                'deskripsi' => $buku_kolaborasi->deskripsi,
+                                'jumlah_halaman' => $jumlah_halaman,
+                                'bahasa' => $buku_kolaborasi->bahasa,
+                                'penerbit' => env('APP_NAME'),
+                                'nama_file_buku' => $data['nama_file_buku'],
+                                'file_buku' => $data['file_buku'],
+                                'isbn' => $data['isbn'],
+                                'active_flag' => 0,
+                            ]);
 
-                                // forech $bab_buku_kolaborasi to merge pdf file_buku in user_bab_buku_kolaborasi
-                                foreach ($bab_buku_kolaborasi as $key => $babData) {
-                                    foreach ($babData->user_bab_buku_kolaborasi as $key => $bab_buku) {
-                                        if ($bab_buku->status == 'DONE') {
-                                            $hargaCount += $babData->harga;
+                            // make storage_buku_dijual from $data['preview_buku']
+                            foreach ($data['preview_buku'] as $key => $value) {
+                                $buku_dijual->storage_buku_dijual()->create([
+                                    'tipe' => 'IMAGE',
+                                    'nama_file' => $value['nama_file'],
+                                    'nama_generate' => $value['nama_generate'],
+                                ]);
+                            }
 
-                                            $penulis[] = $bab_buku->user->nama_lengkap;
-                                        } else {
-                                            Notification::make()
-                                                ->danger()
-                                                ->title('Bab buku belum lengkap')
-                                                ->send();
+                            // make penulis from penulis array
+                            $penulis = array_unique($penulis);
+                            foreach ($penulis as $key => $value) {
+                                $buku_dijual->penulis()->create([
+                                    'nama' => $value,
+                                ]);
+                            }
 
-                                            return;
-                                        }
-                                    }
-                                }
-
-                                // ngehitung halaman pdf ambil dari store tempatnya
-                                $pdftext = file_get_contents(public_path('storage/' . $data['file_buku']));
-                                $jumlah_halaman = preg_match_all("/\/Page\W/", $pdftext, $matches);
-
-                                // make buku_dijual
-                                $buku_dijual = buku_dijual::create([
-                                    'kategori_id' => $buku_kolaborasi->kategori_id,
-                                    'judul' => $buku_kolaborasi->judul,
-                                    'slug' => $buku_kolaborasi->slug,
-                                    'harga' => $data['harga'],
-                                    'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
-                                    'cover_buku' => $data['cover_buku'],
-                                    'deskripsi' => $buku_kolaborasi->deskripsi,
-                                    'jumlah_halaman' => $jumlah_halaman,
-                                    'bahasa' => $buku_kolaborasi->bahasa,
-                                    'penerbit' => env('APP_NAME'),
-                                    'nama_file_buku' => $data['nama_file_buku'],
-                                    'file_buku' => $data['file_buku'],
-                                    'isbn' => $data['isbn'],
-                                    'active_flag' => 0,
+                            if ($buku_dijual) {
+                                // update buku_kolaborasi
+                                $buku_kolaborasi->update([
+                                    'dijual' => 1,
                                 ]);
 
-                                // make storage_buku_dijual from $data['preview_buku']
-                                foreach ($data['preview_buku'] as $key => $value) {
-                                    $buku_dijual->storage_buku_dijual()->create([
-                                        'tipe' => 'IMAGE',
-                                        'nama_file' => $value['nama_file'],
-                                        'nama_generate' => $value['nama_generate'],
-                                    ]);
-                                }
-
-                                // make penulis from penulis array
-                                $penulis = array_unique($penulis);
-                                foreach ($penulis as $key => $value) {
-                                    $buku_dijual->penulis()->create([
-                                        'nama' => $value,
-                                    ]);
-                                }
-
-                                if ($buku_dijual) {
-                                    // update buku_kolaborasi
-                                    $buku_kolaborasi->update([
-                                        'dijual' => 1,
-                                    ]);
-
-                                    Notification::make()
-                                        ->success()
-                                        ->title('Buku berhasil dijual, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
-                                        ->send();
-
-                                    return;
-                                }
-
                                 Notification::make()
-                                    ->danger()
-                                    ->title('Proses Gagal, coba ulangi beberapa saat lagi')
+                                    ->success()
+                                    ->title('Buku berhasil dijual, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
                                     ->send();
 
                                 return;
                             }
-                        ),
+
+                            Notification::make()
+                                ->danger()
+                                ->title('Proses Gagal, coba ulangi beberapa saat lagi')
+                                ->send();
+
+                            return;
+                        }
+                    ),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()->slideOver(),
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\DeleteAction::make(),
                 ])->iconButton()
             ])
             ->recordUrl(false)

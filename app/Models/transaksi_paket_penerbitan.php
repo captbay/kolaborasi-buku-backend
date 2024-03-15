@@ -31,4 +31,15 @@ class transaksi_paket_penerbitan extends Model
     {
         return $this->belongsTo(buku_permohonan_terbit::class, 'buku_permohonan_terbit_id');
     }
+
+    // has many jasa_transaksi_paket_penerbitan
+    public function trx_jasa_penerbitan()
+    {
+        return $this->hasMany(trx_jasa_penerbitan::class, 'transaksi_paket_penerbitan_id');
+    }
+
+    public function jasa_tambahan()
+    {
+        return $this->belongsToMany(jasa_tambahan::class, 'trx_jasa_penerbitan', 'transaksi_paket_penerbitan_id', 'jasa_tambahan_id');
+    }
 }

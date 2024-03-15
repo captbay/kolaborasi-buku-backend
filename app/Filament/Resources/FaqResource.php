@@ -44,7 +44,7 @@ class FaqResource extends Resource
                     ->maxLength(255)
                     ->unique(konten_faq::class, 'judul', ignoreRecord: true),
 
-                Forms\Components\MarkdownEditor::make('answer')
+                Forms\Components\TextArea::make('answer')
                     ->columnSpan('full')
                     ->required(),
 

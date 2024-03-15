@@ -23,14 +23,8 @@ class ListBukuPermohonanTerbits extends ListRecords
     {
         return [
             'Semua' => Tab::make(),
-            'Review' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVIEW')),
-            'Revisi' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVISI')),
-            'Ditolak' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REJECTED')),
-            'Siap Terbit' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'ACCEPTED')),
+            'Belum Diterbitkan' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('dijual', 0)),
             'Sudah Diterbitkan' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('dijual', 1)),
         ];

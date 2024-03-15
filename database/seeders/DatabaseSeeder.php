@@ -12,6 +12,7 @@ use App\Models\buku_permohonan_terbit;
 use App\Models\bukudijual_penulis_pivot;
 use App\Models\config_web;
 use App\Models\jasa_paket_penerbitan;
+use App\Models\jasa_tambahan;
 use App\Models\kategori;
 use App\Models\keranjang;
 use App\Models\konten_event;
@@ -25,6 +26,7 @@ use App\Models\testimoni_pembeli;
 use App\Models\transaksi_kolaborasi_buku;
 use App\Models\transaksi_paket_penerbitan;
 use App\Models\transaksi_penjualan_buku;
+use App\Models\trx_jasa_penerbitan;
 use App\Models\User;
 use App\Models\user_bab_buku_kolaborasi;
 use Illuminate\Database\Seeder;
@@ -72,8 +74,12 @@ class DatabaseSeeder extends Seeder
         // paket penerbitan
         paket_penerbitan::factory(10)->create();
         jasa_paket_penerbitan::factory(20)->create();
-        buku_permohonan_terbit::factory(10)->create();
-        transaksi_paket_penerbitan::factory(20)->create();
+        buku_permohonan_terbit::factory(30)->create();
+        transaksi_paket_penerbitan::factory(30)->create();
+
+        // jasa tambahan
+        jasa_tambahan::factory(10)->create();
+        trx_jasa_penerbitan::factory(30)->create();
 
         // buku kolaborasi
         buku_kolaborasi::factory(10)->create();

@@ -18,9 +18,13 @@ return new class extends Migration
             $table->foreignUuid('buku_permohonan_terbit_id')->constrained('buku_permohonan_terbit')->cascadeOnDelete();
             $table->string('no_transaksi');
             $table->string('total_harga');
-            $table->enum('status', ['DONE', 'PROGRESS', 'FAILED', 'UPLOADED']);
+            $table->enum('status', ['REVIEW', 'TERIMA DRAFT', 'DP UPLOADED', 'DP TIDAK SAH', 'INPUT ISBN', 'DRAFT SELESAI', 'PELUNASAN UPLOADED', 'PELUNASAN TIDAK SAH', 'SIAP TERBIT', 'SUDAH TERBIT']);
+            $table->string('dp_upload')->nullable();
+            $table->string('pelunasan_upload')->nullable();
             $table->string('foto_bukti_bayar')->nullable();
+            $table->dateTime('date_time_dp_lunas')->nullable();
             $table->dateTime('date_time_lunas')->nullable();
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }

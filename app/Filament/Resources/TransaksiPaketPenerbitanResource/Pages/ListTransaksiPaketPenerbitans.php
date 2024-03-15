@@ -22,15 +22,26 @@ class ListTransaksiPaketPenerbitans extends ListRecords
     public function getTabs(): array
     {
         return [
-            'Semua' => Tab::make(),
-            'Proses' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'PROGRESS')),
-            'Uploaded' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'UPLOADED')),
-            'Failed' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'FAILED')),
-            'Done' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'DONE')),
+            'Review' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVIEW')),
+            'Terima Draft' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'TERIMA DRAFT')),
+            'DP Uploaded' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'DP UPLOADED')),
+            'DP Tidak Sesuai' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'DP TIDAK SAH')),
+            'Input ISBN' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'INPUT ISBN')),
+            'Draft Selesai' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'DRAFT SELESAI')),
+            'Pelunasan Uploaded' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'PELUNASAN UPLOADED')),
+            'Pelunasan Tidak Sesuai' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'PELUNASAN TIDAK SAH')),
+            'Siap Terbit' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'SIAP TERBIT')),
+            'Sudah Terbit' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'SUDAH TERBIT')),
         ];
     }
 }
