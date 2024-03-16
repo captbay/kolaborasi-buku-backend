@@ -30,7 +30,7 @@ class buku_dijualFactory extends Factory
             'harga' => $this->faker->numberBetween(10000, 100000),
             'tanggal_terbit' => $this->faker->date(),
             'cover_buku' => "/cover_buku.jpg",
-            'deskripsi' => $this->faker->paragraph(),
+            'deskripsi' => $this->faker->paragraph(10),
             'jumlah_halaman' => $this->faker->numberBetween(100, 500),
             'bahasa' => $this->faker->randomElement(['Indonesaia', 'Inggris', 'Spanyol']),
             'penerbit' => $this->faker->company(),

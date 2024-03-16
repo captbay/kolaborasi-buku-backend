@@ -20,7 +20,7 @@ class buku_permohonan_terbitFactory extends Factory
         return [
             'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'judul' => $this->faker->word(),
-            'deskripsi' => $this->faker->paragraph(),
+            'deskripsi' => $this->faker->paragraph(5),
             'cover_buku' => '/cover_buku.jpg',
             'file_buku' => '/buku_final_temp.pdf',
             'file_mou' => '/buku_final_temp.pdf',

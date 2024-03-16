@@ -16,7 +16,7 @@ class BukuDijualController extends Controller
             // get the most count buku_dijual in list_transasksi_buku
             $data = buku_dijual::with('kategori', 'testimoni_pembeli', 'penulis')
                 ->withCount('list_transaksi_buku')
-                ->where('active_flag', '1');
+                ->where('active_flag', 1);
 
             // filter by kategori
             if ($request->has("kategori")) {
@@ -98,8 +98,8 @@ class BukuDijualController extends Controller
             } else {
                 // filter only needed data
                 $data = $data->through(function ($item) {
-                    // count rating from testimoni_pembeli
-                    $rating = $item->testimoni_pembeli->avg('rating');
+                    // count avg rating from testimoni_pembeli and dibulatkan
+                    $rating = round($item->testimoni_pembeli->avg('rating'));
 
                     return [
                         'id' => $item->id,
@@ -138,9 +138,82 @@ class BukuDijualController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(buku_dijual $buku_dijual)
+    public function show(Request $req)
     {
-        //
+        try {
+            // get buku dijual detail by slug
+            $data = buku_dijual::with('kategori', 'penulis', 'storage_buku_dijual')
+                // with  'testimoni_pembeli' where active_flag is 1
+                ->with(['testimoni_pembeli' => function ($query) {
+                    $query->with('user')->where('active_flag', 1);
+                }])
+                ->where('slug', $req->slug)
+                ->where('active_flag', 1)
+                ->first();
+
+            // get only name and make list of penulis to string and dvide by ,
+            $list_penulis = $data->penulis->map(function ($item) {
+                return $item->nama;
+            })->implode(', ');
+
+            // get only needed data testimoni pembeli
+            $testimoni_pembeli = $data->testimoni_pembeli->map(function ($item) {
+                return [
+                    'nama' => $item->user->nama_lengkap,
+                    'foto_profil' => $item->user->foto_profil,
+                    'rating' => $item->rating,
+                    'ulasan' => $item->ulasan,
+                    // created date to diff human
+                    'created_at' => $item->created_at->diffForHumans()
+                ];
+            });
+
+            // get only needed data gallery foto and add cover_buku at first map
+            $gallery_foto = $data->storage_buku_dijual->map(function ($item) {
+                return [
+                    'foto' => $item->nama_generate
+                ];
+            })->prepend([
+                'foto' => $data->cover_buku
+            ]);
+
+
+            // get needed data
+            $data = [
+                'isbn' => $data->isbn,
+                'slug' => $data->slug,
+                'judul' => $data->judul,
+                'harga' => $data->harga,
+                'kategori' => $data->kategori->nama,
+                'deskripsi' => $data->deskripsi,
+                'tanggal_terbit' => $data->tanggal_terbit,
+                'jumlah_halaman' => $data->jumlah_halaman,
+                'bahasa' => $data->bahasa,
+                'penerbit' => $data->penerbit,
+                'list_penulis' => $list_penulis,
+                'testimoni_pembeli' => $testimoni_pembeli,
+                'gallery_foto' => $gallery_foto,
+            ];
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'error',
+                'data' => $e->getMessage()
+            ], 500);
+        }
+
+        if (!$data) {
+            return response()->json([
+                'message' => 'error',
+                'data' => 'buku_dijual not found'
+            ], 404);
+        }
+
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'buku retrieved successfully.',
+            'data' => $data
+        ], 200);
     }
 
     // toptenterlaris

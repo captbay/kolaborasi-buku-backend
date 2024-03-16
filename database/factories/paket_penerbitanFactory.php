@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,8 +21,8 @@ class paket_penerbitanFactory extends Factory
             'nama' => $this->faker->word(),
             'harga' => $this->faker->numberBetween(10000, 1000000),
             'deskripsi' => $this->faker->paragraph(),
-            'waktu_mulai' => $this->faker->dateTime(),
-            'waktu_selesai' => $this->faker->dateTime(),
+            'waktu_mulai' => Carbon::now(),
+            'waktu_selesai' => Carbon::now()->addDays(30),
         ];
     }
 }

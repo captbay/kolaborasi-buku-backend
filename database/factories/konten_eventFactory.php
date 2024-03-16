@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,8 +20,8 @@ class konten_eventFactory extends Factory
         return [
             'tipe' => 'IMAGE',
             'file' => '/cover_buku.jpg',
-            'waktu_mulai' => $this->faker->dateTime(),
-            'waktu_selesai' => $this->faker->dateTime(),
+            'waktu_mulai' => Carbon::now(),
+            'waktu_selesai' => Carbon::now()->addDays(30),
             'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }

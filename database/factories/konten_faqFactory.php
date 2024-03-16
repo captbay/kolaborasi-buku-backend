@@ -18,7 +18,7 @@ class konten_faqFactory extends Factory
     {
         return [
             'judul' => $this->faker->word(),
-            'answer' => $this->faker->paragraph(),
+            'answer' => $this->faker->paragraph(5),
             'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }

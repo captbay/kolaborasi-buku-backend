@@ -48,8 +48,8 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth:sanctum', 'verified']],
 Route::group(['prefix' => 'buku'], function () {
     // get all buku
     Route::get('all', [BukuDijualController::class, 'index']);
-    // get buku by id
-    Route::get('detail/{id}', [BukuDijualController::class, 'show']);
+    // get buku by slug
+    Route::get('detail/{slug}', [BukuDijualController::class, 'show']);
     // terlaris
     Route::get('best-seller', [BukuDijualController::class, 'bestseller']);
 });
@@ -58,8 +58,8 @@ Route::group(['prefix' => 'buku'], function () {
 Route::group(['prefix' => 'buku-kolaborasi'], function () {
     // get all kolaborasi
     Route::get('all', [BukuKolaborasiController::class, 'index']);
-    // get kolaborasi by id
-    Route::get('detail/{id}', [BukuKolaborasiController::class, 'show']);
+    // get kolaborasi by slug
+    Route::get('detail/{slug}', [BukuKolaborasiController::class, 'show']);
 });
 
 //* DONE!

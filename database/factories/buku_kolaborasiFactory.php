@@ -28,7 +28,7 @@ class buku_kolaborasiFactory extends Factory
             'slug' => $slugs,
             'judul' => $juduls,
             'cover_buku' => '/cover_buku.jpg',
-            'deskripsi' => $this->faker->paragraph(),
+            'deskripsi' => $this->faker->paragraph(10),
             'jumlah_bab' => $this->faker->numberBetween(1, 10),
             'bahasa' => $this->faker->word(),
             'file_mou' => '/buku_final_temp.pdf',
