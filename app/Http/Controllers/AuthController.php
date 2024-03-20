@@ -46,15 +46,7 @@ class AuthController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Email Anda Belum Terverifikasi!'
-                ], 401);
-            }
-
-            // if user active flag != 1
-            if ($user->active_flag != 1) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Akun Anda Sedang Non Aktif, Silahkan Anda Hubungi Admin Untuk Mengaktifkan Ulang!'
-                ], 401);
+                ], 404);
             }
 
             // create token
@@ -62,11 +54,19 @@ class AuthController extends Controller
 
             // check password
             if (Hash::check($request->password, $user->password)) {
-                return response()->json([
-                    'message' => 'Login success',
-                    'user' => $user,
+                // return needed data
+                $data = [
+                    'id' => $user->id,
+                    'nama_lengkap' => $user->nama_lengkap,
+                    'role' => $user->role,
                     'token_type' => 'Bearer',
                     'token' => $token
+                ];
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login success',
+                    'data' => $data,
                 ], 200);
             } else {
                 return response()->json([
@@ -103,7 +103,7 @@ class AuthController extends Controller
             }
 
             // create user
-            $user = User::create([
+            User::create([
                 'nama_depan' => $request->nama_depan,
                 'nama_belakang' => $request->nama_belakang,
                 'email' => $request->email,
@@ -112,7 +112,6 @@ class AuthController extends Controller
                 'kode_verif_email' => uniqid(),
                 'status_verif_email' => 0,
                 'role' => 'CUSTOMER',
-                'active_flag' => 1,
             ])->sendEmailVerificationNotification();
 
             // return response
@@ -307,7 +306,7 @@ class AuthController extends Controller
 
             // return response()->json(["message" => "Email Anda Berhasil di Verifikasi."], 200);
             // redirect another link
-            return redirect('http://localhost:8080/login');
+            return redirect('http://localhost:3000/login');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

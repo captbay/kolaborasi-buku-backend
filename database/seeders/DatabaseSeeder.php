@@ -52,6 +52,28 @@ class DatabaseSeeder extends Seeder
             'role' => 'ADMIN',
         ]);
 
+        User::create([
+            'nama_depan' => 'customer',
+            'nama_belakang' => 'penerbitan',
+            'email' => 'customer@mail.com',
+            'password' => Hash::make('password'),
+            'no_telepon' => '081234567890',
+            'status_verif_email' => 1,
+            'email_verified_at' => now(),
+            'role' => 'CUSTOMER',
+        ]);
+
+        User::create([
+            'nama_depan' => 'member',
+            'nama_belakang' => 'penerbitan',
+            'email' => 'member@mail.com',
+            'password' => Hash::make('password'),
+            'no_telepon' => '081234567890',
+            'status_verif_email' => 1,
+            'email_verified_at' => now(),
+            'role' => 'MEMBER',
+        ]);
+
         User::factory(10)->create();
         kategori::factory(10)->create();
 

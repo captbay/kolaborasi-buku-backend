@@ -48,7 +48,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         'file_ktp',
         'file_ttd',
         'role',
-        'active_flag',
     ];
 
     /**
