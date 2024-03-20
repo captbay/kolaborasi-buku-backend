@@ -209,23 +209,18 @@ class AuthController extends Controller
 
             // if validation fails
             if ($validatedData->fails()) {
-                return response()->json(['message' => $validatedData->errors()], 422);
+                return response()->json(['message' => $validatedData->errors(), 'success' => false], 422);
             }
 
             $status = Password::sendResetLink(
                 $request->only('email')
             );
 
-            if ($status === Password::RESET_LINK_SENT) {
+            if ($status) {
                 return response()->json([
-                    'message' => 'Link Reset Password Dikirim Ke Email Anda!',
-                    'status' => __($status)
+                    'message' => 'Jika Benar Email Terdaftar, Link Reset Password Akan Dikirim Ke Email Anda!',
+                    'success' => true,
                 ], 200);
-            } else {
-                return response()->json([
-                    'message' => 'Gagal Mengirim Link Reset Password!',
-                    'status' => __($status)
-                ], 400);
             }
         } catch (\Exception $e) {
             return response()->json([
@@ -242,11 +237,18 @@ class AuthController extends Controller
     {
         try {
             // validate request
-            $validatedData = Validator::make($request->all(), [
-                'token' => 'required',
-                'email' => 'required|email',
-                'password' => 'required|min:8|confirmed',
-            ]);
+            $validatedData = Validator::make(
+                $request->all(),
+                [
+                    'token' => 'required',
+                    'email' => 'required|email',
+                    'password' => 'required|min:8',
+                    'confirm_password' => 'required|same:password',
+                ],
+                [
+                    'confirm_password.same' => 'Password dan Konfirmasi Password Tidak Sama!',
+                ]
+            );
 
             // if validation fails
             if ($validatedData->fails()) {
@@ -268,13 +270,13 @@ class AuthController extends Controller
 
             if ($status === Password::PASSWORD_RESET) {
                 return response()->json([
-                    'message' => 'Berhasil Mengubah Password',
-                    'status' => __($status)
+                    'success' => true,
+                    'message' => __($status)
                 ], 200);
             } else {
                 return response()->json([
-                    'message' => 'Gagal Mengubah Password',
-                    'status' => __($status)
+                    'success' => false,
+                    'message' => __($status)
                 ], 400);
             }
         } catch (\Exception $e) {
