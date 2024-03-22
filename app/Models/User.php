@@ -41,7 +41,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         'kota',
         'kode_pos',
         'foto_profil',
-        'bio',
         'status_verif_email',
         'email_verified_at',
         'file_cv',

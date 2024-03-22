@@ -57,8 +57,6 @@ class AuthController extends Controller
                 // return needed data
                 $data = [
                     'id' => $user->id,
-                    'nama_lengkap' => $user->nama_lengkap,
-                    'role' => $user->role,
                     'token_type' => 'Bearer',
                     'token' => $token
                 ];

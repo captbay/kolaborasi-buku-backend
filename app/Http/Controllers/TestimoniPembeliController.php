@@ -35,6 +35,7 @@ class TestimoniPembeliController extends Controller
             });
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -42,6 +43,7 @@ class TestimoniPembeliController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'testimoni not found'
             ], 404);
@@ -83,6 +85,7 @@ class TestimoniPembeliController extends Controller
             });
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -90,6 +93,7 @@ class TestimoniPembeliController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'testimoni not found'
             ], 404);

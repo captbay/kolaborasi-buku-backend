@@ -37,7 +37,6 @@ class UserFactory extends Factory
             'kota' => $this->faker->city(),
             'kode_pos' => $this->faker->postcode(),
             'foto_profil' => '/cover_buku.jpg',
-            'bio' => $this->faker->text(),
             'status_verif_email' => $this->faker->randomElement([0, 1]), // 0 or 1
             'email_verified_at' => now(),
             'file_cv' => '/buku_final_temp.pdf',

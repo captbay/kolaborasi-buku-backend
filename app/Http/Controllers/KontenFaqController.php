@@ -17,6 +17,7 @@ class KontenFaqController extends Controller
             $data = konten_faq::where('active_flag', 1)->orderBy('created_at', 'desc')->get();
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);

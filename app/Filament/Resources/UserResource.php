@@ -44,29 +44,22 @@ class UserResource extends Resource
                     ->maxLength(255),
                 Forms\Components\DatePicker::make('tgl_lahir')
                     ->native(false)
-                    ->maxDate('today')
-                    ->required(),
+                    ->maxDate('today'),
                 Forms\Components\Select::make('gender')
                     ->options([
                         'Pria' => 'Pria',
                         'Wanita' => 'Wanita',
                         'Memilih Untuk Tidak Diisi' => 'Memilih Untuk Tidak Diisi',
-                    ])
-                    ->required(),
+                    ]),
                 Forms\Components\TextInput::make('alamat')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('provinsi')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('kecamatan')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('kota')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('kode_pos')
-                    ->required()
                     ->maxLength(255),
                 Forms\Components\Select::make('role')
                     ->options([
@@ -81,11 +74,7 @@ class UserResource extends Resource
                     ->imageEditor()
                     ->openable()
                     ->downloadable()
-                    ->directory('foto_profil')
-                    ->required(),
-                Forms\Components\Textarea::make('bio')
-                    ->required()
-                    ->maxLength(255),
+                    ->directory('foto_profil'),
                 Forms\Components\FileUpload::make('file_cv')
                     ->openable()
                     ->downloadable()

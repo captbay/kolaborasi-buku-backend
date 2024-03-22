@@ -74,6 +74,7 @@ class BukuKolaborasiController extends Controller
             });
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -81,6 +82,7 @@ class BukuKolaborasiController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'kolaborasi not found'
             ], 404);
@@ -97,7 +99,7 @@ class BukuKolaborasiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $req)
+    public function show(String $slug)
     {
         try {
             $data = buku_kolaborasi::with('kategori')
@@ -109,7 +111,7 @@ class BukuKolaborasiController extends Controller
                         ->where('active_flag', 1)
                         ->orderBy('created_at', 'desc');
                 }])
-                ->where('slug', $req->slug)
+                ->where('slug', $slug)
                 ->where('active_flag', 1)
                 ->where('dijual', 0)
                 ->first();
@@ -232,6 +234,7 @@ class BukuKolaborasiController extends Controller
             ];
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -239,6 +242,7 @@ class BukuKolaborasiController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'kolaborasi not found'
             ], 404);

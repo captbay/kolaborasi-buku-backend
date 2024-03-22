@@ -8,6 +8,7 @@ use App\Http\Controllers\KontenEventController;
 use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
 use App\Http\Controllers\TestimoniPembeliController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,6 +43,11 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth:sanctum', 'verified']],
     Route::get('logout', [AuthController::class, 'logout']);
     // change password
     Route::put('changePassword', [AuthController::class, 'changePassword']);
+});
+
+Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    //show data user by id
+    Route::get('show/{id}', [UserController::class, 'show']);
 });
 
 // buku

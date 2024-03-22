@@ -115,6 +115,7 @@ class BukuDijualController extends Controller
             }
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -122,6 +123,7 @@ class BukuDijualController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'buku_dijual not found'
             ], 404);
@@ -138,7 +140,7 @@ class BukuDijualController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $req)
+    public function show(String $slug)
     {
         try {
             // get buku dijual detail by slug
@@ -147,7 +149,7 @@ class BukuDijualController extends Controller
                 ->with(['testimoni_pembeli' => function ($query) {
                     $query->with('user')->where('active_flag', 1);
                 }])
-                ->where('slug', $req->slug)
+                ->where('slug', $slug)
                 ->where('active_flag', 1)
                 ->first();
 
@@ -196,6 +198,7 @@ class BukuDijualController extends Controller
             ];
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -203,6 +206,7 @@ class BukuDijualController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'buku_dijual not found'
             ], 404);
@@ -249,6 +253,7 @@ class BukuDijualController extends Controller
             });
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => $e->getMessage()
             ], 500);
@@ -256,6 +261,7 @@ class BukuDijualController extends Controller
 
         if (!$data) {
             return response()->json([
+                'success' => false,
                 'message' => 'error',
                 'data' => 'buku_dijual not found'
             ], 404);

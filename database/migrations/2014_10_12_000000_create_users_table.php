@@ -27,7 +27,6 @@ return new class extends Migration
             $table->string('kota')->nullable();
             $table->string('kode_pos')->nullable();
             $table->string('foto_profil')->nullable();
-            $table->string('bio')->nullable();
             $table->integer('status_verif_email')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('file_cv')->nullable();
