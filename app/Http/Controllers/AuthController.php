@@ -154,12 +154,29 @@ class AuthController extends Controller
             // find user login
             $user = User::find(Auth::user()->id);
 
+            // check if req->password is same with user password
+            if (!Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kata Sandi Lama Anda Salah!',
+                ], 404);
+            }
+
             // validate request
-            $validatedData = Validator::make($request->all(), [
-                'password' => 'required|min:8',
-                'new_password' => 'required|min:8|different:password',
-                'confirm_password' => 'required|min:8|same:new_password',
-            ]);
+            $validatedData = Validator::make(
+                $request->all(),
+                [
+                    'password' => 'required|min:8',
+                    'new_password' => 'required|min:8|different:password',
+                    'confirm_password' => 'required|min:8|same:new_password',
+                ],
+                [
+                    'new_password.min' => 'Kata Sandi Baru Minimal 8 Karakter!',
+                    'confirm_password.min' => 'Konfirmasi Kata Sandi Minimal 8 Karakter!',
+                    'new_password.different' => 'Kata Sandi Baru Harus Berbeda Dengan Kata Sandi Lama!',
+                    'confirm_password.same' => 'Kata Sandi Baru dan Konfirmasi Kata Sandi Tidak Sama!',
+                ]
+            );
 
             // if validation fails
             if ($validatedData->fails()) {
@@ -174,16 +191,16 @@ class AuthController extends Controller
                 ]);
 
                 // revoke token
-                $user->currentAccessToken()->delete();
+                Auth::user()->currentAccessToken()->delete();
 
                 // return response
                 return response()->json([
-                    'message' => 'Berhasil Mengubah Password',
+                    'message' => 'Berhasil Mengubah Kata Sandi',
                 ], 200);
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Password Lama Anda Salah!',
+                    'message' => 'Kata Sandi Lama Anda Salah!',
                 ], 404);
             }
         } catch (\Exception $e) {
@@ -216,7 +233,7 @@ class AuthController extends Controller
 
             if ($status) {
                 return response()->json([
-                    'message' => 'Jika Benar Email Terdaftar, Link Reset Password Akan Dikirim Ke Email Anda!',
+                    'message' => 'Jika Benar Email Terdaftar, Link Reset Kata Sandi Akan Dikirim Ke Email Anda!',
                     'success' => true,
                 ], 200);
             }
@@ -244,7 +261,7 @@ class AuthController extends Controller
                     'confirm_password' => 'required|same:password',
                 ],
                 [
-                    'confirm_password.same' => 'Password dan Konfirmasi Password Tidak Sama!',
+                    'confirm_password.same' => 'Kata Sandi dan Konfirmasi Password Tidak Sama!',
                 ]
             );
 
