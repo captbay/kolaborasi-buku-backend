@@ -30,7 +30,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('register', [AuthController::class, 'register']);
     // verif and resend email
     Route::get('email/verify/{id}', [AuthController::class, 'verifyEmail'])->name('verification.verify'); // Make sure to keep this as your route name
-    Route::get('email/resend', [AuthController::class, 'resendEmailVerification'])->name('verification.resend');
+    Route::post('email/resend', [AuthController::class, 'resendEmailVerification'])->name('verification.resend');
     // forgot password
     Route::post('forgotPassword', [AuthController::class, 'sendEmailForgotPassword'])->middleware('guest')->name('password.email');
     // reset password
@@ -48,6 +48,12 @@ Route::group(['prefix' => 'auth', 'middleware' => ['auth:sanctum', 'verified']],
 Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'verified']], function () {
     //show data user by id
     Route::get('show/{id}', [UserController::class, 'show']);
+    // update data user
+    Route::put('update', [UserController::class, 'update']);
+    // post member
+    Route::post('uploadFileMember', [UserController::class, 'uploadFileMember']);
+    // post photo profile
+    Route::post('uploadFotoProfil', [UserController::class, 'uploadFotoProfil']);
 });
 
 // buku

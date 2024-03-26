@@ -23,8 +23,7 @@ class KontenEventController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'error',
-                'data' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
 

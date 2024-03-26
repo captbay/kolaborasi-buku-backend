@@ -92,7 +92,7 @@ class AuthController extends Controller
                 'nama_belakang' => 'required|min:3',
                 'email' => 'required|email:rfc,dns|unique:users',
                 'password' => 'required|min:8',
-                'no_telepon' => 'required|max:12|min:9',
+                'no_telepon' => 'required|max:12|min:9|starts_with:08,+62',
             ]);
 
             // if validation fails
