@@ -188,10 +188,24 @@ class UserResource extends Resource
                                     'role' => 'MEMBER',
                                 ]);
 
+                                $recipientAdmin = auth()->user();
+
                                 Notification::make()
                                     ->success()
-                                    ->title('Customer berhasil diverifikasi')
+                                    ->title('Customer ' . $user->nama_lengkap . ' berhasil diverifikasi menjadi member')
+                                    ->sendToDatabase($recipientAdmin)
                                     ->send();
+
+                                // send notif to user
+                                Notification::make()
+                                    ->success()
+                                    ->title(
+                                        'Verifikasi Member Berhasil'
+                                    )
+                                    ->body(
+                                        'Selamat, Anda telah berhasil diverifikasi menjadi member. Anda dapat melakukan kolaborasi sekarang.'
+                                    )
+                                    ->sendToDatabase($user);
 
                                 return;
                             }

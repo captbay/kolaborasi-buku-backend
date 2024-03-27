@@ -54,6 +54,12 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'verified']],
     Route::post('uploadFileMember', [UserController::class, 'uploadFileMember']);
     // post photo profile
     Route::post('uploadFotoProfil', [UserController::class, 'uploadFotoProfil']);
+    // notifikasi user
+    Route::get('notifikasi', [UserController::class, 'notifikasi']);
+    // baca notifikasi user
+    Route::put('notifikasi/read', [UserController::class, 'readNotifikasi']);
+    // hapus notifikasi
+    Route::delete('notifikasi/delete', [UserController::class, 'deleteNotifikasi']);
 });
 
 // buku

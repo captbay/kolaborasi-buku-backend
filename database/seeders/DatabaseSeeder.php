@@ -123,66 +123,73 @@ class DatabaseSeeder extends Seeder
         // make notification seeder
         $data = [
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
             [
-                'type' => 'Anda Berhasil Masuk',
+                'type' => 'Filament\Notifications\DatabaseNotification',
                 'notifiable_type' => 'App\Models\User',
                 'notifiable_id' => User::all()->random()->id,
                 'data' => json_encode([
                     'title' => 'Selamat Datang',
-                    'message' => 'Selamat datang di aplikasi penerbitan buku',
+                    'body' => 'Selamat datang di aplikasi penerbitan buku',
+                    'actions' => []
                 ])
             ],
         ];

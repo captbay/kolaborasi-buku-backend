@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -294,5 +295,126 @@ class UserController extends Controller
             'success' => true,
             'message' => 'Berhasil upload photo.',
         ], 200);
+    }
+
+    /**
+     * Display a listing of notifikasi
+     */
+    public function notifikasi()
+    {
+        // Get the user from the database
+        try {
+            $data = User::find(Auth::user()->id);
+
+            // If the user was not found, return a 404 response
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'error',
+                    'data' => 'User tidak ditemukan'
+                ], 404);
+            }
+
+            // return needed data
+            $notif = $data->notifications->map(function ($item) {
+                return [
+                    'notif_id' => $item->id,
+                    'actions' => $item->data['actions'],
+                    'title' => $item->data['title'],
+                    'body' => $item->data['body'],
+                    'is_read' => $item->read_at ? true : false,
+                    'created_at' => Carbon::parse($item->created_at)->diffForHumans(),
+                ];
+            });
+
+            // count not read notifications
+            $countNotRead = $data->unreadNotifications->count();
+
+            // final data
+            $finalData = [
+                'count_not_read' => $countNotRead,
+                'data' => $notif,
+            ];
+
+            // Return the user
+            return response()->json([
+                'success' => true,
+                'message' => 'Notifikasi User',
+                'data' => $finalData
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark the all notification as read.
+     */
+    public function readNotifikasi()
+    {
+        // Get the user from the database
+        try {
+            $data = User::find(Auth::user()->id);
+
+            // If the user was not found, return a 404 response
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'error',
+                    'data' => 'User tidak ditemukan'
+                ], 404);
+            }
+
+            // mark all notification as read
+            $data->unreadNotifications->markAsRead();
+
+            // Return the user
+            return response()->json([
+                'success' => true,
+                'message' => 'Notifikasi telah dibaca',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove all notification from storage.
+     */
+    public function deleteNotifikasi()
+    {
+        // Get the user from the database
+        try {
+            $data = User::find(Auth::user()->id);
+
+            // If the user was not found, return a 404 response
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'error',
+                    'data' => 'User tidak ditemukan'
+                ], 404);
+            }
+
+            // delete all notification
+            $data->notifications()->delete();
+
+            // Return the user
+            return response()->json([
+                'success' => true,
+                'message' => 'Seluruh Notifikasi telah dihapus',
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }
