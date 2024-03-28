@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukuDijualController;
 use App\Http\Controllers\BukuKolaborasiController;
 use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\KontenEventController;
 use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
@@ -64,6 +65,18 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'verified']],
     Route::put('notifikasi/read', [UserController::class, 'readNotifikasi']);
     // hapus notifikasi
     Route::delete('notifikasi/delete', [UserController::class, 'deleteNotifikasi']);
+});
+
+// keranjang
+Route::group(['prefix' => 'keranjang', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // get all keranjang
+    Route::get('all', [KeranjangController::class, 'index']);
+    // add to keranjang
+    Route::post('add', [KeranjangController::class, 'store']);
+    // update keranjang
+    Route::put('update/{id}', [KeranjangController::class, 'update']);
+    // delete keranjang
+    Route::delete('delete/{id}', [KeranjangController::class, 'destroy']);
 });
 
 // buku

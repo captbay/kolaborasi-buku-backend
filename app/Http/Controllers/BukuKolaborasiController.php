@@ -221,6 +221,7 @@ class BukuKolaborasiController extends Controller
 
             // filter only needed data
             $data = [
+                'id' => $data->id,
                 'slug' => $data->slug,
                 'judul' => $data->judul,
                 'deskripsi' => $data->deskripsi,

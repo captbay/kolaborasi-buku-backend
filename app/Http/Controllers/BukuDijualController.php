@@ -181,6 +181,7 @@ class BukuDijualController extends Controller
 
             // get needed data
             $data = [
+                'id' => $data->id,
                 'isbn' => $data->isbn,
                 'slug' => $data->slug,
                 'judul' => $data->judul,
