@@ -9,6 +9,7 @@ use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
 use App\Http\Controllers\TestimoniPembeliController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +22,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+// broadcast
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
 
 // API without login
 Route::group(['prefix' => 'auth'], function () {

@@ -170,11 +170,10 @@ class UserController extends Controller
                     if ($oldFile) {
                         $filesystem = Storage::disk('public');
                         $filesystem->delete($oldFile);
-
-                        $filenameCv = Str::uuid() . '.' . $uploadedFileCV->getClientOriginalExtension();
-                        $filesystem = Storage::disk('public');
-                        $filesystem->putFileAs('file_cv/', $uploadedFileCV, $filenameCv);
                     }
+                    $filenameCv = Str::uuid() . '.' . $uploadedFileCV->getClientOriginalExtension();
+                    $filesystem = Storage::disk('public');
+                    $filesystem->putFileAs('file_cv/', $uploadedFileCV, $filenameCv);
                 }
             }
 
@@ -187,11 +186,10 @@ class UserController extends Controller
                     if ($oldFile) {
                         $filesystem = Storage::disk('public');
                         $filesystem->delete($oldFile);
-
-                        $filenameKtp = Str::uuid() . '.' . $uploadedFileKtp->getClientOriginalExtension();
-                        $filesystem = Storage::disk('public');
-                        $filesystem->putFileAs('file_ktp/', $uploadedFileKtp, $filenameKtp);
                     }
+                    $filenameKtp = Str::uuid() . '.' . $uploadedFileKtp->getClientOriginalExtension();
+                    $filesystem = Storage::disk('public');
+                    $filesystem->putFileAs('file_ktp/', $uploadedFileKtp, $filenameKtp);
                 }
             }
 
@@ -204,11 +202,10 @@ class UserController extends Controller
                     if ($oldFile) {
                         $filesystem = Storage::disk('public');
                         $filesystem->delete($oldFile);
-
-                        $filenameTtd = Str::uuid() . '.' . $uploadedFileTtd->getClientOriginalExtension();
-                        $filesystem = Storage::disk('public');
-                        $filesystem->putFileAs('file_ttd/', $uploadedFileTtd, $filenameTtd);
                     }
+                    $filenameTtd = Str::uuid() . '.' . $uploadedFileTtd->getClientOriginalExtension();
+                    $filesystem = Storage::disk('public');
+                    $filesystem->putFileAs('file_ttd/', $uploadedFileTtd, $filenameTtd);
                 }
             }
 
@@ -270,12 +267,11 @@ class UserController extends Controller
                     if ($oldFile) {
                         $filesystem = Storage::disk('public');
                         $filesystem->delete($oldFile);
-
-                        // save new file
-                        $filename = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
-                        $filesystem = Storage::disk('public');
-                        $filesystem->putFileAs('foto_profil/', $uploadedFile, $filename);
                     }
+                    // save new file
+                    $filename = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
+                    $filesystem = Storage::disk('public');
+                    $filesystem->putFileAs('foto_profil/', $uploadedFile, $filename);
                 }
             }
 

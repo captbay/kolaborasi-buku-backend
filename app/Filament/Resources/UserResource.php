@@ -7,6 +7,7 @@ use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -206,6 +207,8 @@ class UserResource extends Resource
                                         'Selamat, Anda telah berhasil diverifikasi menjadi member. Anda dapat melakukan kolaborasi sekarang.'
                                     )
                                     ->sendToDatabase($user);
+
+                                event(new DatabaseNotificationsSent($user));
 
                                 return;
                             }
