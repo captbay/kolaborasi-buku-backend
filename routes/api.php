@@ -73,8 +73,6 @@ Route::group(['prefix' => 'keranjang', 'middleware' => ['auth:sanctum', 'verifie
     Route::get('all', [KeranjangController::class, 'index']);
     // add to keranjang
     Route::post('add', [KeranjangController::class, 'store']);
-    // update keranjang
-    Route::put('update/{id}', [KeranjangController::class, 'update']);
     // delete keranjang
     Route::delete('delete/{id}', [KeranjangController::class, 'destroy']);
 });
