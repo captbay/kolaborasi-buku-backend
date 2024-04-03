@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\buku_dijual;
 use App\Models\buku_lunas_user;
+use App\Models\transaksi_penjualan_buku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -187,10 +188,24 @@ class BukuDijualController extends Controller
                     ->where('user_id', auth('sanctum')->user()->id)
                     ->first();
 
+                // check if already have transaksi_penjualan_buku where status != FAILED
+                $alreadyTransaksi = transaksi_penjualan_buku::whereHas('list_transaksi_buku', function ($transaksi) use ($data) {
+                    $transaksi->where('buku_dijual_id', $data->id);
+                })
+                    ->where('user_id', auth('sanctum')->user()->id)
+                    ->where('status', '!=', 'FAILED')
+                    ->first();
+
                 if ($alreadyBuy) {
                     $isDibeli = true;
                 } else {
                     $isDibeli = false;
+                }
+
+                if ($alreadyTransaksi) {
+                    $isTransaksi = true;
+                } else {
+                    $isTransaksi = false;
                 }
 
                 // get needed data
@@ -210,7 +225,8 @@ class BukuDijualController extends Controller
                     'list_penulis' => $list_penulis,
                     'testimoni_pembeli' => $testimoni_pembeli,
                     'gallery_foto' => $gallery_foto,
-                    'isDibeli' => $isDibeli
+                    'isDibeli' => $isDibeli,
+                    'isTransaksi' => $isTransaksi,
                 ];
             } else {
                 $data = [
@@ -229,6 +245,7 @@ class BukuDijualController extends Controller
                     'testimoni_pembeli' => $testimoni_pembeli,
                     'gallery_foto' => $gallery_foto,
                     'isDibeli' => false,
+                    'isTransaksi' => false,
                 ];
             }
         } catch (\Exception $e) {
