@@ -40,6 +40,7 @@ class transaksi_paket_penerbitanFactory extends Factory
             'no_transaksi' => "T" . $this->faker->randomNumber(1, 1000),
             'total_harga' => $this->faker->numberBetween(10000, 1000000),
             'status' => $status,
+            'date_time_exp' => null,
             'dp_upload' => "/cover_buku.jpg",
             'pelunasan_upload' => "/cover_buku.jpg",
             'date_time_dp_lunas' => $date_time_dp_lunas,

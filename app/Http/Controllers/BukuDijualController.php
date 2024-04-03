@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\buku_dijual;
+use App\Models\buku_lunas_user;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BukuDijualController extends Controller
 {
@@ -15,7 +17,7 @@ class BukuDijualController extends Controller
         try {
             // get the most count buku_dijual in list_transasksi_buku
             $data = buku_dijual::with('kategori', 'testimoni_pembeli', 'penulis')
-                ->withCount('list_transaksi_buku')
+                ->withCount('buku_lunas_user')
                 ->where('active_flag', 1);
 
             // filter by kategori
@@ -63,14 +65,14 @@ class BukuDijualController extends Controller
             // ads
             if ($request->has("bookAds")) {
                 if ($request->bookAds == "true") {
-                    $data->orderBy('list_transaksi_buku_count', 'asc');
+                    $data->orderBy('buku_lunas_user_count', 'asc');
                 }
             }
 
             // order
             if ($request->has("order")) {
                 if ($request->order == "terlaris") {
-                    $data->orderBy('list_transaksi_buku_count', 'desc');
+                    $data->orderBy('buku_lunas_user_count', 'desc');
                 } else if ($request->order == "terbaru") {
                     $data->orderBy('created_at', 'desc');
                 } else if ($request->order == "termurah") {
@@ -108,7 +110,7 @@ class BukuDijualController extends Controller
                         'harga' => $item->harga,
                         'kategori' => $item->kategori->nama,
                         'cover_buku' => $item->cover_buku,
-                        'pembeli' => $item->list_transaksi_buku_count == 0 ? 0 : $item->list_transaksi_buku_count,
+                        'pembeli' => $item->buku_lunas_user_count == 0 ? 0 : $item->buku_lunas_user_count,
                         'rating' => $rating
                     ];
                 });
@@ -178,24 +180,57 @@ class BukuDijualController extends Controller
                 'foto' => $data->cover_buku
             ]);
 
+            // if have $request->user('sanctum')->id
+            if (auth('sanctum')->check()) {
+                // check if buku already dibeli oleh user login
+                $alreadyBuy = buku_lunas_user::where('buku_dijual_id', $data->id)
+                    ->where('user_id', auth('sanctum')->user()->id)
+                    ->first();
 
-            // get needed data
-            $data = [
-                'id' => $data->id,
-                'isbn' => $data->isbn,
-                'slug' => $data->slug,
-                'judul' => $data->judul,
-                'harga' => $data->harga,
-                'kategori' => $data->kategori->nama,
-                'deskripsi' => $data->deskripsi,
-                'tanggal_terbit' => $data->tanggal_terbit,
-                'jumlah_halaman' => $data->jumlah_halaman,
-                'bahasa' => $data->bahasa,
-                'penerbit' => $data->penerbit,
-                'list_penulis' => $list_penulis,
-                'testimoni_pembeli' => $testimoni_pembeli,
-                'gallery_foto' => $gallery_foto,
-            ];
+                if ($alreadyBuy) {
+                    $isDibeli = true;
+                } else {
+                    $isDibeli = false;
+                }
+
+                // get needed data
+
+                $data = [
+                    'id' => $data->id,
+                    'isbn' => $data->isbn,
+                    'slug' => $data->slug,
+                    'judul' => $data->judul,
+                    'harga' => $data->harga,
+                    'kategori' => $data->kategori->nama,
+                    'deskripsi' => $data->deskripsi,
+                    'tanggal_terbit' => $data->tanggal_terbit,
+                    'jumlah_halaman' => $data->jumlah_halaman,
+                    'bahasa' => $data->bahasa,
+                    'penerbit' => $data->penerbit,
+                    'list_penulis' => $list_penulis,
+                    'testimoni_pembeli' => $testimoni_pembeli,
+                    'gallery_foto' => $gallery_foto,
+                    'isDibeli' => $isDibeli
+                ];
+            } else {
+                $data = [
+                    'id' => $data->id,
+                    'isbn' => $data->isbn,
+                    'slug' => $data->slug,
+                    'judul' => $data->judul,
+                    'harga' => $data->harga,
+                    'kategori' => $data->kategori->nama,
+                    'deskripsi' => $data->deskripsi,
+                    'tanggal_terbit' => $data->tanggal_terbit,
+                    'jumlah_halaman' => $data->jumlah_halaman,
+                    'bahasa' => $data->bahasa,
+                    'penerbit' => $data->penerbit,
+                    'list_penulis' => $list_penulis,
+                    'testimoni_pembeli' => $testimoni_pembeli,
+                    'gallery_foto' => $gallery_foto,
+                    'isDibeli' => false,
+                ];
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -225,12 +260,12 @@ class BukuDijualController extends Controller
         try {
             // get the most count buku_dijual in list_transasksi_buku
             $data = buku_dijual::with('kategori', 'testimoni_pembeli')
-                ->withCount('list_transaksi_buku')
-                ->whereHas('list_transaksi_buku', function ($query) {
+                ->withCount('buku_lunas_user')
+                ->whereHas('buku_lunas_user', function ($query) {
                     $query->orderBy('created_at', 'desc');
                 })
                 ->where('active_flag', '1')
-                ->orderBy('list_transaksi_buku_count', 'desc')
+                ->orderBy('buku_lunas_user_count', 'desc')
                 ->limit(10)
                 ->get();
 
@@ -246,7 +281,7 @@ class BukuDijualController extends Controller
                     'harga' => $item->harga,
                     'kategori' => $item->kategori->nama,
                     'cover_buku' => $item->cover_buku,
-                    'pembeli' => $item->list_transaksi_buku_count,
+                    'pembeli' => $item->buku_lunas_user_count,
                     'rating' => $rating,
                 ];
             });

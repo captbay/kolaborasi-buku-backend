@@ -32,6 +32,7 @@ class transaksi_kolaborasi_bukuFactory extends Factory
             'no_transaksi' => "K" . $this->faker->randomNumber(1, 1000),
             'total_harga' => $this->faker->numberBetween(10000, 1000000),
             'status' => $status,
+            'date_time_exp' => null,
             'foto_bukti_bayar' => "/cover_buku.jpg",
             'date_time_lunas' => $date_time_lunas,
         ];

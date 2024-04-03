@@ -8,6 +8,7 @@ use App\Models\transaksi_penjualan_buku;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -210,7 +211,10 @@ class TransaksiPenjualanBukuResource extends Resource
 
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi pembelian buku berhasil diverifikasi, ' . $transaksi->user->nama_lengkap . ' sudah lunas')
+                                ->title(
+                                    'Transaksi Pembelian Buku Berhasil'
+                                )
+                                ->body('Transaksi pembelian buku #' . $transaksi->no_transaksi . ' berhasil diverifikasi, ' . $transaksi->user->nama_lengkap . ' sudah mendapatkan buku yang dibeli')
                                 ->sendToDatabase($recipientAdmin)
                                 ->send();
 
@@ -220,11 +224,14 @@ class TransaksiPenjualanBukuResource extends Resource
                             Notification::make()
                                 ->success()
                                 ->title(
-                                    'Transaksi pembelian buku berhasil dengan ID '
-                                        . $transaksi->no_transaksi .
-                                        ' , buku anda sudah masuk ke dalam daftar buku yang sudah anda beli. Terima kasih!'
+                                    'Transaksi Pembelian Buku Berhasil'
+                                )
+                                ->body(
+                                    'Transaksi pembelian buku dengan nomor transaksi #' . $transaksi->no_transaksi . ' berhasil diverifikasi, terimakasih sudah berbelanja di penerbitan kami.'
                                 )
                                 ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
 
                             return;
                         }
@@ -272,10 +279,31 @@ class TransaksiPenjualanBukuResource extends Resource
                                 'status' => 'FAILED',
                             ]);
 
+                            $recipientAdmin = auth()->user();
+
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil dibatalkan')
+                                ->title(
+                                    'Transaksi Pembelian Buku Gagal'
+                                )
+                                ->body('Transaksi pembelian buku #' . $transaksi->no_transaksi . ' berhasil digagalkan')
+                                ->sendToDatabase($recipientAdmin)
                                 ->send();
+
+                            $recipientUser = $transaksi->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Transaksi Pembelian Buku Gagal'
+                                )
+                                ->body(
+                                    'Transaksi pembelian buku dengan nomor transaksi #' . $transaksi->no_transaksi . ' gagal, silahkan mengulangi pembelian buku.'
+                                )
+                                ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
 
                             return;
                         }

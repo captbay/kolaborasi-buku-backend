@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('no_transaksi');
             $table->string('total_harga');
             $table->enum('status', ['REVIEW', 'TERIMA DRAFT', 'DP UPLOADED', 'DP TIDAK SAH', 'INPUT ISBN', 'DRAFT SELESAI', 'PELUNASAN UPLOADED', 'PELUNASAN TIDAK SAH', 'SIAP TERBIT', 'SUDAH TERBIT']);
+            $table->dateTime('date_time_exp')->nullable();
             $table->string('dp_upload')->nullable();
             $table->string('pelunasan_upload')->nullable();
             $table->string('foto_bukti_bayar')->nullable();

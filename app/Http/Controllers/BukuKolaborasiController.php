@@ -49,7 +49,7 @@ class BukuKolaborasiController extends Controller
                     $data->orderBy('created_at', 'desc');
                 }
                 // else if ($request->order == "terlaris") {
-                //     $data->orderBy('list_transaksi_buku_count', 'desc');
+                //     $data->orderBy('buku_lunas_user_count', 'desc');
                 // } else  if ($request->order == "termurah") {
                 //     $data->orderBy('harga', 'asc');
                 // } else if ($request->order == "termahal") {

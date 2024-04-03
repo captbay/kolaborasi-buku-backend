@@ -9,6 +9,7 @@ use App\Http\Controllers\KontenEventController;
 use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
 use App\Http\Controllers\TestimoniPembeliController;
+use App\Http\Controllers\TransaksiPenjualanBukuController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +76,20 @@ Route::group(['prefix' => 'keranjang', 'middleware' => ['auth:sanctum', 'verifie
     Route::post('add', [KeranjangController::class, 'store']);
     // delete keranjang
     Route::delete('delete/{id}', [KeranjangController::class, 'destroy']);
+});
+
+// transaksi pembelian buku_dijual
+Route::group(['prefix' => 'transaksi-buku-dijual', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // index all
+    Route::get('all', [TransaksiPenjualanBukuController::class, 'index']);
+    // detail transaksi
+    Route::get('detail/{id}', [TransaksiPenjualanBukuController::class, 'show']);
+    // add transaksi
+    Route::post('add', [TransaksiPenjualanBukuController::class, 'store']);
+    // delete transaksi
+    Route::put('gagal', [TransaksiPenjualanBukuController::class, 'gagal']);
+    // upload bukti pembayaran
+    Route::post('upload-bukti-pembayaran/{id}', [TransaksiPenjualanBukuController::class, 'uploadBuktiPembayaran']);
 });
 
 // buku
