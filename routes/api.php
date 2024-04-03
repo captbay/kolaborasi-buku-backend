@@ -41,6 +41,8 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('forgotPassword', [AuthController::class, 'sendEmailForgotPassword'])->middleware('guest')->name('password.email');
     // reset password
     Route::post('resetPassword', [AuthController::class, 'resetPassword'])->middleware('guest')->name('password.reset');
+    // hubungi kami
+    Route::post('hubungi-kami', [AuthController::class, 'hubungiKami']);
 });
 
 // logout

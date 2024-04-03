@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\HubungiKamiMail;
+use App\Models\hubungi_kami;
 use App\Models\User;
+use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -348,6 +352,59 @@ class AuthController extends Controller
             $user->sendEmailVerificationNotification();
 
             return response()->json(["message" => "Link Verifikasi Email Dikirim Ke Email Anda!"]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Hubungi kami function
+     */
+    public function hubungiKami(Request $request)
+    {
+        try {
+            // validate request
+            $validatedData = Validator::make($request->all(), [
+                'nama' => 'required',
+                'email' => 'required|email:rfc,dns',
+                'subjek' => 'required',
+                'pesan' => 'required',
+            ]);
+
+            // if validation fails
+            if ($validatedData->fails()) {
+                return response()->json(['message' => $validatedData->errors()], 422);
+            }
+
+            // add data
+            $hubungiKami = hubungi_kami::create([
+                'nama' => $request->nama,
+                'email' => $request->email,
+                'subjek' => $request->subjek,
+                'pesan' => $request->pesan,
+            ]);
+
+            // get admin
+            $recipientAdmin = User::where('role', 'ADMIN')->first();
+
+            Notification::make()
+                ->success()
+                ->title('#HUBUNGIKAMI Ada Pesan Baru Dari User : ' . $request->nama)
+                ->sendToDatabase($recipientAdmin)
+                ->send();
+
+            if ($hubungiKami) {
+                return response()->json([
+                    'message' => 'Pesan Anda Berhasil Dikirim!',
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => 'Pesan Anda Gagal Dikirim!',
+                ], 400);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
