@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 class BukuDijualController extends Controller
 {
     /**
-     * TODO: implement filter, search, dll ini belum selesai
+     * Display a listing of the resource.
      */
     public function index(Request $request)
     {
@@ -202,6 +202,7 @@ class BukuDijualController extends Controller
                     $isDibeli = false;
                 }
 
+                // if alreadyTransaksi get the data
                 if ($alreadyTransaksi) {
                     $isTransaksi = true;
                 } else {

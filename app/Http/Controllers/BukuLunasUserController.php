@@ -2,48 +2,92 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\buku_dijual;
 use App\Models\buku_lunas_user;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class BukuLunasUserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // Get the data from the database
+        try {
+            $data = buku_lunas_user::with('buku_dijual.kategori')
+                ->where('user_id', Auth::user()->id);
+
+            // search
+            if ($request->search) {
+                $data = $data->whereHas('buku_dijual', function ($query) use ($request) {
+                    $query->where('judul', 'like', '%' . $request->search . '%');
+                });
+            }
+
+            $data = $data
+                ->orderBy('created_at', 'desc')
+                ->paginate($request->limit);
+
+            // Return needed data
+            $data = $data->through(function ($item) {
+                return [
+                    'buku_dijual_id' => $item->buku_dijual->id,
+                    'slug' => $item->buku_dijual->slug,
+                    'cover_buku' => $item->buku_dijual->cover_buku,
+                    'judul' => $item->buku_dijual->judul,
+                    'kategori' => $item->buku_dijual->kategori->nama,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Buku user',
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Download buku pdf base on buku_dijual id
      */
-    public function store(Request $request)
+    public function download(string $id)
     {
-        //
-    }
+        // Get the data from the database
+        try {
+            $data = buku_dijual::find($id);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(buku_lunas_user $buku_lunas_user)
-    {
-        //
-    }
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Buku tidak ditemukan'
+                ], 404);
+            }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, buku_lunas_user $buku_lunas_user)
-    {
-        //
-    }
+            // Path to the PDF file
+            $path = Storage::disk('public')->path($data->file_buku);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(buku_lunas_user $buku_lunas_user)
-    {
-        //
+            // Check if the file exists
+            if (!Storage::disk('public')->exists($data->file_buku)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File buku tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->download($path, $data->judul . '.pdf');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

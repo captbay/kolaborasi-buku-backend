@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukuDijualController;
 use App\Http\Controllers\BukuKolaborasiController;
+use App\Http\Controllers\BukuLunasUserController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\KontenEventController;
@@ -92,6 +93,14 @@ Route::group(['prefix' => 'transaksi-buku-dijual', 'middleware' => ['auth:sanctu
     Route::put('gagal', [TransaksiPenjualanBukuController::class, 'gagal']);
     // upload bukti pembayaran
     Route::post('upload-bukti-pembayaran/{id}', [TransaksiPenjualanBukuController::class, 'uploadBuktiPembayaran']);
+});
+
+// koleksi-buku-user
+Route::group(['prefix' => 'koleksi-buku-user', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // get all koleksi buku user
+    Route::get('all', [BukuLunasUserController::class, 'index']);
+    // download buku base buku_dijual id
+    Route::get('download/{id}', [BukuLunasUserController::class, 'download']);
 });
 
 // buku
