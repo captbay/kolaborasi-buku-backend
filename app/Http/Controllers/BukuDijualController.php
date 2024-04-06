@@ -198,7 +198,8 @@ class BukuDijualController extends Controller
                     ->first();
 
                 // check if already have add testimoni
-                $alreadyTestimoni = testimoni_pembeli::where('user_id', auth('sanctum')->user()->id)->first();
+                $alreadyTestimoni = testimoni_pembeli::where('buku_dijual_id', $data->id)
+                    ->where('user_id', auth('sanctum')->user()->id)->first();
 
                 if ($alreadyBuy) {
                     $isDibeli = true;
