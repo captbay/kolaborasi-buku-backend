@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\testimoni_pembeli;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TestimoniPembeliController extends Controller
 {
@@ -102,6 +103,40 @@ class TestimoniPembeliController extends Controller
             'success' => true,
             'message' => 'testimoni retrieved successfully.',
             'data' => $data
+        ], 200);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request, string $id)
+    {
+        try {
+            // validate the request
+            $request->validate([
+                'rating' => 'required|integer|between:0,5',
+                'ulasan' => 'required',
+            ]);
+
+            // create testimoni_pembeli
+            testimoni_pembeli::create([
+                'user_id' => Auth::user()->id,
+                'buku_dijual_id' => $id,
+                'ulasan' => $request->ulasan,
+                'rating' => $request->rating,
+                'active_flag' => 0
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+
+        // return the resource
+        return response()->json([
+            'success' => true,
+            'message' => 'Berhasil Menambah Testimoni',
         ], 200);
     }
 }

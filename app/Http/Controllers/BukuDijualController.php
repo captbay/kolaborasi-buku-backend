@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\buku_dijual;
 use App\Models\buku_lunas_user;
+use App\Models\testimoni_pembeli;
 use App\Models\transaksi_penjualan_buku;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -196,10 +197,19 @@ class BukuDijualController extends Controller
                     ->where('status', '!=', 'FAILED')
                     ->first();
 
+                // check if already have add testimoni
+                $alreadyTestimoni = testimoni_pembeli::where('user_id', auth('sanctum')->user()->id)->first();
+
                 if ($alreadyBuy) {
                     $isDibeli = true;
                 } else {
                     $isDibeli = false;
+                }
+
+                if ($alreadyTestimoni) {
+                    $isTestimoni = true;
+                } else {
+                    $isTestimoni = false;
                 }
 
                 // if alreadyTransaksi get the data
@@ -228,6 +238,7 @@ class BukuDijualController extends Controller
                     'gallery_foto' => $gallery_foto,
                     'isDibeli' => $isDibeli,
                     'isTransaksi' => $isTransaksi,
+                    'isTestimoni' => $isTestimoni,
                 ];
             } else {
                 $data = [
@@ -247,6 +258,7 @@ class BukuDijualController extends Controller
                     'gallery_foto' => $gallery_foto,
                     'isDibeli' => false,
                     'isTransaksi' => false,
+                    'isTestimoni' => false,
                 ];
             }
         } catch (\Exception $e) {

@@ -101,6 +101,8 @@ Route::group(['prefix' => 'koleksi-buku-user', 'middleware' => ['auth:sanctum', 
     Route::get('all', [BukuLunasUserController::class, 'index']);
     // download buku base buku_dijual id
     Route::get('download/{id}', [BukuLunasUserController::class, 'download']);
+    // add testimoni
+    Route::post('add-testimoni/{id}', [TestimoniPembeliController::class, 'store']);
 });
 
 // buku
