@@ -226,7 +226,10 @@ class TransaksiKolaborasiBukuResource extends Resource
 
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi kolaborasi berhasil diverifikasi, bab yang ditulis untuk ' . $transaksi->user->nama_lengkap . ' sudah ditambahkan')
+                                ->title(
+                                    'Transaksi Kolaborasi Berhasil'
+                                )
+                                ->body('Transaksi pembelian buku kolaborasi #' . $transaksi->no_transaksi . ' berhasil diverifikasi, ' . $transaksi->user->nama_lengkap . ' sudah mendapatkan buku kolaborasi yang dibeli')
                                 ->sendToDatabase($recipientAdmin)
                                 ->send();
 
@@ -236,11 +239,15 @@ class TransaksiKolaborasiBukuResource extends Resource
                             Notification::make()
                                 ->success()
                                 ->title(
-                                    'Transaksi kolaborasi berhasil dengan ID '
-                                        . $transaksi->no_transaksi .
-                                        ' , bab yang ditulis sudah ditambahkan, selamat mengerjakan!'
+                                    'Transaksi Kolaborasi Berhasil'
+                                )
+                                ->body(
+                                    'Transaksi pembelian buku kolaborasi dengan nomor transaksi #' . $transaksi->no_transaksi . ' berhasil diverifikasi, terimakasih sudah berbelanja di penerbitan kami.'
                                 )
                                 ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
+
 
                             return;
                         }
@@ -285,13 +292,35 @@ class TransaksiKolaborasiBukuResource extends Resource
 
                             // update status and datetimelunas
                             $transaksi->update([
+                                'date_time_exp' => null,
                                 'status' => 'FAILED',
                             ]);
 
+                            $recipientAdmin = auth()->user();
+
                             Notification::make()
                                 ->success()
-                                ->title('Transaksi berhasil dibatalkan')
+                                ->title(
+                                    'Transaksi Kolaborasi Gagal'
+                                )
+                                ->body('Transaksi pembelian buku kolaborasi #' . $transaksi->no_transaksi . ' berhasil digagalkan')
+                                ->sendToDatabase($recipientAdmin)
                                 ->send();
+
+                            $recipientUser = $transaksi->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Transaksi Kolaborasi Gagal'
+                                )
+                                ->body(
+                                    'Transaksi pembelian buku kolaborasi dengan nomor transaksi #' . $transaksi->no_transaksi . ' gagal, silahkan mengulangi pembelian bab buku kolaborasi.'
+                                )
+                                ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
 
                             return;
                         }

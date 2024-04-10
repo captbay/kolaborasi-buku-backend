@@ -276,6 +276,7 @@ class TransaksiPenjualanBukuResource extends Resource
 
                             // update status and datetimelunas
                             $transaksi->update([
+                                'date_time_exp' => null,
                                 'status' => 'FAILED',
                             ]);
 

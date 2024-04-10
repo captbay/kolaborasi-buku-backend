@@ -10,7 +10,9 @@ use App\Http\Controllers\KontenEventController;
 use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
 use App\Http\Controllers\TestimoniPembeliController;
+use App\Http\Controllers\TransaksiKolaborasiBukuController;
 use App\Http\Controllers\TransaksiPenjualanBukuController;
+use App\Http\Controllers\UserBabBukuKolaborasiController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
@@ -95,6 +97,20 @@ Route::group(['prefix' => 'transaksi-buku-dijual', 'middleware' => ['auth:sanctu
     Route::post('upload-bukti-pembayaran/{id}', [TransaksiPenjualanBukuController::class, 'uploadBuktiPembayaran']);
 });
 
+// transaksi pembelian bab buku kolaborasi
+Route::group(['prefix' => 'transaksi-buku-kolaborasi', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // index all
+    Route::get('all', [TransaksiKolaborasiBukuController::class, 'index']);
+    // detail transaksi
+    Route::get('detail/{id}', [TransaksiKolaborasiBukuController::class, 'show']);
+    // add
+    Route::post('add', [TransaksiKolaborasiBukuController::class, 'store']);
+    // delete transaksi
+    Route::put('gagal', [TransaksiKolaborasiBukuController::class, 'gagal']);
+    // upload bukti pembayaran
+    Route::post('upload-bukti-pembayaran/{id}', [TransaksiKolaborasiBukuController::class, 'uploadBuktiPembayaran']);
+});
+
 // koleksi-buku-user
 Route::group(['prefix' => 'koleksi-buku-user', 'middleware' => ['auth:sanctum', 'verified']], function () {
     // get all koleksi buku user
@@ -103,6 +119,14 @@ Route::group(['prefix' => 'koleksi-buku-user', 'middleware' => ['auth:sanctum', 
     Route::get('download/{id}', [BukuLunasUserController::class, 'download']);
     // add testimoni
     Route::post('add-testimoni/{id}', [TestimoniPembeliController::class, 'store']);
+});
+
+// koleksi-buku-kolaborasi-user
+Route::group(['prefix' => 'koleksi-buku-kolaborasi-user', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // get all koleksi buku user
+    Route::get('all', [UserBabBukuKolaborasiController::class, 'index']);
+    // detail
+    Route::get('detail/{id}', [UserBabBukuKolaborasiController::class, 'show']);
 });
 
 // buku

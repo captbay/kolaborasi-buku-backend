@@ -208,7 +208,7 @@ class TransaksiPenjualanBukuController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Update status the specified resource from storage.
      */
     public function gagal(Request $request)
     {

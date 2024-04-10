@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\buku_kolaborasi;
+use App\Models\transaksi_kolaborasi_buku;
+use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -157,15 +159,52 @@ class BukuKolaborasiController extends Controller
                     $terjual = false;
                 }
 
-                return [
-                    'id' => $item->id,
-                    'no_bab' => $item->no_bab,
-                    'judul' => $item->judul,
-                    'harga' => $item->harga,
-                    'durasi_pembuatan' => $item->durasi_pembuatan,
-                    'deskripsi' => $item->deskripsi,
-                    'is_terjual' => $terjual,
-                ];
+                if (auth('sanctum')->check()) {
+                    $alreadyBuy = user_bab_buku_kolaborasi::where('bab_buku_kolaborasi_id', $item->id)
+                        ->where('user_id', auth('sanctum')->user()->id)
+                        ->first();
+
+                    $alreadyTransaksi = transaksi_kolaborasi_buku::where('bab_buku_kolaborasi_id', $item->id)
+                        ->where('user_id', auth('sanctum')->user()->id)
+                        ->where('status', '!=', 'FAILED')
+                        ->first();
+
+                    if ($alreadyBuy) {
+                        $isDibeli = true;
+                    } else {
+                        $isDibeli = false;
+                    }
+
+                    if ($alreadyTransaksi) {
+                        $isTransaksi = true;
+                    } else {
+                        $isTransaksi = false;
+                    }
+
+                    return [
+                        'id' => $item->id,
+                        'no_bab' => $item->no_bab,
+                        'judul' => $item->judul,
+                        'harga' => $item->harga,
+                        'durasi_pembuatan' => $item->durasi_pembuatan,
+                        'deskripsi' => $item->deskripsi,
+                        'is_terjual' => $terjual,
+                        'isDibeli' => $isDibeli,
+                        'isTransaksi' => $isTransaksi,
+                    ];
+                } else {
+                    return [
+                        'id' => $item->id,
+                        'no_bab' => $item->no_bab,
+                        'judul' => $item->judul,
+                        'harga' => $item->harga,
+                        'durasi_pembuatan' => $item->durasi_pembuatan,
+                        'deskripsi' => $item->deskripsi,
+                        'is_terjual' => $terjual,
+                        'isDibeli' => false,
+                        'isTransaksi' => false,
+                    ];
+                }
             });
 
             // set status of kolaborasi
