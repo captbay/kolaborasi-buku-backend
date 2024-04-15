@@ -127,6 +127,18 @@ Route::group(['prefix' => 'koleksi-buku-kolaborasi-user', 'middleware' => ['auth
     Route::get('all', [UserBabBukuKolaborasiController::class, 'index']);
     // detail
     Route::get('detail/{id}', [UserBabBukuKolaborasiController::class, 'show']);
+    // upload file mou
+    Route::post('uploadMou/{id}', [UserBabBukuKolaborasiController::class, 'uploadMou']);
+    // gagal bcs time exp
+    Route::put('failedKolaborasi/{id}', [UserBabBukuKolaborasiController::class, 'failedKolaborasi']);
+    // upload bab file
+    Route::post('uploadBab/{id}', [UserBabBukuKolaborasiController::class, 'uploadBab']);
+});
+
+// mou
+Route::group(['prefix' => 'mou', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // download file mou
+    Route::get('downloadMou', [UserBabBukuKolaborasiController::class, 'downloadMou']);
 });
 
 // buku

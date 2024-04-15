@@ -10,12 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Storage;
 
 class UserBabBukuKolaborasiResource extends Resource
 {
@@ -63,11 +66,10 @@ class UserBabBukuKolaborasiResource extends Resource
                                 name: 'bab_buku_kolaborasi',
                                 modifyQueryUsing: fn (Builder $query) =>
                                 // bab yang diambil hanya bab yang belum dibayar lunas ataupun belum diassign ke user
-                                $query->whereDoesntHave('transaksi_kolaborasi_buku', function ($query) {
-                                    $query->whereNot('date_time_lunas', null);
-                                })->whereDoesntHave('user_bab_buku_kolaborasi',  function ($query) {
-                                    $query->whereNot('status', 'REJECTED');
-                                })
+                                $query->whereDoesntHave('transaksi_kolaborasi_buku')
+                                    ->orWhereHas('user_bab_buku_kolaborasi', function ($query) {
+                                        $query->where('status', 'FAILED');
+                                    })
                             )
                             ->searchable()
                             ->getSearchResultsUsing(
@@ -101,7 +103,7 @@ class UserBabBukuKolaborasiResource extends Resource
                                 $set('datetime_deadline', $datetime);
                             })
                             ->label(false)
-                            ->helperText('* Bab yang diambil hanya bab yang belum dibayar lunas ataupun belum diassign ke user')
+                            ->helperText('* Bab yang diambil hanya bab yang belum ada di transaksi dan user gagal membuat bab sebelum deadlinenya')
                             ->required(),
                     ]),
 
@@ -126,9 +128,10 @@ class UserBabBukuKolaborasiResource extends Resource
                             ->options([
                                 'PROGRESS' => 'Progress',
                                 'UPLOADED' => 'Uploaded',
-                                'REVISI' => 'Revisi',
-                                'DONE' => 'Terima',
-                                'REJECTED' => 'Ditolak',
+                                'EDITING' => 'Editing',
+                                'DONE' => 'Done',
+                                'REJECTED' => 'Rejected',
+                                'FAILED' => 'Failed',
                             ])
                             ->live()
                             ->required(),
@@ -186,9 +189,10 @@ class UserBabBukuKolaborasiResource extends Resource
                         fn (user_bab_buku_kolaborasi $user_bab_buku_kolaborasi) => match ($user_bab_buku_kolaborasi->status) {
                             'PROGRESS' => 'primary',
                             'UPLOADED' => 'info',
-                            'REVISI' => 'warning',
+                            'EDITING' => 'warning',
                             'DONE' => 'success',
                             'REJECTED' => 'danger',
+                            'FAILED' => 'danger',
                         }
                     )
                     ->sortable()
@@ -208,16 +212,229 @@ class UserBabBukuKolaborasiResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()->slideOver(),
-                    Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\Action::make('Terima Kolaborasi')
+                        ->requiresConfirmation()
+                        ->modalHeading('Terima Kolaborasi')
+                        ->modalDescription('Apakah anda yakin ingin terima bab buku kolaborasi ini?
+                         jika memiliki final bab untuk kolaborasi ini silahkan input,
+                          jika tidak silahkan langsung klik tombol terima')
+                        ->modalSubmitActionLabel('iya, terima')
+                        ->color('success')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('success')
+                        ->hidden(function (user_bab_buku_kolaborasi $record) {
+                            if ($record->status != 'EDITING') {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->form([
+                            Forms\Components\FileUpload::make('file_bab')
+                                ->label(false)
+                                ->helperText('* Optional')
+                                ->openable()
+                                ->downloadable()
+                                ->acceptedFileTypes(['application/pdf'])
+                                ->directory('file_buku_bab_kolaborasi'),
+                        ])
+                        ->action(function (user_bab_buku_kolaborasi $record, array $data) {
+                            if ($data['file_bab'] != null && $record->file_bab != null) {
+                                // delete old file
+                                $filesystem = Storage::disk('public');
+                                $filesystem->delete($record->file_bab);
+
+                                $record->update([
+                                    'status' => 'DONE',
+                                    'file_bab' => $data['file_bab'],
+                                    'datetime_deadline' => null,
+                                ]);
+                            } else {
+                                $record->update([
+                                    'status' => 'DONE',
+                                    'datetime_deadline' => null,
+                                ]);
+                            }
+
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Kolaborasi Bab ' . $record->user->nama_lengkap . ' berhasil diterima, status sudah done!'
+                                )
+                                ->send();
+
+                            $recipientUser = $record->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Yeay Kolaborasi Anda sudah diterima!'
+                                )
+                                ->body(
+                                    'Kolaborasi Buku ' . $record->bab_buku_kolaborasi->buku_kolaborasi->judul . ' telah diterima, silahkan menunggu buku untuk terbit!'
+                                )
+                                ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
+                        }),
+                    Tables\Actions\Action::make('Editing Kolaborasi')
+                        ->requiresConfirmation()
+                        ->modalHeading('Editing Kolaborasi')
+                        ->modalDescription('Apakah anda yakin ingin revisi bab buku kolaborasi ini?')
+                        ->modalSubmitActionLabel('iya, revisi')
+                        ->color('success')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('success')
+                        ->hidden(function (user_bab_buku_kolaborasi $record) {
+                            if ($record->status != 'UPLOADED' && $record->status != 'REJECTED') {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->action(function (user_bab_buku_kolaborasi $record) {
+                            $record->update([
+                                'status' => 'EDITING',
+                                'datetime_deadline' => null,
+                            ]);
+
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Kolaborasi Bab ' . $record->user->nama_lengkap . ' berhasil masuk tahap revisi!'
+                                )
+                                ->send();
+
+                            $recipientUser = $record->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Yeay Kolaborasi Anda sudah masuk tahap revisi!'
+                                )
+                                ->body(
+                                    'Kolaborasi Buku ' . $record->bab_buku_kolaborasi->buku_kolaborasi->judul . ' telah masuk tahap revisi, silahkan menunggu untuk proses selanjutnya!'
+                                )
+                                ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
+                        }),
+                    Tables\Actions\Action::make('Reject Kolaborasi')
+                        ->requiresConfirmation()
+                        ->modalHeading('Reject Kolaborasi')
+                        ->modalDescription('Apakah anda yakin ingin reject/menolak bab buku kolaborasi ini?')
+                        ->modalSubmitActionLabel('iya, tolak')
+                        ->color('danger')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('danger')
+                        ->form([
+                            Forms\Components\Textarea::make('note')
+                                ->label(false)
+                                ->live(onBlur: true)
+                                ->helperText('* Note atau pemberitahuan untuk member')
+                        ])
+                        ->hidden(function (user_bab_buku_kolaborasi $record) {
+                            if ($record->status != 'UPLOADED') {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->action(function (user_bab_buku_kolaborasi $record, array $data) {
+                            $bab_buku_kolaborasi = $record->bab_buku_kolaborasi;
+
+                            // count diff day created_at and updated_at
+                            $diff_day = Carbon::parse($record->created_at)->diffInDays(Carbon::parse($record->updated_at));
+
+                            $final_day = $bab_buku_kolaborasi->durasi_pembuatan - $diff_day;
+
+                            $record->update([
+                                'status' => 'REJECTED',
+                                'note' => $data['note'],
+                                'datetime_deadline' => Carbon::now()->addDays($final_day)->format('Y-m-d H:i:s'),
+                            ]);
+
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Kolaborasi Bab ' . $record->user->nama_lengkap . ' berhasil direject/ditolak!'
+                                )
+                                ->send();
+
+                            $recipientUser = $record->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Kolaborasi Buku ' . $record->bab_buku_kolaborasi->buku_kolaborasi->judul . ' Anda masih ada yang perlu diperbaiki!'
+                                )
+                                ->body(
+                                    $data['note']
+                                )
+                                ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
+                        }),
+                    Tables\Actions\Action::make('Berikan Note')
+                        ->icon('heroicon-s-document-check')
+                        ->hidden(function (user_bab_buku_kolaborasi $record) {
+                            if ($record->status == 'FAILED') {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->form([
+                            Forms\Components\Textarea::make('note')
+                                ->label(false)
+                                ->live(onBlur: true)
+                                ->helperText('* Note atau pemberitahuan untuk member')
+                        ])
+                        ->action(function (user_bab_buku_kolaborasi $record, array $data) {
+                            $record->update([
+                                'note' => $data['note'],
+                            ]);
+
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Note berhasil diberikan kepada ' . $record->user->nama_lengkap . '!'
+                                )
+                                ->send();
+
+                            $recipientUser = $record->user;
+
+                            // send notif to user yang bayar
+                            Notification::make()
+                                ->success()
+                                ->title(
+                                    'Note Kolaborasi Baru dari Admin'
+                                )
+                                ->body(
+                                    'Ada Pemberitahuan dari admin penerbitan untuk kolaborasi ' . $record->bab_buku_kolaborasi->buku_kolaborasi->judul . '!'
+                                )
+                                ->sendToDatabase($recipientUser);
+
+                            event(new DatabaseNotificationsSent($recipientUser));
+                        }),
+                    Tables\Actions\DeleteAction::make()
+                        ->hidden(function (user_bab_buku_kolaborasi $record) {
+                            if ($record->status != 'PROGRESS' && $record->status != 'FAILED') {
+                                return true;
+                            }
+
+                            return false;
+                        }),
                 ])->iconButton()
             ])
             ->recordUrl(false)
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -232,7 +449,7 @@ class UserBabBukuKolaborasiResource extends Resource
         return [
             'index' => Pages\ListUserBabBukuKolaborasis::route('/'),
             'create' => Pages\CreateUserBabBukuKolaborasi::route('/create'),
-            'edit' => Pages\EditUserBabBukuKolaborasi::route('/{record}/edit'),
+            // 'edit' => Pages\EditUserBabBukuKolaborasi::route('/{record}/edit'),
         ];
     }
 }

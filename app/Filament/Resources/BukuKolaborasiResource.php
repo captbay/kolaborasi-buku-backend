@@ -175,6 +175,7 @@ class BukuKolaborasiResource extends Resource
                                 Forms\Components\FileUpload::make('file_mou')
                                     ->label('Upload file MOU')
                                     ->openable()
+                                    ->maxSize(2 * 1024)
                                     ->acceptedFileTypes(['application/pdf'])
                                     ->directory('mou_buku_kolaborasi'),
                             ]),
@@ -376,6 +377,7 @@ class BukuKolaborasiResource extends Resource
                             $hargaCount = 0;
 
                             $penulis = array();
+                            $userPenulisArray = array();
 
                             // forech $bab_buku_kolaborasi to merge pdf file_buku in user_bab_buku_kolaborasi
                             foreach ($bab_buku_kolaborasi as $key => $babData) {
@@ -384,6 +386,7 @@ class BukuKolaborasiResource extends Resource
                                         $hargaCount += $babData->harga;
 
                                         $penulis[] = $bab_buku->user->nama_lengkap;
+                                        $userPenulisArray[] = $bab_buku->user;
                                     } else {
                                         Notification::make()
                                             ->danger()
@@ -442,8 +445,11 @@ class BukuKolaborasiResource extends Resource
 
                                 Notification::make()
                                     ->success()
-                                    ->title('Buku berhasil dijual, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
+                                    ->title('Buku berhasil diterbitkan, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
                                     ->send();
+
+                                $userPenulisArray = array_unique($userPenulisArray);
+
 
                                 return;
                             }

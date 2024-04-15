@@ -21,7 +21,7 @@ class user_bab_buku_kolaborasiFactory extends Factory
         return [
             'user_id' => User::where('role', '!=', 'ADMIN')->inRandomOrder()->first()->id,
             'bab_buku_kolaborasi_id' => bab_buku_kolaborasi::all()->random()->id,
-            'status' => $this->faker->randomElement(['DONE', 'PROGRESS', 'REVISI', 'REJECTED', 'UPLOADED']),
+            'status' => $this->faker->randomElement(['DONE', 'PROGRESS', 'EDITING', 'REJECTED', 'UPLOADED', 'FAILED']),
             'note' => $this->faker->randomElement([$this->faker->paragraph(), null]),
             'file_bab' => '/buku_final_temp.pdf',
             'datetime_deadline' => $this->faker->dateTimeBetween('now', '+1 years'),

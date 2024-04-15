@@ -134,7 +134,10 @@ class BukuKolaborasiController extends Controller
                 // check if user_bab_buku_kolaborasi is exist
                 if ($item->user_bab_buku_kolaborasi->first()) {
                     // compere datetime_deadline to get is_terjual true or false
-                    if ($item->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()) {
+                    if (
+                        $item->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()
+                        || $item->user_bab_buku_kolaborasi->first()->status != "FAILED"
+                    ) {
                         $terjual = true;
                         $count_kontributor++;
                     } else {
@@ -146,8 +149,8 @@ class BukuKolaborasiController extends Controller
                         $count_upload++;
                     }
 
-                    // check if status is REVISI
-                    if ($item->user_bab_buku_kolaborasi->first()->status == "REVISI") {
+                    // check if status is EDITING
+                    if ($item->user_bab_buku_kolaborasi->first()->status == "EDITING") {
                         $count_editing++;
                     }
 
@@ -162,23 +165,30 @@ class BukuKolaborasiController extends Controller
                 if (auth('sanctum')->check()) {
                     $alreadyBuy = user_bab_buku_kolaborasi::where('bab_buku_kolaborasi_id', $item->id)
                         ->where('user_id', auth('sanctum')->user()->id)
+                        ->orderBy('created_at', 'desc')
                         ->first();
 
                     $alreadyTransaksi = transaksi_kolaborasi_buku::where('bab_buku_kolaborasi_id', $item->id)
                         ->where('user_id', auth('sanctum')->user()->id)
                         ->where('status', '!=', 'FAILED')
+                        ->orderBy('created_at', 'desc')
                         ->first();
 
-                    if ($alreadyBuy) {
-                        $isDibeli = true;
-                    } else {
+                    if ($alreadyBuy?->status == "FAILED" && $alreadyTransaksi?->status == "DONE") {
                         $isDibeli = false;
-                    }
-
-                    if ($alreadyTransaksi) {
-                        $isTransaksi = true;
-                    } else {
                         $isTransaksi = false;
+                    } else {
+                        if ($alreadyBuy) {
+                            $isDibeli = true;
+                        } else {
+                            $isDibeli = false;
+                        }
+
+                        if ($alreadyTransaksi) {
+                            $isTransaksi = true;
+                        } else {
+                            $isTransaksi = false;
+                        }
                     }
 
                     return [

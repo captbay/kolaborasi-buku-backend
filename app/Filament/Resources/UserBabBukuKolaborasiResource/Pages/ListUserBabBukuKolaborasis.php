@@ -28,12 +28,14 @@ class ListUserBabBukuKolaborasis extends ListRecords
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'PROGRESS')),
             'Uploaded' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'UPLOADED')),
-            'Revisi' => Tab::make()
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REVISI')),
+            'Editing' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'EDITING')),
             'Done' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'DONE')),
-            'Ditolak' => Tab::make()
+            'Rejected' => Tab::make()
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'REJECTED')),
+            'Failed' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'FAILED')),
         ];
     }
 }
