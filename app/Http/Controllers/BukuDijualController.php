@@ -103,7 +103,7 @@ class BukuDijualController extends Controller
                 // filter only needed data
                 $data = $data->through(function ($item) {
                     // count avg rating from testimoni_pembeli and dibulatkan
-                    $rating = round($item->testimoni_pembeli->avg('rating'));
+                    $rating = round($item->testimoni_pembeli->avg('rating'), 1);
 
                     return [
                         'id' => $item->id,
@@ -303,7 +303,7 @@ class BukuDijualController extends Controller
             // filter only needed data
             $data = $data->map(function ($item) {
                 // count avarage rating of all tesimoni_pembeli data
-                $rating = $item->testimoni_pembeli->avg('rating');
+                $rating = round($item->testimoni_pembeli->avg('rating'), 1);
 
                 return [
                     'id' => $item->id,
