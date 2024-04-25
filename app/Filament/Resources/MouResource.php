@@ -37,7 +37,13 @@ class MouResource extends Resource
                     ->columnSpan('full')
                     ->required(),
 
-                Forms\Components\Textarea::make('deskripsi')
+                Forms\Components\Select::make('kategori')
+                    ->searchable()
+                    ->options([
+                        'kolaborasi' => 'Kolaborasi',
+                        'paket penerbitan' => 'Paket Penerbitan',
+                    ])
+                    ->live()
                     ->columnSpan('full')
                     ->required(),
 
@@ -65,7 +71,7 @@ class MouResource extends Resource
                 Tables\Columns\TextColumn::make('nama')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('deskripsi')
+                Tables\Columns\TextColumn::make('kategori')
                     ->wrap()
                     ->searchable()
                     ->sortable(),

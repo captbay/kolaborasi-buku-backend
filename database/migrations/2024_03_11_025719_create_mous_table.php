@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('mou', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('nama');
-            $table->string('deskripsi');
+            $table->string('kategori');
             $table->string('file_mou');
             $table->boolean('active_flag');
             $table->timestamps();

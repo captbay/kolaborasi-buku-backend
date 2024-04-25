@@ -4,16 +4,19 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PaketPenerbitanResource\Pages;
 use App\Filament\Resources\PaketPenerbitanResource\RelationManagers;
+use App\Models\jasa_tambahan;
 use App\Models\paket_penerbitan;
 use App\Models\PaketPenerbitan;
 use Carbon\Carbon;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Number;
 
 class PaketPenerbitanResource extends Resource
 {
@@ -63,11 +66,32 @@ class PaketPenerbitanResource extends Resource
                                 Forms\Components\Repeater::make('jasa_paket_penerbitan')
                                     ->relationship()
                                     ->schema([
-                                        Forms\Components\TextInput::make('nama')
+                                        Forms\Components\Select::make('jasa_tambahan_id')
+                                            ->relationship('jasa_tambahan', 'nama')
+                                            ->getOptionLabelFromRecordUsing(fn (jasa_tambahan $record) => "{$record->nama}" . " - " . Number::currency($record->harga, 'IDR'))
+                                            ->searchable(['nama', 'harga'])
                                             ->required()
-                                            ->hiddenLabel()
-                                            ->maxLength(255)
-                                            ->unique(paket_penerbitan::class, 'nama', ignoreRecord: true),
+                                            ->searchable()
+                                            ->preload()
+                                            ->label(false)
+                                            ->disableOptionsWhenSelectedInSiblingRepeaterItems()
+                                            ->createOptionForm([
+                                                Forms\Components\TextInput::make('nama')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->unique(jasa_tambahan::class, 'nama', ignoreRecord: true),
+
+                                                Forms\Components\TextInput::make('harga')
+                                                    ->numeric()
+                                                    ->minValue(1)
+                                                    ->required(),
+                                            ])
+                                            ->createOptionAction(function (Action $action) {
+                                                return $action
+                                                    ->modalHeading('Buat Data Jasa Tambahan')
+                                                    ->modalSubmitActionLabel('Buat Jasa Tambahan')
+                                                    ->modalWidth('lg');
+                                            }),
                                     ])
                                     ->minItems(1)
                                     ->hiddenLabel()

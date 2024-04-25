@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\buku_dijual;
+use App\Models\keranjang;
 use App\Models\list_transaksi_buku;
 use App\Models\transaksi_penjualan_buku;
 use Carbon\Carbon;
@@ -126,6 +127,17 @@ class TransaksiPenjualanBukuController extends Controller
                     'transaksi_penjualan_buku_id' => $data->id,
                     'buku_dijual_id' => $buku_dijual->id,
                 ]);
+            }
+
+            // delete keranjang if $buku_dijual_array is more than 1
+            if (
+                count($buku_dijual_array) > 1
+            ) {
+                // delete keranjang
+                foreach ($buku_dijual_array as $key => $value) {
+                    $keranjang = keranjang::where('buku_dijual_id', $value);
+                    $keranjang->delete();
+                }
             }
 
             if ($data && $list_buku) {
@@ -273,12 +285,12 @@ class TransaksiPenjualanBukuController extends Controller
                     }
                     $filenameCv = Str::uuid() . '.' . $uploadedFileCV->getClientOriginalExtension();
                     $filesystem = Storage::disk('public');
-                    $filesystem->putFileAs('foto_bukti_bayar/', $uploadedFileCV, $filenameCv);
+                    $filesystem->putFileAs('foto_bukti_bayar_pembelian_buku/', $uploadedFileCV, $filenameCv);
                 }
             }
 
             $trx->update([
-                'foto_bukti_bayar' => 'foto_bukti_bayar/' . $filenameCv,
+                'foto_bukti_bayar' => 'foto_bukti_bayar_pembelian_buku/' . $filenameCv,
                 'date_time_exp' => null,
                 'status' => 'UPLOADED',
             ]);

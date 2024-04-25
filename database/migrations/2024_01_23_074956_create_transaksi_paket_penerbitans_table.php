@@ -22,7 +22,6 @@ return new class extends Migration
             $table->dateTime('date_time_exp')->nullable();
             $table->string('dp_upload')->nullable();
             $table->string('pelunasan_upload')->nullable();
-            $table->string('foto_bukti_bayar')->nullable();
             $table->dateTime('date_time_dp_lunas')->nullable();
             $table->dateTime('date_time_lunas')->nullable();
             $table->text('note')->nullable();

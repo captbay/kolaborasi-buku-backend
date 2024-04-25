@@ -23,12 +23,6 @@ class BukuKolaborasiObserver
         if ($buku_kolaborasi->isDirty('file_sertifikasi') && $file_sertifikasi !== null) {
             Storage::disk('public')->delete($file_sertifikasi);
         }
-
-        $file_mou = $buku_kolaborasi->getOriginal('file_mou');
-
-        if ($buku_kolaborasi->isDirty('file_mou') && $file_mou !== null) {
-            Storage::disk('public')->delete($file_mou);
-        }
     }
 
     /**
@@ -47,12 +41,6 @@ class BukuKolaborasiObserver
         if ($buku_kolaborasi->isDirty('file_sertifikasi') && $file_sertifikasi !== null) {
             Storage::disk('public')->delete($file_sertifikasi);
         }
-
-        $file_mou = $buku_kolaborasi->getOriginal('file_mou');
-
-        if ($buku_kolaborasi->isDirty('file_mou') && $file_mou !== null) {
-            Storage::disk('public')->delete($file_mou);
-        }
     }
 
     /**
@@ -65,9 +53,6 @@ class BukuKolaborasiObserver
         }
         if (!is_null($buku_kolaborasi->file_sertifikasi)) {
             Storage::disk('public')->delete($buku_kolaborasi->file_sertifikasi);
-        }
-        if (!is_null($buku_kolaborasi->file_mou)) {
-            Storage::disk('public')->delete($buku_kolaborasi->file_mou);
         }
     }
 
@@ -90,9 +75,6 @@ class BukuKolaborasiObserver
         if (!is_null($buku_kolaborasi->file_sertifikasi)) {
             Storage::disk('public')->delete($buku_kolaborasi->file_sertifikasi);
         }
-        if (!is_null($buku_kolaborasi->file_mou)) {
-            Storage::disk('public')->delete($buku_kolaborasi->file_mou);
-        }
     }
 
     /**
@@ -110,12 +92,6 @@ class BukuKolaborasiObserver
 
         if ($buku_kolaborasi->isDirty('file_sertifikasi') && $file_sertifikasi !== null) {
             Storage::disk('public')->delete($file_sertifikasi);
-        }
-
-        $file_mou = $buku_kolaborasi->getOriginal('file_mou');
-
-        if ($buku_kolaborasi->isDirty('file_mou') && $file_mou !== null) {
-            Storage::disk('public')->delete($file_mou);
         }
     }
 }

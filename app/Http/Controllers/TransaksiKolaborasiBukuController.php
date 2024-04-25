@@ -80,6 +80,17 @@ class TransaksiKolaborasiBukuController extends Controller
     {
         // Create a new resource
         try {
+            // get user login
+            $user = Auth::user();
+
+            // if user role != MEMBER
+            if ($user->role != 'MEMBER') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kolaborasi Hanya Bisa Dilakukan Oleh Member, Silahkan Mendaftar Terlebih Dahulu Di Menu Akun!',
+                ], 404);
+            }
+
             // validate request
             $validatedData = Validator::make($request->all(), [
                 'bab_buku_kolaborasi_id' => 'required',
@@ -100,9 +111,6 @@ class TransaksiKolaborasiBukuController extends Controller
                     'message' => 'Bab Buku Kolaborasi tidak ditemukan',
                 ], 404);
             }
-
-            // get user login
-            $user = Auth::user();
 
             // generate no_transaksi
             $no_transaksi = 'TRX-KOLABORASI-' . date('YmdHis') . '-' . rand(1000, 9999);
@@ -265,12 +273,12 @@ class TransaksiKolaborasiBukuController extends Controller
                     }
                     $filename = Str::uuid() . '.' . $uploadedFile->getClientOriginalExtension();
                     $filesystem = Storage::disk('public');
-                    $filesystem->putFileAs('foto_bukti_bayar/', $uploadedFile, $filename);
+                    $filesystem->putFileAs('foto_bukti_bayar_kolaborasi/', $uploadedFile, $filename);
                 }
             }
 
             $trx->update([
-                'foto_bukti_bayar' => 'foto_bukti_bayar/' . $filename,
+                'foto_bukti_bayar' => 'foto_bukti_bayar_kolaborasi/' . $filename,
                 'date_time_exp' => null,
                 'status' => 'UPLOADED',
             ]);

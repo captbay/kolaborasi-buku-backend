@@ -41,7 +41,7 @@ class EditTransaksiPaketPenerbitan extends EditRecord
         // send notification to user
         Notification::make()
             ->success()
-            ->title('Buku Permohonan Terbit : No Transaksi ' . $no_transaksi . ' Sudah Disunting, mohon dicek.')
+            ->title('Buku Permohonan Terbit : No Transaksi ' . $no_transaksi . ' Sudah disunting oleh admin, mohon dicek kembali transaksi dan koleksi buku penerbitan Anda.')
             ->body($id)
             ->sendToDatabase($member);
 

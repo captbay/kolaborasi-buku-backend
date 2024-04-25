@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('judul');
             $table->text('deskripsi');
-            $table->string('cover_buku');
+            $table->string('cover_buku')->nullable();
             $table->string('file_buku');
             $table->string('file_mou')->nullable();
             $table->boolean('dijual')->default(0);

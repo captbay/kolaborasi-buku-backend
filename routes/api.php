@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukuDijualController;
 use App\Http\Controllers\BukuKolaborasiController;
 use App\Http\Controllers\BukuLunasUserController;
+use App\Http\Controllers\BukuPermohonanTerbitController;
+use App\Http\Controllers\JasaTambahanController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeranjangController;
 use App\Http\Controllers\KontenEventController;
@@ -11,6 +13,7 @@ use App\Http\Controllers\KontenFaqController;
 use App\Http\Controllers\PaketPenerbitanController;
 use App\Http\Controllers\TestimoniPembeliController;
 use App\Http\Controllers\TransaksiKolaborasiBukuController;
+use App\Http\Controllers\TransaksiPaketPenerbitanController;
 use App\Http\Controllers\TransaksiPenjualanBukuController;
 use App\Http\Controllers\UserBabBukuKolaborasiController;
 use App\Http\Controllers\UserController;
@@ -77,6 +80,8 @@ Route::group(['prefix' => 'user', 'middleware' => ['auth:sanctum', 'verified']],
 Route::group(['prefix' => 'keranjang', 'middleware' => ['auth:sanctum', 'verified']], function () {
     // get all keranjang
     Route::get('all', [KeranjangController::class, 'index']);
+    // get count all item in keranjang
+    Route::get('count', [KeranjangController::class, 'count']);
     // add to keranjang
     Route::post('add', [KeranjangController::class, 'store']);
     // delete keranjang
@@ -111,6 +116,27 @@ Route::group(['prefix' => 'transaksi-buku-kolaborasi', 'middleware' => ['auth:sa
     Route::post('upload-bukti-pembayaran/{id}', [TransaksiKolaborasiBukuController::class, 'uploadBuktiPembayaran']);
 });
 
+// transaksi paket penerbitan
+Route::group(['prefix' => 'transaksi-paket-penerbitan', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // add
+    Route::post('add', [TransaksiPaketPenerbitanController::class, 'store']);
+    // index all
+    Route::get('all', [TransaksiPaketPenerbitanController::class, 'index']);
+    // detail transaksi
+    Route::get('detail/{id}', [TransaksiPaketPenerbitanController::class, 'show']);
+    // status failed transaksi
+    Route::put('gagal', [TransaksiPaketPenerbitanController::class, 'gagal']);
+    // status failed but want to transaksi again
+    Route::get('transaction-again/{id}', [TransaksiPaketPenerbitanController::class, 'transactionAgain']);
+    // upload bukti pembayaran dp
+    Route::post('upload-bukti-pembayaran/{id}', [TransaksiPaketPenerbitanController::class, 'uploadBuktiPembayaran']);
+    // detail paket
+    Route::get('detail-paket/{id}', [PaketPenerbitanController::class, 'show']);
+    // JasaTambahan
+    // all jasa
+    Route::get('jasa-tambahan/{id}', [JasaTambahanController::class, 'index']);
+});
+
 // koleksi-buku-user
 Route::group(['prefix' => 'koleksi-buku-user', 'middleware' => ['auth:sanctum', 'verified']], function () {
     // get all koleksi buku user
@@ -135,10 +161,20 @@ Route::group(['prefix' => 'koleksi-buku-kolaborasi-user', 'middleware' => ['auth
     Route::post('uploadBab/{id}', [UserBabBukuKolaborasiController::class, 'uploadBab']);
 });
 
+// koleksi-buku-penerbitan-user
+Route::group(['prefix' => 'koleksi-buku-penerbitan-user', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // get all koleksi penerbitan buku user
+    Route::get('all', [BukuPermohonanTerbitController::class, 'index']);
+    // detail
+    Route::get('detail/{id}', [BukuPermohonanTerbitController::class, 'show']);
+    // download buku base buku_dijual id
+    Route::get('download/{id}', [BukuPermohonanTerbitController::class, 'download']);
+});
+
 // mou
 Route::group(['prefix' => 'mou', 'middleware' => ['auth:sanctum', 'verified']], function () {
     // download file mou
-    Route::get('downloadMou', [UserBabBukuKolaborasiController::class, 'downloadMou']);
+    Route::get('downloadMou/{filter}', [UserBabBukuKolaborasiController::class, 'downloadMou']);
 });
 
 // buku

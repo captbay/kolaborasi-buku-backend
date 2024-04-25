@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('jasa_paket_penerbitan', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('paket_penerbitan_id')->constrained('paket_penerbitan')->cascadeOnDelete();
-            $table->string('nama');
+            $table->foreignUuid('jasa_tambahan_id')->constrained('jasa_tambahan')->cascadeOnDelete();
             $table->timestamps();
         });
     }

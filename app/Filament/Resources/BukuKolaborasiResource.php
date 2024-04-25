@@ -171,13 +171,6 @@ class BukuKolaborasiResource extends Resource
                                     ->image()
                                     ->imageEditor()
                                     ->directory('cover_buku_kolaborasi'),
-
-                                Forms\Components\FileUpload::make('file_mou')
-                                    ->label('Upload file MOU')
-                                    ->openable()
-                                    ->maxSize(2 * 1024)
-                                    ->acceptedFileTypes(['application/pdf'])
-                                    ->directory('mou_buku_kolaborasi'),
                             ]),
 
                         Forms\Components\Section::make('Kategori')

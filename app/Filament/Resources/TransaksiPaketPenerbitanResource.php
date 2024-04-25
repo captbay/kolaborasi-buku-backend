@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use App\Models\buku_permohonan_terbit;
 use App\Models\kategori;
 use App\Models\penulis;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Number;
 
@@ -118,7 +119,9 @@ class TransaksiPaketPenerbitanResource extends Resource
                                     ->disabled()
                                     ->openable()
                                     ->columnSpan('full')
-                                    ->downloadable(),
+                                    ->acceptedFileTypes(['application/pdf'])
+                                    ->downloadable()
+                                    ->directory('mou_paket_penerbitan'),
 
                                 Forms\Components\FileUpload::make('cover_buku')
                                     ->label('Draft Cover Buku')
@@ -173,6 +176,7 @@ class TransaksiPaketPenerbitanResource extends Resource
                             ->schema([
                                 Forms\Components\Textarea::make('note')
                                     ->label(false)
+                                    ->disabled()
                                     ->live(onBlur: true)
                                     ->helperText('* Note atau pemberitahuan untuk member')
                             ]),
@@ -237,610 +241,675 @@ class TransaksiPaketPenerbitanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()->slideOver(),
-                // siap terbit
-                Tables\Actions\Action::make('Terbitkan')
-                    ->slideOver()
-                    ->hidden(function (transaksi_paket_penerbitan $transaksi) {
-                        if ($transaksi->status != 'SIAP TERBIT') {
-                            return true;
-                        }
+                Tables\Actions\ActionGroup::make([
 
-                        // if dijual == 1
-                        if ($transaksi->buku_permohonan_terbit->dijual == 1) {
-                            return true;
-                        }
-
-                        return false;
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Terbitkan Buku')
-                    ->modalDescription('Apakah anda yakin ingin menerbitkan buku ini? Pastikan file buku sudah benar')
-                    ->modalSubmitActionLabel('iya, terbitkan')
-                    ->color('success')
-                    ->modalIcon('heroicon-o-book-open')
-                    ->icon('heroicon-o-book-open')
-                    ->modalIconColor('success')
-                    ->form([
-                        Forms\Components\TextInput::make('harga')
-                            ->numeric()
-                            ->label('Harga Buku')
-                            ->minValue(1)
-                            ->required(),
-
-                        Forms\Components\Select::make('kategori_id')
-                            ->label('Kategori')
-                            ->options(kategori::all()->pluck('nama', 'id'))
-                            ->searchable()
-                            ->preload()
-                            ->required(),
-
-                        Forms\Components\Select::make('penulis_id')
-                            ->options(penulis::all()->pluck('nama', 'id'))
-                            ->multiple()
-                            ->preload()
-                            ->label('Penulis')
-                            ->default(
-                                function (transaksi_paket_penerbitan $transaksi) {
-                                    return [$transaksi->user->nama_lengkap];
-                                }
-                            )
-                            ->createOptionForm([
-                                Forms\Components\TextInput::make('nama')
-                                    ->unique(penulis::class, 'nama', ignoreRecord: true)
-                                    ->required(),
-                            ])
-                            ->createOptionUsing(function (array $data) {
-                                if ($data['nama']) {
-                                    return penulis::create([
-                                        'nama' => $data['nama']
-                                    ])->getKey();
-                                }
-                                return null;
-                            })
-                            ->createOptionAction(function (Action $action) {
-                                return $action
-                                    ->modalHeading('Buat Data Penulis')
-                                    ->modalSubmitActionLabel('Buat penulis')
-                                    ->modalWidth('lg');
-                            }),
-
-                        Forms\Components\Select::make('bahasa')
-                            ->searchable()
-                            ->options([
-                                'Indonesia' => 'Indonesia',
-                                'Inggris' => 'Inggris',
-                            ])
-                            ->required(),
-
-                        Forms\Components\FileUpload::make('cover_buku')
-                            ->required()
-                            ->openable()
-                            ->image()
-                            ->imageEditor()
-                            ->directory('cover_buku_dijual'),
-
-                        Forms\Components\Repeater::make('preview_buku')
-                            ->label('File Preview Buku')
-                            ->schema([
-                                Forms\Components\FileUpload::make('nama_generate')
-                                    ->label('Upload Gambar untuk preview buku')
-                                    ->required()
-                                    ->openable()
-                                    ->image()
-                                    ->imageEditor()
-                                    ->storeFileNamesIn('nama_file')
-                                    ->directory('buku_preview_storage'),
-                            ])
-                            ->defaultItems(1)
-                            ->required(),
-                    ])
-                    ->action(
-                        function (transaksi_paket_penerbitan $transaksi, array $data): void {
-                            $buku_permohonan_terbit = $transaksi->buku_permohonan_terbit;
-
-                            if ($buku_permohonan_terbit->dijual == 1) {
-                                Notification::make()
-                                    ->danger()
-                                    ->title('Buku sudah diterbitkan')
-                                    ->send();
-
-                                return;
+                    Tables\Actions\ViewAction::make()->slideOver(),
+                    Tables\Actions\Action::make('Berikan Note')
+                        ->icon('heroicon-s-document-check')
+                        ->hidden(function (transaksi_paket_penerbitan $record) {
+                            if ($record->status == 'DP TIDAK SAH' || $record->status == 'PELUNASAN TIDAK SAH') {
+                                return true;
                             }
 
-                            // split name of $buku_permohonan_terbit->file_buku
-                            $file_buku = explode('/', $buku_permohonan_terbit->file_buku);
-                            $file_buku = end($file_buku);
-
-                            // copy file $buku_permohonan_terbit->file_buku to public/storage/buku_final_storage
-                            File::ensureDirectoryExists(base_path('public/storage/buku_final_storage'));
-                            File::copy(base_path('public/storage/' . $buku_permohonan_terbit->file_buku), base_path('public/storage/buku_final_storage/' . $file_buku));
-
-                            // get jumlah halaman in pdf
-                            $pdftext = file_get_contents(base_path('public/storage/buku_final_storage/' . $file_buku));
-                            $jumlah_halaman = preg_match_all("/\/Page\W/", $pdftext, $matches);
-
-                            // make buku_dijual
-                            $buku_dijual = buku_dijual::create([
-                                'kategori_id' => $data['kategori_id'],
-                                'judul' => $buku_permohonan_terbit->judul,
-                                'slug' => Str::slug($buku_permohonan_terbit->judul),
-                                'harga' => $data['harga'],
-                                'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
-                                'cover_buku' => $data['cover_buku'],
-                                'deskripsi' => $buku_permohonan_terbit->deskripsi,
-                                'jumlah_halaman' => $jumlah_halaman,
-                                'bahasa' => $data['bahasa'],
-                                'penerbit' => env('APP_NAME'),
-                                'nama_file_buku' => $buku_permohonan_terbit->judul . '.pdf', // 'buku_final_storage/' . $buku_permohonan_terbit->judul . '.pdf
-                                'file_buku' => 'buku_final_storage/' . $file_buku,
-                                'isbn' => $buku_permohonan_terbit->isbn,
-                                'active_flag' => 0,
+                            return false;
+                        })
+                        ->form([
+                            Forms\Components\Textarea::make('note')
+                                ->label(false)
+                                ->live(onBlur: true)
+                                ->helperText('* Note atau pemberitahuan untuk member')
+                        ])
+                        ->action(function (transaksi_paket_penerbitan $record, array $data) {
+                            $record->update([
+                                'note' => $data['note'],
                             ]);
-
-                            // make storage_buku_dijual from $data['preview_buku']
-                            foreach ($data['preview_buku'] as $key => $value) {
-                                $buku_dijual->storage_buku_dijual()->create([
-                                    'tipe' => 'IMAGE',
-                                    'nama_file' => $value['nama_file'],
-                                    'nama_generate' => $value['nama_generate'],
-                                ]);
-                            }
-
-                            // make penulis from penulis_id
-                            foreach ($data['penulis_id'] as $key => $value) {
-                                // check the value if exists in penulis table
-                                $penulis = penulis::find($value);
-                                if ($penulis) {
-                                    $buku_dijual->penulis()->attach($value);
-                                } else {
-                                    $penulis = penulis::create([
-                                        'nama' => $value,
-                                    ]);
-                                    $buku_dijual->penulis()->attach($penulis->id);
-                                }
-                            }
-
-                            if ($buku_dijual) {
-                                // update buku_permohonan_terbit
-                                $buku_permohonan_terbit->update([
-                                    'dijual' => 1,
-                                ]);
-
-                                // update status transaksi_paket_penerbitan
-                                $transaksi->update([
-                                    'status' => 'SUDAH TERBIT',
-                                ]);
-
-                                $recipientAdmin = auth()->user();
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('Penerbitan untuk permohonan terbit berhasil, No Transaksi ' . $transaksi->no_transaksi . ' Sudah TERBIT')
-                                    ->sendToDatabase($recipientAdmin)
-                                    ->send();
-
-                                $recipientUser = $transaksi->user;
-
-                                // send notif to user yang bayar
-                                Notification::make()
-                                    ->success()
-                                    ->title(
-                                        'Penerbitan permohonan terbit dengan No Transaksi '
-                                            . $transaksi->no_transaksi .
-                                            ' berhasil, Buku anda sudah terbit. Terima kasih.'
-                                    )
-                                    ->body($transaksi->id)
-                                    ->sendToDatabase($recipientUser);
-
-                                return;
-                            }
-
-                            Notification::make()
-                                ->danger()
-                                ->title('Proses Gagal, coba ulangi beberapa saat lagi')
-                                ->send();
-
-                            return;
-                        }
-                    ),
-
-                // input ISBN
-                Tables\Actions\Action::make('Input ISBN')
-                    ->label('Input ISBN')
-                    ->slideOver()
-                    ->hidden(function (transaksi_paket_penerbitan $transaksi) {
-                        if ($transaksi->status != 'INPUT ISBN') {
-                            return true;
-                        }
-
-                        return false;
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Input ISBN')
-                    ->modalDescription('Apakah anda yakin ingin memasukkan ISBN buku ini?')
-                    ->modalSubmitActionLabel('iya, input ISBN')
-                    ->color('success')
-                    ->modalIcon('heroicon-o-book-open')
-                    ->icon('heroicon-o-book-open')
-                    ->modalIconColor('success')
-                    ->form([
-                        Forms\Components\TextInput::make('isbn')
-                            ->label('ISBN')
-                            ->required(),
-                    ])
-                    ->action(
-                        function (transaksi_paket_penerbitan $transaksi, array $data): void {
-                            $buku_permohonan_terbit = $transaksi->buku_permohonan_terbit;
-
-                            $buku_permohonan_terbit->update([
-                                'isbn' => $data['isbn'],
-                            ]);
-
-                            if ($buku_permohonan_terbit->isbn != null) {
-                                // update status transaksi_paket_penerbitan
-                                $transaksi->update([
-                                    'status' => 'DRAFT SELESAI',
-                                ]);
-
-                                $recipientAdmin = auth()->user();
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('Input ISBN untuk permohonan terbit berhasil, No Transaksi ' . $transaksi->no_transaksi . ' Sudah DRAFT SELESAI')
-                                    ->sendToDatabase($recipientAdmin)
-                                    ->send();
-
-                                $recipientUser = $transaksi->user;
-
-                                // send notif to user yang bayar
-                                Notification::make()
-                                    ->success()
-                                    ->title(
-                                        'Input ISBN permohonan terbit dengan No Transaksi '
-                                            . $transaksi->no_transaksi .
-                                            ' berhasil, lakukan pelunasan untuk segera diterbitkan'
-                                    )
-                                    ->body($transaksi->id)
-                                    ->sendToDatabase($recipientUser);
-
-                                return;
-                            }
-
-                            Notification::make()
-                                ->danger()
-                                ->title('Proses Gagal, coba ulangi beberapa saat lagi')
-                                ->send();
-
-                            return;
-                        }
-                    ),
-
-                // verifikasi
-                Tables\Actions\Action::make('Verifikasi')
-                    ->hidden(function (transaksi_paket_penerbitan $transaksi) {
-                        if ($transaksi->dp_upload == null && $transaksi->pelunasan_upload == null) {
-                            return true;
-                        }
-                        if ($transaksi->status != 'DP UPLOADED' && $transaksi->status != 'PELUNASAN UPLOADED') {
-                            return true;
-                        }
-                        return false;
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Verifikasi Pembayaran')
-                    ->modalDescription('Apakah anda yakin ingin memverifikasi pembayaran ini, mohon cek dahulu bukti bayar?')
-                    ->modalSubmitActionLabel('iya, verifikasi')
-                    ->color('success')
-                    ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
-                    ->icon('heroicon-s-document-check')
-                    ->modalIconColor('success')
-                    ->form([
-                        Forms\Components\FileUpload::make('foto_bukti_bayar')
-                            ->label('Foto Bukti Bayar')
-                            ->default(
-                                function (transaksi_paket_penerbitan $transaksi) {
-                                    if ($transaksi->status == 'DP UPLOADED') {
-                                        return $transaksi->dp_upload;
-                                    } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
-                                        return $transaksi->pelunasan_upload;
-                                    } else {
-                                        return null;
-                                    }
-                                }
-                            )
-                            ->openable()
-                            ->downloadable()
-                            ->image()
-                            ->imagePreviewHeight('500')
-                            ->panelAspectRatio('1:1')
-                            ->disabled(),
-                    ])
-                    ->action(
-                        function (transaksi_paket_penerbitan $transaksi): void {
-                            if ($transaksi->status == 'DP UPLOADED') {
-                                if ($transaksi->date_time_dp_lunas != null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Customer ini sudah lunas')
-                                        ->send();
-
-                                    return;
-                                }
-
-                                if ($transaksi->dp_upload == null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Foto bukti bayar tidak ada')
-                                        ->send();
-                                }
-
-                                // update status and datetimelunas
-                                $transaksi->update([
-                                    'status' => 'INPUT ISBN',
-                                    'date_time_dp_lunas' => Carbon::now(),
-                                ]);
-
-                                $recipientAdmin = auth()->user();
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('DP untuk permohonan terbit berhasil diverifikasi, No Transaksi ' . $transaksi->no_transaksi . ' Sudah LUNAS DP')
-                                    ->sendToDatabase($recipientAdmin)
-                                    ->send();
-
-                                $recipientUser = $transaksi->user;
-
-                                // send notif to user yang bayar
-                                Notification::make()
-                                    ->success()
-                                    ->title(
-                                        'DP permohonan terbit dengan No Transaksi '
-                                            . $transaksi->no_transaksi .
-                                            ' berhasil, kami segera akan menyelesaikan INPUT ISBN'
-                                    )
-                                    ->body($transaksi->id)
-                                    ->sendToDatabase($recipientUser);
-
-                                return;
-                            } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
-                                if ($transaksi->date_time_lunas != null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Customer ini sudah lunas')
-                                        ->send();
-
-                                    return;
-                                }
-
-                                if ($transaksi->pelunasan_upload == null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Foto bukti bayar tidak ada')
-                                        ->send();
-                                }
-
-                                // update status and datetimelunas
-                                $transaksi->update([
-                                    'status' => 'SIAP TERBIT',
-                                    'date_time_lunas' => Carbon::now(),
-                                ]);
-
-                                $recipientAdmin = auth()->user();
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('Pelunasan untuk permohonan terbit berhasil diverifikasi, No Transaksi ' . $transaksi->no_transaksi . ' Sudah LUNAS')
-                                    ->sendToDatabase($recipientAdmin)
-                                    ->send();
-
-                                $recipientUser = $transaksi->user;
-
-                                // send notif to user yang bayar
-                                Notification::make()
-                                    ->success()
-                                    ->title(
-                                        'Pelunasan permohonan terbit dengan No Transaksi '
-                                            . $transaksi->no_transaksi .
-                                            ' berhasil, Buku anda segera akan terbit. Terima kasih.'
-                                    )
-                                    ->body($transaksi->id)
-                                    ->sendToDatabase($recipientUser);
-
-                                return;
-                            } else {
-                                return;
-                            }
-                        }
-                    ),
-                // batalkan verifikasi
-                Tables\Actions\Action::make('Tidak Sesuai')
-                    ->hidden(function (transaksi_paket_penerbitan $transaksi) {
-                        if ($transaksi->dp_upload == null && $transaksi->pelunasan_upload == null) {
-                            return true;
-                        }
-                        if ($transaksi->status != 'DP UPLOADED' && $transaksi->status != 'PELUNASAN UPLOADED') {
-                            return true;
-                        }
-                        return false;
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Batalkan Verifikasi Pembayaran')
-                    ->modalDescription('Apakah anda yakin ingin membatalkan verifikasi pembayaran ini?')
-                    ->modalSubmitActionLabel('iya, batalkan')
-                    ->color('danger')
-                    ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
-                    ->icon('heroicon-s-document-check')
-                    ->modalIconColor('danger')
-                    ->form([
-                        Forms\Components\FileUpload::make('foto_bukti_bayar')
-                            ->label('Foto Bukti Bayar')
-                            ->default(
-                                function (transaksi_paket_penerbitan $transaksi) {
-                                    if ($transaksi->status == 'DP UPLOADED') {
-                                        return $transaksi->dp_upload;
-                                    } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
-                                        return $transaksi->pelunasan_upload;
-                                    } else {
-                                        return null;
-                                    }
-                                }
-                            )
-                            ->openable()
-                            ->downloadable()
-                            ->image()
-                            ->imagePreviewHeight('500')
-                            ->panelAspectRatio('1:1')
-                            ->disabled(),
-                    ])
-                    ->action(
-                        function (transaksi_paket_penerbitan $transaksi): void {
-                            if ($transaksi->status == 'DP UPLOADED') {
-                                if ($transaksi->date_time_dp_lunas != null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Customer ini sudah lunas')
-                                        ->send();
-
-                                    return;
-                                }
-
-                                if ($transaksi->dp_upload == null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Foto bukti bayar tidak ada')
-                                        ->send();
-                                }
-
-                                // update status and datetimelunas
-                                $transaksi->update([
-                                    'status' => 'DP TIDAK SAH',
-                                    'date_time_dp_lunas' => null,
-                                ]);
-
-                                $recipientAdmin = auth()->user();
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('DP untuk permohonan terbit tidak sah, No Transaksi ' . $transaksi->no_transaksi . ' Sudah DIBATALKAN')
-                                    ->sendToDatabase($recipientAdmin)
-                                    ->send();
-
-                                $recipientUser = $transaksi->user;
-
-                                // send notif to user yang bayar
-                                Notification::make()
-                                    ->success()
-                                    ->title(
-                                        'DP permohonan terbit dengan No Transaksi '
-                                            . $transaksi->no_transaksi .
-                                            ' gagal, mohon segera melakukan pembayaran ulang.'
-                                    )
-                                    ->body($transaksi->id)
-                                    ->sendToDatabase($recipientUser);
-
-                                return;
-                            } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
-                                if ($transaksi->date_time_lunas != null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Customer ini sudah lunas')
-                                        ->send();
-
-                                    return;
-                                }
-
-                                if ($transaksi->pelunasan_upload == null) {
-                                    Notification::make()
-                                        ->danger()
-                                        ->title('Foto bukti bayar tidak ada')
-                                        ->send();
-                                }
-
-                                // update status and datetimelunas
-                                $transaksi->update([
-                                    'status' => 'PELUNASAN TIDAK SAH',
-                                    'date_time_lunas' => null,
-                                ]);
-
-                                $recipientAdmin = auth()->user();
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('Pelunasan untuk permohonan terbit tidak sah, No Transaksi ' . $transaksi->no_transaksi . ' Sudah DIBATALKAN')
-                                    ->sendToDatabase($recipientAdmin)
-                                    ->send();
-
-                                $recipientUser = $transaksi->user;
-
-                                // send notif to user yang bayar
-                                Notification::make()
-                                    ->success()
-                                    ->title(
-                                        'Pelunasan permohonan terbit dengan No Transaksi '
-                                            . $transaksi->no_transaksi .
-                                            ' gagal, mohon segera melakukan pembayaran ulang.'
-                                    )
-                                    ->body($transaksi->id)
-                                    ->sendToDatabase($recipientUser);
-
-                                return;
-                            } else {
-                                return;
-                            }
-                        }
-                    ),
-                // sunting
-                Tables\Actions\EditAction::make()
-                    ->label('Sunting')
-                    ->hidden(function (transaksi_paket_penerbitan $transaksi) {
-                        if ($transaksi->status != 'REVIEW') {
-                            return true;
-                        }
-                        return false;
-                    }),
-                // lanjut tahap Terima Draft
-                Tables\Actions\Action::make('Terima Draft')
-                    ->hidden(function (transaksi_paket_penerbitan $transaksi) {
-                        if ($transaksi->status != 'REVIEW') {
-                            return true;
-                        }
-                        return false;
-                    })
-                    ->requiresConfirmation()
-                    ->modalHeading('Terima Draft')
-                    ->modalDescription('Apakah anda yakin ingin menerima draft ini?')
-                    ->modalSubmitActionLabel('iya, Terima Draft')
-                    ->color('success')
-                    ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
-                    ->icon('heroicon-s-document-check')
-                    ->modalIconColor('success')
-                    ->action(
-                        function (transaksi_paket_penerbitan $transaksi): void {
-                            $transaksi->update([
-                                'status' => 'TERIMA DRAFT',
-                            ]);
-
-                            $recipientAdmin = auth()->user();
 
                             Notification::make()
                                 ->success()
-                                ->title('Buku Permohonan Terbit: No Transaksi ' . $transaksi->no_transaksi . ' Sudah TERIMA DRAFT')
-                                ->sendToDatabase($recipientAdmin)
+                                ->title(
+                                    'Note berhasil diberikan kepada ' . $record->user->nama_lengkap . '!'
+                                )
                                 ->send();
 
-                            $recipientUser = $transaksi->user;
+                            $recipientUser = $record->user;
 
                             // send notif to user yang bayar
                             Notification::make()
                                 ->success()
-                                ->title('Buku Permohonan Terbit : No Transaksi ' . $transaksi->no_transaksi . ' Sudah Diterima, mohon segera melakukan pembayaran DP.')
-                                ->body($transaksi->id)
+                                ->title(
+                                    'Note Penerbitan Baru dari Admin'
+                                )
+                                ->body(
+                                    'Ada Pemberitahuan dari admin penerbitan untuk penerbitan buku ' . $record->buku_permohonan_terbit->judul . '!'
+                                )
                                 ->sendToDatabase($recipientUser);
 
-                            return;
-                        }
-                    ),
+                            event(new DatabaseNotificationsSent($recipientUser));
+                        }),
+                    // siap terbit
+                    Tables\Actions\Action::make('Terbitkan')
+                        ->slideOver()
+                        ->hidden(function (transaksi_paket_penerbitan $transaksi) {
+                            if ($transaksi->status != 'SIAP TERBIT') {
+                                return true;
+                            }
+
+                            // if dijual == 1
+                            if ($transaksi->buku_permohonan_terbit->dijual == 1) {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Terbitkan Buku')
+                        ->modalDescription('Apakah anda yakin ingin menerbitkan buku ini? Pastikan file buku sudah benar')
+                        ->modalSubmitActionLabel('iya, terbitkan')
+                        ->color('success')
+                        ->modalIcon('heroicon-o-book-open')
+                        ->icon('heroicon-o-book-open')
+                        ->modalIconColor('success')
+                        ->form([
+                            Forms\Components\TextInput::make('harga')
+                                ->numeric()
+                                ->label('Harga Buku')
+                                ->minValue(1)
+                                ->required(),
+
+                            Forms\Components\Select::make('kategori_id')
+                                ->label('Kategori')
+                                ->options(kategori::all()->pluck('nama', 'id'))
+                                ->searchable()
+                                ->preload()
+                                ->required(),
+
+                            Forms\Components\Select::make('penulis_id')
+                                ->options(penulis::all()->pluck('nama', 'id'))
+                                ->multiple()
+                                ->preload()
+                                ->label('Penulis')
+                                ->default(
+                                    function (transaksi_paket_penerbitan $transaksi) {
+                                        return [$transaksi->user->nama_lengkap];
+                                    }
+                                )
+                                ->createOptionForm([
+                                    Forms\Components\TextInput::make('nama')
+                                        ->unique(penulis::class, 'nama', ignoreRecord: true)
+                                        ->required(),
+                                ])
+                                ->createOptionUsing(function (array $data) {
+                                    if ($data['nama']) {
+                                        return penulis::create([
+                                            'nama' => $data['nama']
+                                        ])->getKey();
+                                    }
+                                    return null;
+                                })
+                                ->createOptionAction(function (Action $action) {
+                                    return $action
+                                        ->modalHeading('Buat Data Penulis')
+                                        ->modalSubmitActionLabel('Buat penulis')
+                                        ->modalWidth('lg');
+                                }),
+
+                            Forms\Components\Select::make('bahasa')
+                                ->searchable()
+                                ->options([
+                                    'Indonesia' => 'Indonesia',
+                                    'Inggris' => 'Inggris',
+                                ])
+                                ->required(),
+
+                            Forms\Components\FileUpload::make('cover_buku')
+                                ->required()
+                                ->openable()
+                                ->image()
+                                ->imageEditor()
+                                ->directory('cover_buku_dijual'),
+
+                            Forms\Components\Repeater::make('preview_buku')
+                                ->label('File Preview Buku')
+                                ->schema([
+                                    Forms\Components\FileUpload::make('nama_generate')
+                                        ->label('Upload Gambar untuk preview buku')
+                                        ->required()
+                                        ->openable()
+                                        ->image()
+                                        ->imageEditor()
+                                        ->storeFileNamesIn('nama_file')
+                                        ->directory('buku_preview_storage'),
+                                ])
+                                ->defaultItems(1)
+                                ->required(),
+                        ])
+                        ->action(
+                            function (transaksi_paket_penerbitan $transaksi, array $data): void {
+                                $buku_permohonan_terbit = $transaksi->buku_permohonan_terbit;
+
+                                if ($buku_permohonan_terbit->dijual == 1) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title('Buku sudah diterbitkan')
+                                        ->send();
+
+                                    return;
+                                }
+
+                                // split name of $buku_permohonan_terbit->file_buku
+                                $file_buku = explode('/', $buku_permohonan_terbit->file_buku);
+                                $file_buku = end($file_buku);
+
+                                // copy file $buku_permohonan_terbit->file_buku to public/storage/buku_final_storage
+                                File::ensureDirectoryExists(base_path('public/storage/buku_final_storage'));
+                                File::copy(base_path('public/storage/' . $buku_permohonan_terbit->file_buku), base_path('public/storage/buku_final_storage/' . $file_buku));
+
+                                // get jumlah halaman in pdf
+                                $pdftext = file_get_contents(base_path('public/storage/buku_final_storage/' . $file_buku));
+                                $jumlah_halaman = preg_match_all("/\/Page\W/", $pdftext, $matches);
+
+                                // make buku_dijual
+                                $buku_dijual = buku_dijual::create([
+                                    'kategori_id' => $data['kategori_id'],
+                                    'judul' => $buku_permohonan_terbit->judul,
+                                    'slug' => Str::slug($buku_permohonan_terbit->judul),
+                                    'harga' => $data['harga'],
+                                    'tanggal_terbit' => Carbon::now()->format('Y-m-d'),
+                                    'cover_buku' => $data['cover_buku'],
+                                    'deskripsi' => $buku_permohonan_terbit->deskripsi,
+                                    'jumlah_halaman' => $jumlah_halaman,
+                                    'bahasa' => $data['bahasa'],
+                                    'penerbit' => env('APP_NAME'),
+                                    'nama_file_buku' => $buku_permohonan_terbit->judul . '.pdf', // 'buku_final_storage/' . $buku_permohonan_terbit->judul . '.pdf
+                                    'file_buku' => 'buku_final_storage/' . $file_buku,
+                                    'isbn' => $buku_permohonan_terbit->isbn,
+                                    'active_flag' => 0,
+                                ]);
+
+                                // make storage_buku_dijual from $data['preview_buku']
+                                foreach ($data['preview_buku'] as $key => $value) {
+                                    $buku_dijual->storage_buku_dijual()->create([
+                                        'tipe' => 'IMAGE',
+                                        'nama_file' => $value['nama_file'],
+                                        'nama_generate' => $value['nama_generate'],
+                                    ]);
+                                }
+
+                                // make penulis from penulis_id
+                                foreach ($data['penulis_id'] as $key => $value) {
+                                    // check the value if exists in penulis table
+                                    $penulis = penulis::find($value);
+                                    if ($penulis) {
+                                        $buku_dijual->penulis()->attach($value);
+                                    } else {
+                                        $penulis = penulis::create([
+                                            'nama' => $value,
+                                        ]);
+                                        $buku_dijual->penulis()->attach($penulis->id);
+                                    }
+                                }
+
+                                if ($buku_dijual) {
+                                    // update buku_permohonan_terbit
+                                    $buku_permohonan_terbit->update([
+                                        'dijual' => 1,
+                                    ]);
+
+                                    // update status transaksi_paket_penerbitan
+                                    $transaksi->update([
+                                        'status' => 'SUDAH TERBIT',
+                                    ]);
+
+                                    $recipientAdmin = auth()->user();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title('Penerbitan untuk permohonan terbit berhasil, No Transaksi ' . $transaksi->no_transaksi . ' Sudah TERBIT')
+                                        ->sendToDatabase($recipientAdmin)
+                                        ->send();
+
+                                    $recipientUser = $transaksi->user;
+
+                                    // send notif to user yang bayar
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'Penerbitan permohonan terbit dengan No Transaksi '
+                                                . $transaksi->no_transaksi .
+                                                ' berhasil, Buku anda sudah terbit. Terima kasih.'
+                                        )
+                                        ->body($transaksi->id)
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+
+                                    return;
+                                }
+
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Proses Gagal, coba ulangi beberapa saat lagi')
+                                    ->send();
+
+                                return;
+                            }
+                        ),
+
+                    // input ISBN
+                    Tables\Actions\Action::make('Input ISBN')
+                        ->label('Input ISBN')
+                        ->slideOver()
+                        ->hidden(function (transaksi_paket_penerbitan $transaksi) {
+                            if ($transaksi->status != 'INPUT ISBN') {
+                                return true;
+                            }
+
+                            return false;
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Input ISBN')
+                        ->modalDescription('Apakah anda yakin ingin memasukkan ISBN buku ini?')
+                        ->modalSubmitActionLabel('iya, input ISBN')
+                        ->color('success')
+                        ->modalIcon('heroicon-o-book-open')
+                        ->icon('heroicon-o-book-open')
+                        ->modalIconColor('success')
+                        ->form([
+                            Forms\Components\TextInput::make('isbn')
+                                ->label('ISBN')
+                                ->required(),
+                        ])
+                        ->action(
+                            function (transaksi_paket_penerbitan $transaksi, array $data): void {
+                                $buku_permohonan_terbit = $transaksi->buku_permohonan_terbit;
+
+                                $buku_permohonan_terbit->update([
+                                    'isbn' => $data['isbn'],
+                                ]);
+
+                                if ($buku_permohonan_terbit->isbn != null) {
+                                    // update status transaksi_paket_penerbitan
+                                    $transaksi->update([
+                                        'status' => 'DRAFT SELESAI',
+                                        'date_time_exp' => Carbon::now()->addHours(24),
+                                    ]);
+
+                                    $recipientAdmin = auth()->user();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title('Input ISBN untuk permohonan terbit berhasil, No Transaksi ' . $transaksi->no_transaksi . ' Sudah DRAFT SELESAI')
+                                        ->sendToDatabase($recipientAdmin)
+                                        ->send();
+
+                                    $recipientUser = $transaksi->user;
+
+                                    // send notif to user yang bayar
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'Input ISBN permohonan terbit dengan No Transaksi '
+                                                . $transaksi->no_transaksi .
+                                                ' berhasil, lakukan pelunasan untuk segera diterbitkan'
+                                        )
+                                        ->body($transaksi->id)
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+
+                                    return;
+                                }
+
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Proses Gagal, coba ulangi beberapa saat lagi')
+                                    ->send();
+
+                                return;
+                            }
+                        ),
+
+                    // verifikasi
+                    Tables\Actions\Action::make('Verifikasi')
+                        ->hidden(function (transaksi_paket_penerbitan $transaksi) {
+                            if ($transaksi->dp_upload == null && $transaksi->pelunasan_upload == null) {
+                                return true;
+                            }
+                            if ($transaksi->status != 'DP UPLOADED' && $transaksi->status != 'PELUNASAN UPLOADED') {
+                                return true;
+                            }
+                            return false;
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Verifikasi Pembayaran')
+                        ->modalDescription('Apakah anda yakin ingin memverifikasi pembayaran ini, mohon cek dahulu bukti bayar?')
+                        ->modalSubmitActionLabel('iya, verifikasi')
+                        ->color('success')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('success')
+                        ->form([
+                            Forms\Components\FileUpload::make('foto_bukti_bayar')
+                                ->label('Foto Bukti Bayar')
+                                ->default(
+                                    function (transaksi_paket_penerbitan $transaksi) {
+                                        if ($transaksi->status == 'DP UPLOADED') {
+                                            return $transaksi->dp_upload;
+                                        } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
+                                            return $transaksi->pelunasan_upload;
+                                        } else {
+                                            return null;
+                                        }
+                                    }
+                                )
+                                ->openable()
+                                ->downloadable()
+                                ->image()
+                                ->imagePreviewHeight('500')
+                                ->panelAspectRatio('1:1')
+                                ->disabled(),
+                        ])
+                        ->action(
+                            function (transaksi_paket_penerbitan $transaksi): void {
+                                if ($transaksi->status == 'DP UPLOADED') {
+                                    if ($transaksi->date_time_dp_lunas != null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Customer ini sudah lunas')
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    if ($transaksi->dp_upload == null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Foto bukti bayar tidak ada')
+                                            ->send();
+                                    }
+
+                                    // update status and datetimelunas
+                                    $transaksi->update([
+                                        'status' => 'INPUT ISBN',
+                                        'date_time_dp_lunas' => Carbon::now(),
+                                    ]);
+
+                                    $recipientAdmin = auth()->user();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title('DP untuk permohonan terbit berhasil diverifikasi, No Transaksi ' . $transaksi->no_transaksi . ' Sudah LUNAS DP')
+                                        ->sendToDatabase($recipientAdmin)
+                                        ->send();
+
+                                    $recipientUser = $transaksi->user;
+
+                                    // send notif to user yang bayar
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'DP permohonan terbit dengan No Transaksi '
+                                                . $transaksi->no_transaksi .
+                                                ' berhasil, kami segera akan menyelesaikan INPUT ISBN'
+                                        )
+                                        ->body($transaksi->id)
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+
+                                    return;
+                                } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
+                                    if ($transaksi->date_time_lunas != null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Customer ini sudah lunas')
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    if ($transaksi->pelunasan_upload == null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Foto bukti bayar tidak ada')
+                                            ->send();
+                                    }
+
+                                    // update status and datetimelunas
+                                    $transaksi->update([
+                                        'status' => 'SIAP TERBIT',
+                                        'date_time_lunas' => Carbon::now(),
+                                    ]);
+
+                                    $recipientAdmin = auth()->user();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title('Pelunasan untuk permohonan terbit berhasil diverifikasi, No Transaksi ' . $transaksi->no_transaksi . ' Sudah LUNAS')
+                                        ->sendToDatabase($recipientAdmin)
+                                        ->send();
+
+                                    $recipientUser = $transaksi->user;
+
+                                    // send notif to user yang bayar
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'Pelunasan permohonan terbit dengan No Transaksi '
+                                                . $transaksi->no_transaksi .
+                                                ' berhasil, Buku anda segera akan terbit. Terima kasih.'
+                                        )
+                                        ->body($transaksi->id)
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+
+                                    return;
+                                } else {
+                                    return;
+                                }
+                            }
+                        ),
+                    // batalkan verifikasi
+                    Tables\Actions\Action::make('Tidak Sesuai')
+                        ->hidden(function (transaksi_paket_penerbitan $transaksi) {
+                            if ($transaksi->dp_upload == null && $transaksi->pelunasan_upload == null) {
+                                return true;
+                            }
+                            if ($transaksi->status != 'DP UPLOADED' && $transaksi->status != 'PELUNASAN UPLOADED') {
+                                return true;
+                            }
+                            return false;
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Batalkan Verifikasi Pembayaran')
+                        ->modalDescription('Apakah anda yakin ingin membatalkan verifikasi pembayaran ini?')
+                        ->modalSubmitActionLabel('iya, batalkan')
+                        ->color('danger')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('danger')
+                        ->form([
+                            Forms\Components\FileUpload::make('foto_bukti_bayar')
+                                ->label('Foto Bukti Bayar')
+                                ->default(
+                                    function (transaksi_paket_penerbitan $transaksi) {
+                                        if ($transaksi->status == 'DP UPLOADED') {
+                                            return $transaksi->dp_upload;
+                                        } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
+                                            return $transaksi->pelunasan_upload;
+                                        } else {
+                                            return null;
+                                        }
+                                    }
+                                )
+                                ->openable()
+                                ->downloadable()
+                                ->image()
+                                ->imagePreviewHeight('500')
+                                ->panelAspectRatio('1:1')
+                                ->disabled(),
+                        ])
+                        ->action(
+                            function (transaksi_paket_penerbitan $transaksi): void {
+                                if ($transaksi->status == 'DP UPLOADED') {
+                                    if ($transaksi->date_time_dp_lunas != null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Customer ini sudah lunas')
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    if ($transaksi->dp_upload == null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Foto bukti bayar tidak ada')
+                                            ->send();
+                                    }
+
+                                    // update status and datetimelunas
+                                    $transaksi->update([
+                                        'status' => 'DP TIDAK SAH',
+                                        'date_time_exp' => null,
+                                        'date_time_dp_lunas' => null,
+                                    ]);
+
+                                    $recipientAdmin = auth()->user();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title('DP untuk permohonan terbit tidak sah, No Transaksi ' . $transaksi->no_transaksi . ' Sudah DIBATALKAN')
+                                        ->sendToDatabase($recipientAdmin)
+                                        ->send();
+
+                                    $recipientUser = $transaksi->user;
+
+                                    // send notif to user yang bayar
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'DP permohonan terbit dengan No Transaksi '
+                                                . $transaksi->no_transaksi .
+                                                ' gagal, mohon segera melakukan pembayaran ulang.'
+                                        )
+                                        ->body($transaksi->id)
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+
+                                    return;
+                                } else if ($transaksi->status == 'PELUNASAN UPLOADED') {
+                                    if ($transaksi->date_time_lunas != null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Customer ini sudah lunas')
+                                            ->send();
+
+                                        return;
+                                    }
+
+                                    if ($transaksi->pelunasan_upload == null) {
+                                        Notification::make()
+                                            ->danger()
+                                            ->title('Foto bukti bayar tidak ada')
+                                            ->send();
+                                    }
+
+                                    // update status and datetimelunas
+                                    $transaksi->update([
+                                        'status' => 'PELUNASAN TIDAK SAH',
+                                        'date_time_exp' => null,
+                                        'date_time_lunas' => null,
+                                    ]);
+
+                                    $recipientAdmin = auth()->user();
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title('Pelunasan untuk permohonan terbit tidak sah, No Transaksi ' . $transaksi->no_transaksi . ' Sudah DIBATALKAN')
+                                        ->sendToDatabase($recipientAdmin)
+                                        ->send();
+
+                                    $recipientUser = $transaksi->user;
+
+                                    // send notif to user yang bayar
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'Pelunasan permohonan terbit dengan No Transaksi '
+                                                . $transaksi->no_transaksi .
+                                                ' gagal, mohon segera melakukan pembayaran ulang.'
+                                        )
+                                        ->body($transaksi->id)
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+
+                                    return;
+                                } else {
+                                    return;
+                                }
+                            }
+                        ),
+                    // sunting
+                    Tables\Actions\EditAction::make()
+                        ->label('Sunting')
+                        ->hidden(function (transaksi_paket_penerbitan $transaksi) {
+                            if ($transaksi->status != 'REVIEW') {
+                                return true;
+                            }
+                            return false;
+                        }),
+                    // lanjut tahap Terima Draft
+                    Tables\Actions\Action::make('Terima Draft')
+                        ->hidden(function (transaksi_paket_penerbitan $transaksi) {
+                            if ($transaksi->status != 'REVIEW') {
+                                return true;
+                            }
+                            return false;
+                        })
+                        ->requiresConfirmation()
+                        ->modalHeading('Terima Draft')
+                        ->modalDescription('Apakah anda yakin ingin menerima draft ini?')
+                        ->modalSubmitActionLabel('iya, Terima Draft')
+                        ->color('success')
+                        ->modalIcon('heroicon-s-chat-bubble-left-ellipsis')
+                        ->icon('heroicon-s-document-check')
+                        ->modalIconColor('success')
+                        ->action(
+                            function (transaksi_paket_penerbitan $transaksi): void {
+                                $transaksi->update([
+                                    'status' => 'TERIMA DRAFT',
+                                    'date_time_exp' => Carbon::now()->addHours(24),
+                                ]);
+
+                                $recipientAdmin = auth()->user();
+
+                                Notification::make()
+                                    ->success()
+                                    ->title('Buku Permohonan Terbit: No Transaksi ' . $transaksi->no_transaksi . ' Sudah TERIMA DRAFT')
+                                    ->sendToDatabase($recipientAdmin)
+                                    ->send();
+
+                                $recipientUser = $transaksi->user;
+
+                                // send notif to user yang bayar
+                                Notification::make()
+                                    ->success()
+                                    ->title('Buku Permohonan Terbit : No Transaksi ' . $transaksi->no_transaksi . ' Sudah Diterima, mohon segera melakukan pembayaran DP dalam 24 jam untuk Buku Permohonan Terbit ' .
+                                        $transaksi->buku_permohonan_terbit->judul . '.')
+                                    ->body($transaksi->id)
+                                    ->sendToDatabase($recipientUser);
+
+                                event(new DatabaseNotificationsSent($recipientUser));
+
+                                return;
+                            }
+                        ),
+
+                ])->iconButton()
             ])
             ->recordUrl(false)
             ->bulkActions([]);

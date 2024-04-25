@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\jasa_tambahan;
 use App\Models\paket_penerbitan;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +20,7 @@ class jasa_paket_penerbitanFactory extends Factory
     {
         return [
             'paket_penerbitan_id' => paket_penerbitan::all()->random()->id,
-            'nama' => $this->faker->word(),
+            'jasa_tambahan_id' => jasa_tambahan::all()->random()->id
         ];
     }
 }

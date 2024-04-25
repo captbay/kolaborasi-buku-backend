@@ -17,7 +17,7 @@ class buku_permohonan_terbit extends Model
     // has many transaksi_paket_penerbitan
     public function transaksi_paket_penerbitan()
     {
-        return $this->hasMany(transaksi_paket_penerbitan::class);
+        return $this->hasOne(transaksi_paket_penerbitan::class);
     }
 
     // belongs to user

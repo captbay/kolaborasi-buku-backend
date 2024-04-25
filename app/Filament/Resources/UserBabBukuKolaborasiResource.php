@@ -156,6 +156,19 @@ class UserBabBukuKolaborasiResource extends Resource
                             ->acceptedFileTypes(['application/pdf'])
                             ->directory('file_buku_bab_kolaborasi'),
                     ])->hiddenOn('create'),
+
+                Forms\Components\Section::make('File Mou')
+                    ->schema([
+                        Forms\Components\FileUpload::make('file_mou')
+                            ->label('Upload file MOU')
+                            ->helperText('* File mou yang diupload oleh member')
+                            ->disabled()
+                            ->openable()
+                            ->maxSize(2 * 1024)
+                            ->downloadable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('mou_buku_kolaborasi'),
+                    ])->hiddenOn('create'),
             ]);
     }
 

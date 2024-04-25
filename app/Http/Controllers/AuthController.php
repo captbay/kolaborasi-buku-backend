@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password as RulesPassword;
 
 class AuthController extends Controller
 {
@@ -95,8 +96,20 @@ class AuthController extends Controller
                 'nama_depan' => 'required|min:3',
                 'nama_belakang' => 'required|min:3',
                 'email' => 'required|email:rfc,dns|unique:users',
-                'password' => 'required|min:8',
-                'no_telepon' => 'required|max:12|min:9|starts_with:08,+62',
+                'password' => ['required', RulesPassword::min(6)
+                    ->letters()
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised()],
+                'no_telepon' => 'required|min:9|starts_with:08,+62',
+            ], [
+                'password.min' => 'Password minimal 6 karakter',
+                'password.letters' => 'Password minimal memiliki 1 huruf',
+                'password.numbers' => 'Password minimal memiliki 1 angka',
+                'password.symbols' => 'Password minimal memiliki 1 simbol',
+                'password.mixed' => 'Password minimal memiliki 1 huruf kecil dan besar',
+                'password.uncompromised' => 'Password ini telah di pelanggarai',
             ]);
 
             // if validation fails

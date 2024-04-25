@@ -19,4 +19,10 @@ class jasa_paket_penerbitan extends Model
     {
         return $this->belongsTo(paket_penerbitan::class, 'paket_id');
     }
+
+    // belongs to jasa_tambahan
+    public function jasa_tambahan()
+    {
+        return $this->belongsTo(jasa_tambahan::class, 'jasa_tambahan_id');
+    }
 }

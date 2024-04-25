@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('jasa_tambahan', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('nama');
-            $table->string('harga');
+            $table->integer('harga');
             $table->timestamps();
         });
     }

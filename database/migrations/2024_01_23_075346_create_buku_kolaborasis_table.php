@@ -20,7 +20,6 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->integer('jumlah_bab');
             $table->string('bahasa');
-            $table->string('file_mou')->nullable();
             $table->boolean('active_flag');
             $table->boolean('dijual')->default(0);
             $table->timestamps();

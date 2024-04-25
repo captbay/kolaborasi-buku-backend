@@ -168,7 +168,7 @@ class UserBabBukuKolaborasiController extends Controller
                 'cover_buku' => $data->bab_buku_kolaborasi->buku_kolaborasi->cover_buku,
                 'deskripsi_buku' => $data->bab_buku_kolaborasi->buku_kolaborasi->deskripsi,
                 'kategori_buku' => $data->bab_buku_kolaborasi->buku_kolaborasi->kategori->nama,
-                'file_mou' => $data->bab_buku_kolaborasi->buku_kolaborasi->file_mou,
+                'file_mou' => $data->file_mou,
                 'timeline_kolaborasi' => $timeline_kolaborasi,
                 'buku_kolaborasi_id' => $data->bab_buku_kolaborasi->buku_kolaborasi->id,
             ];
@@ -190,17 +190,19 @@ class UserBabBukuKolaborasiController extends Controller
      * Download file mou base on buku_kolaborasi_id
      *
      **/
-    public function downloadMou()
+    public function downloadMou(Request $request)
     {
         // Get the data from the database
         try {
-            $data = mou::orderBy('created_at', 'desc')
+            $data = mou::where('active_flag', 1)
+                ->where('kategori', $request->filter)
+                ->orderBy('created_at', 'desc')
                 ->first();
 
             if (!$data) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data tidak ditemukan'
+                    'message' => 'Mou tidak ditemukan'
                 ], 404);
             }
 
@@ -215,7 +217,7 @@ class UserBabBukuKolaborasiController extends Controller
                 ], 404);
             }
 
-            return response()->download($path, 'filemou_' . $data->judul . '.pdf');
+            return response()->download($path, 'filemou_' . $data->nama . '.pdf');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -225,7 +227,7 @@ class UserBabBukuKolaborasiController extends Controller
     }
 
     /**
-     * Upload file mou base on buku_kolaborasi_id
+     * Upload file mou base on user_bab_buku_kolaborasi_id
      *
      * */
     public function uploadMou(Request $request, $id)
@@ -233,7 +235,7 @@ class UserBabBukuKolaborasiController extends Controller
 
         // Get the data from the database
         try {
-            $data = buku_kolaborasi::find($id);
+            $data = user_bab_buku_kolaborasi::find($id);
 
             if (!$data) {
                 return response()->json([

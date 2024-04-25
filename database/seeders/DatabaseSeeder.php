@@ -93,14 +93,14 @@ class DatabaseSeeder extends Seeder
         konten_faq::factory(10)->create();
         config_web::factory(10)->create();
 
+        // jasa tambahan
+        jasa_tambahan::factory(10)->create();
+
         // paket penerbitan
         paket_penerbitan::factory(10)->create();
         jasa_paket_penerbitan::factory(20)->create();
         buku_permohonan_terbit::factory(30)->create();
         transaksi_paket_penerbitan::factory(30)->create();
-
-        // jasa tambahan
-        jasa_tambahan::factory(10)->create();
         trx_jasa_penerbitan::factory(30)->create();
 
         // buku kolaborasi
@@ -112,8 +112,18 @@ class DatabaseSeeder extends Seeder
         // mou
         DB::table('mou')->insert([
             'id' => \Ramsey\Uuid\Uuid::uuid4(),
-            'nama' => "MOU Template 2024",
-            'deskripsi' => "template perjanjian kerjasama penerbitan buku yang dibutuhkan sebagai syarat penerbitan dilakukan sebagai sebuah kesepakatan antara penulis dan penerbit",
+            'nama' => "MOU Template Kolaborasi",
+            'kategori' => "kolaborasi",
+            'file_mou' => '/buku_final_temp.pdf',
+            'active_flag' => 1,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        DB::table('mou')->insert([
+            'id' => \Ramsey\Uuid\Uuid::uuid4(),
+            'nama' => "MOU Template Penerbitan",
+            'kategori' => "paket penerbitan",
             'file_mou' => '/buku_final_temp.pdf',
             'active_flag' => 1,
             'created_at' => now(),

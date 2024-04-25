@@ -17,6 +17,12 @@ class UserBabBukuKolaborasiObserver
         if ($user_bab_buku_kolaborasi->isDirty('file_bab') && $originalCover !== null) {
             Storage::disk('public')->delete($originalCover);
         }
+
+        $file_mou = $user_bab_buku_kolaborasi->getOriginal('file_mou');
+
+        if ($user_bab_buku_kolaborasi->isDirty('file_mou') && $file_mou !== null) {
+            Storage::disk('public')->delete($file_mou);
+        }
     }
 
     /**
@@ -29,6 +35,12 @@ class UserBabBukuKolaborasiObserver
         if ($user_bab_buku_kolaborasi->isDirty('file_bab') && $originalCover !== null) {
             Storage::disk('public')->delete($originalCover);
         }
+
+        $file_mou = $user_bab_buku_kolaborasi->getOriginal('file_mou');
+
+        if ($user_bab_buku_kolaborasi->isDirty('file_mou') && $file_mou !== null) {
+            Storage::disk('public')->delete($file_mou);
+        }
     }
 
     /**
@@ -38,6 +50,10 @@ class UserBabBukuKolaborasiObserver
     {
         if (!is_null($user_bab_buku_kolaborasi->file_bab)) {
             Storage::disk('public')->delete($user_bab_buku_kolaborasi->file_bab);
+        }
+
+        if (!is_null($user_bab_buku_kolaborasi->file_mou)) {
+            Storage::disk('public')->delete($user_bab_buku_kolaborasi->file_mou);
         }
     }
 
@@ -57,6 +73,10 @@ class UserBabBukuKolaborasiObserver
         if (!is_null($user_bab_buku_kolaborasi->file_bab)) {
             Storage::disk('public')->delete($user_bab_buku_kolaborasi->file_bab);
         }
+
+        if (!is_null($user_bab_buku_kolaborasi->file_mou)) {
+            Storage::disk('public')->delete($user_bab_buku_kolaborasi->file_mou);
+        }
     }
 
     /**
@@ -68,6 +88,12 @@ class UserBabBukuKolaborasiObserver
 
         if ($user_bab_buku_kolaborasi->isDirty('file_bab') && $originalCover !== null) {
             Storage::disk('public')->delete($originalCover);
+        }
+
+        $file_mou = $user_bab_buku_kolaborasi->getOriginal('file_mou');
+
+        if ($user_bab_buku_kolaborasi->isDirty('file_mou') && $file_mou !== null) {
+            Storage::disk('public')->delete($file_mou);
         }
     }
 }

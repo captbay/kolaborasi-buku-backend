@@ -124,4 +124,31 @@ class KeranjangController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * get count all item in keranjang
+     **/
+    public function count()
+    {
+        try {
+
+            $user = Auth::user();
+            $keranjang = keranjang::where('user_id', $user->id)
+                ->count();
+
+            $keranjang = [
+                'count' => $keranjang
+            ];
+            return response()->json([
+                'success' => true,
+                'message' => 'Jumlah keranjang',
+                'data' => $keranjang,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
