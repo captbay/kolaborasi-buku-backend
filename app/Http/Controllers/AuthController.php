@@ -109,7 +109,7 @@ class AuthController extends Controller
                 'password.numbers' => 'Password minimal memiliki 1 angka',
                 'password.symbols' => 'Password minimal memiliki 1 simbol',
                 'password.mixed' => 'Password minimal memiliki 1 huruf kecil dan besar',
-                'password.uncompromised' => 'Password ini telah di pelanggarai',
+                'password.uncompromised' => 'Silahkan masukkan password yang berbeda karena password ini tidak aman',
             ]);
 
             // if validation fails
@@ -172,7 +172,7 @@ class AuthController extends Controller
             $user = User::find(Auth::user()->id);
 
             // check if req->password is same with user password
-            if (!Hash::check($request->password, $user->password)) {
+            if (!Hash::check($request->old_password, $user->password)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Kata Sandi Lama Anda Salah!',
@@ -183,14 +183,24 @@ class AuthController extends Controller
             $validatedData = Validator::make(
                 $request->all(),
                 [
-                    'password' => 'required|min:8',
-                    'new_password' => 'required|min:8|different:password',
-                    'confirm_password' => 'required|min:8|same:new_password',
+                    'old_password' => 'required',
+                    'password' => ['required', 'different:old_password', RulesPassword::min(6)
+                        ->letters()
+                        ->mixedCase()
+                        ->numbers()
+                        ->symbols()
+                        ->uncompromised()],
+                    'confirm_password' => 'required|min:6|same:password',
                 ],
                 [
-                    'new_password.min' => 'Kata Sandi Baru Minimal 8 Karakter!',
-                    'confirm_password.min' => 'Konfirmasi Kata Sandi Minimal 8 Karakter!',
-                    'new_password.different' => 'Kata Sandi Baru Harus Berbeda Dengan Kata Sandi Lama!',
+                    'password.letters' => 'Kata Sandi Baru minimal memiliki 1 huruf',
+                    'password.numbers' => 'Kata Sandi Baru minimal memiliki 1 angka',
+                    'password.symbols' => 'Kata Sandi Baru minimal memiliki 1 simbol',
+                    'password.mixed' => 'Kata Sandi Baru minimal memiliki 1 huruf kecil dan besar',
+                    'password.uncompromised' => 'Silahkan masukkan password yang berbeda karena password ini tidak aman',
+                    'password.min' => 'Kata Sandi Baru Minimal 6 Karakter!',
+                    'password.different' => 'Kata Sandi Baru Harus Berbeda Dengan Kata Sandi Lama!',
+                    'confirm_password.min' => 'Konfirmasi Kata Sandi Minimal 6 Karakter!',
                     'confirm_password.same' => 'Kata Sandi Baru dan Konfirmasi Kata Sandi Tidak Sama!',
                 ]
             );
@@ -201,10 +211,10 @@ class AuthController extends Controller
             }
 
             // check password
-            if (Hash::check($request->password, $user->password)) {
+            if (Hash::check($request->old_password, $user->password)) {
                 // update password
                 $user->update([
-                    'password' => Hash::make($request->new_password),
+                    'password' => Hash::make($request->password),
                 ]);
 
                 // revoke token
@@ -274,10 +284,21 @@ class AuthController extends Controller
                 [
                     'token' => 'required',
                     'email' => 'required|email',
-                    'password' => 'required|min:8',
+                    'password' => ['required', RulesPassword::min(6)
+                        ->letters()
+                        ->mixedCase()
+                        ->numbers()
+                        ->symbols()
+                        ->uncompromised()],
                     'confirm_password' => 'required|same:password',
                 ],
                 [
+                    'password.min' => 'Password minimal 6 karakter',
+                    'password.letters' => 'Password minimal memiliki 1 huruf',
+                    'password.numbers' => 'Password minimal memiliki 1 angka',
+                    'password.symbols' => 'Password minimal memiliki 1 simbol',
+                    'password.mixed' => 'Password minimal memiliki 1 huruf kecil dan besar',
+                    'password.uncompromised' => 'Silahkan masukkan password yang berbeda karena password ini tidak aman',
                     'confirm_password.same' => 'Kata Sandi dan Konfirmasi Password Tidak Sama!',
                 ]
             );

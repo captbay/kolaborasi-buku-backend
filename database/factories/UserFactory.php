@@ -36,12 +36,12 @@ class UserFactory extends Factory
             'kecamatan' => $this->faker->city(),
             'kota' => $this->faker->city(),
             'kode_pos' => $this->faker->postcode(),
-            'foto_profil' => '/cover_buku.jpg',
+            'foto_profil' => '/cover_buku_' . rand(1, 3) . '.jpg',
             'status_verif_email' => $this->faker->randomElement([0, 1]), // 0 or 1
             'email_verified_at' => now(),
-            'file_cv' => '/buku_final_temp.pdf',
-            'file_ktp' => '/buku_final_temp.pdf',
-            'file_ttd' => '/buku_final_temp.pdf',
+            'file_cv' => '/buku_' . rand(1, 10) . '.pdf',
+            'file_ktp' => '/buku_' . rand(1, 10) . '.pdf',
+            'file_ttd' => '/buku_' . rand(1, 10) . '.pdf',
             'role' => $this->faker->randomElement(['CUSTOMER', 'MEMBER']), // 'ADMIN', 'CUSTOMER', 'MEMBER'
             'remember_token' => Str::random(10),
         ];

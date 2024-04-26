@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -37,6 +39,20 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        DB::table('users')->insert([
+            'id' => \Ramsey\Uuid\Uuid::uuid4(),
+            'nama_depan' => 'admin',
+            'nama_belakang' => 'penerbitan',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('admin'),
+            'no_telepon' => '081234567890',
+            'status_verif_email' => 1,
+            'email_verified_at' => now(),
+            'role' => 'ADMIN',
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
 
     /**

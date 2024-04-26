@@ -22,13 +22,13 @@ class EventResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-s-photo';
 
-    protected static ?string $navigationLabel = 'Galeri';
+    protected static ?string $navigationLabel = 'Galeri Event';
 
-    protected static ?string $label = 'Galeri';
+    protected static ?string $label = 'Galeri Event';
 
-    protected static ?string $slug = 'galeri';
+    protected static ?string $slug = 'galeri-event';
 
-    protected static ?string $title = 'Galeri';
+    protected static ?string $title = 'Galeri Event';
 
     protected static ?int $navigationSort = 4;
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('konten_event', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->enum('tipe', ['IMAGE', 'VIDEO']);
+            $table->enum('tipe', ['IMAGE']);
             $table->string('file');
             $table->dateTime('waktu_mulai');
             $table->dateTime('waktu_selesai');

@@ -40,58 +40,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // make user admin
-        User::create([
-            'nama_depan' => 'admin',
-            'nama_belakang' => 'penerbitan',
-            'email' => 'admin@admin.com',
-            'password' => Hash::make('admin'),
-            'no_telepon' => '081234567890',
-            'status_verif_email' => 1,
-            'email_verified_at' => now(),
-            'role' => 'ADMIN',
-        ]);
-
-        User::create([
-            'nama_depan' => 'customer',
-            'nama_belakang' => 'penerbitan',
-            'email' => 'customer@mail.com',
-            'password' => Hash::make('password'),
-            'no_telepon' => '081234567890',
-            'status_verif_email' => 1,
-            'email_verified_at' => now(),
-            'role' => 'CUSTOMER',
-        ]);
-
-        User::create([
-            'nama_depan' => 'member',
-            'nama_belakang' => 'penerbitan',
-            'email' => 'member@mail.com',
-            'password' => Hash::make('password'),
-            'no_telepon' => '081234567890',
-            'status_verif_email' => 1,
-            'email_verified_at' => now(),
-            'role' => 'MEMBER',
-        ]);
-
-        User::factory(10)->create();
-        kategori::factory(10)->create();
+        // kategori::factory(10)->create();
+        $this->call(KategoriSeeder::class);
 
         // buku dijual
-        penulis::factory(10)->create();
-        buku_dijual::factory(20)->create();
-        keranjang::factory(20)->create();
-        testimoni_pembeli::factory(10)->create();
-        bukudijual_penulis_pivot::factory(10)->create();
-        buku_lunas_user::factory(20)->create();
-        storage_buku_dijual::factory(10)->create();
-        transaksi_penjualan_buku::factory(20)->create();
-        list_transaksi_buku::factory(30)->create();
+        penulis::factory(20)->create();
+        buku_dijual::factory(50)->create();
+        // testimoni_pembeli::factory(20)->create();
+        bukudijual_penulis_pivot::factory(50)->create();
+        // keranjang::factory(20)->create();
+        // buku_lunas_user::factory(20)->create();
+        storage_buku_dijual::factory(50)->create();
+        // transaksi_penjualan_buku::factory(20)->create();
+        // list_transaksi_buku::factory(30)->create();
 
         // config web
-        konten_event::factory(10)->create();
-        konten_faq::factory(10)->create();
-        config_web::factory(10)->create();
+        // konten_event::factory(10)->create();
+        $this->call(KontenEventSeeder::class);
+        // konten_faq::factory(10)->create();
+        $this->call(KontenFaqSeeder::class);
+        // config_web::factory(10)->create();
 
         // jasa tambahan
         jasa_tambahan::factory(10)->create();
@@ -99,22 +67,22 @@ class DatabaseSeeder extends Seeder
         // paket penerbitan
         paket_penerbitan::factory(10)->create();
         jasa_paket_penerbitan::factory(20)->create();
-        buku_permohonan_terbit::factory(30)->create();
-        transaksi_paket_penerbitan::factory(30)->create();
-        trx_jasa_penerbitan::factory(30)->create();
+        // buku_permohonan_terbit::factory(30)->create();
+        // transaksi_paket_penerbitan::factory(30)->create();
+        // trx_jasa_penerbitan::factory(30)->create();
 
         // buku kolaborasi
         buku_kolaborasi::factory(10)->create();
-        bab_buku_kolaborasi::factory(10)->create();
-        user_bab_buku_kolaborasi::factory(10)->create();
-        transaksi_kolaborasi_buku::factory(20)->create();
+        // bab_buku_kolaborasi::factory(10)->create();
+        // user_bab_buku_kolaborasi::factory(10)->create();
+        // transaksi_kolaborasi_buku::factory(20)->create();
 
         // mou
         DB::table('mou')->insert([
             'id' => \Ramsey\Uuid\Uuid::uuid4(),
             'nama' => "MOU Template Kolaborasi",
             'kategori' => "kolaborasi",
-            'file_mou' => '/buku_final_temp.pdf',
+            'file_mou' => '/mou_file/contoh_mou_kolaborasi.pdf',
             'active_flag' => 1,
             'created_at' => now(),
             'updated_at' => now(),
@@ -124,97 +92,10 @@ class DatabaseSeeder extends Seeder
             'id' => \Ramsey\Uuid\Uuid::uuid4(),
             'nama' => "MOU Template Penerbitan",
             'kategori' => "paket penerbitan",
-            'file_mou' => '/buku_final_temp.pdf',
+            'file_mou' => '/mou_file/contoh_mou_penerbitan.pdf',
             'active_flag' => 1,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        // make notification seeder
-        $data = [
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-            [
-                'type' => 'Filament\Notifications\DatabaseNotification',
-                'notifiable_type' => 'App\Models\User',
-                'notifiable_id' => User::all()->random()->id,
-                'data' => json_encode([
-                    'title' => 'Selamat Datang',
-                    'body' => 'Selamat datang di aplikasi penerbitan buku',
-                    'actions' => []
-                ])
-            ],
-        ];
-
-        foreach ($data as $d) {
-            DB::table('notifications')->insert([
-                'id' => \Ramsey\Uuid\Uuid::uuid4(),
-                'type' => $d['type'],
-                'notifiable_type' => $d['notifiable_type'],
-                'notifiable_id' => $d['notifiable_id'],
-                'data' => $d['data'],
-                'read_at' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
     }
 }
