@@ -413,7 +413,7 @@ class BukuKolaborasiResource extends Resource
                                 'deskripsi' => $buku_kolaborasi->deskripsi,
                                 'jumlah_halaman' => $jumlah_halaman,
                                 'bahasa' => $buku_kolaborasi->bahasa,
-                                'penerbit' => env('APP_NAME'),
+                                'penerbit' => config('app.app_name'),
                                 'nama_file_buku' => $data['nama_file_buku'],
                                 'file_buku' => $data['file_buku'],
                                 'isbn' => $data['isbn'],

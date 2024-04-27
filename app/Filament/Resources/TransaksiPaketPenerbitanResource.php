@@ -418,7 +418,7 @@ class TransaksiPaketPenerbitanResource extends Resource
                                     'deskripsi' => $buku_permohonan_terbit->deskripsi,
                                     'jumlah_halaman' => $jumlah_halaman,
                                     'bahasa' => $data['bahasa'],
-                                    'penerbit' => env('APP_NAME'),
+                                    'penerbit' => config('app.app_name'),
                                     'nama_file_buku' => $buku_permohonan_terbit->judul . '.pdf', // 'buku_final_storage/' . $buku_permohonan_terbit->judul . '.pdf
                                     'file_buku' => 'buku_final_storage/' . $file_buku,
                                     'isbn' => $buku_permohonan_terbit->isbn,

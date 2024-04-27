@@ -32,7 +32,7 @@ class EditBukuDijual extends EditRecord
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['slug'] = Str::slug($data['judul']);
-        $data['penerbit'] = env('APP_NAME');
+        $data['penerbit'] = config('app.app_name');
 
         return $data;
     }
