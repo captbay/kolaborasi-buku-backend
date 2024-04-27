@@ -147,7 +147,7 @@ class UserBabBukuKolaborasiController extends Controller
                 [
                     'id' => 5,
                     'judul' => 'Input ISBN',
-                    'status' => $count_selesai == $dataForTimeline->jumlah_bab ? 'proses' : 'menunggu'
+                    'status' => $dataForTimeline->dijual == 1 ? 'selesai' : 'menunggu'
                 ],
                 [
                     'id' => 6,
