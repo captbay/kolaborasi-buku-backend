@@ -6,7 +6,9 @@ use App\Models\buku_dijual;
 use App\Models\keranjang;
 use App\Models\list_transaksi_buku;
 use App\Models\transaksi_penjualan_buku;
+use App\Models\User;
 use Carbon\Carbon;
+use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -256,7 +258,7 @@ class TransaksiPenjualanBukuController extends Controller
     {
         // Upload bukti pembayaran
         try {
-            $trx = transaksi_penjualan_buku::find($id);
+            $trx = transaksi_penjualan_buku::with('user')->find($id);
 
             // validate request
             $validatedData = Validator::make($request->all(), [
@@ -294,6 +296,15 @@ class TransaksiPenjualanBukuController extends Controller
                 'date_time_exp' => null,
                 'status' => 'UPLOADED',
             ]);
+
+            // send notification to admin
+            $recipientAdmin = User::where('role', 'admin')->first();
+
+            Notification::make()
+                ->success()
+                ->title('Terdapat pembelian buku oleh user ' . $trx->user->nama_lengkap . ' dan sudah upload bukti pembayaran!')
+                ->sendToDatabase($recipientAdmin)
+                ->send();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

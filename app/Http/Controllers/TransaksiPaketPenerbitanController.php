@@ -7,7 +7,9 @@ use App\Models\jasa_tambahan;
 use App\Models\paket_penerbitan;
 use App\Models\transaksi_paket_penerbitan;
 use App\Models\trx_jasa_penerbitan;
+use App\Models\User;
 use Carbon\Carbon;
+use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -186,6 +188,15 @@ class TransaksiPaketPenerbitanController extends Controller
             }
 
             if ($transaksi_paket_penerbitan) {
+                // send notification to admin
+                $recipientAdmin = User::where('role', 'admin')->first();
+
+                Notification::make()
+                    ->success()
+                    ->title('Terdapat pembelian paket penerbitan oleh user ' . $user->nama_lengkap . ', silahkan mulai review!')
+                    ->sendToDatabase($recipientAdmin)
+                    ->send();
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Transaksi paket penerbitan berhasi dibuat',
@@ -369,7 +380,7 @@ class TransaksiPaketPenerbitanController extends Controller
     {
         // Upload bukti pembayaran
         try {
-            $trx = transaksi_paket_penerbitan::find($id);
+            $trx = transaksi_paket_penerbitan::with('user')->find($id);
 
             // validate request
             $validatedData = Validator::make($request->all(), [
@@ -430,6 +441,15 @@ class TransaksiPaketPenerbitanController extends Controller
                     'date_time_exp' => null,
                     'status' => 'PELUNASAN UPLOADED',
                 ]);
+
+                // send notification to admin
+                $recipientAdmin = User::where('role', 'admin')->first();
+
+                Notification::make()
+                    ->success()
+                    ->title('Terdapat pembelian paket penerbitan oleh user ' . $trx->user->nama_lengkap . ' dan sudah upload bukti pembayaran!')
+                    ->sendToDatabase($recipientAdmin)
+                    ->send();
             } else {
                 return response()->json([
                     'success' => false,

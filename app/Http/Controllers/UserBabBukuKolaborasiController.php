@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\buku_kolaborasi;
 use App\Models\mou;
+use App\Models\User;
 use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
+use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -335,7 +337,7 @@ class UserBabBukuKolaborasiController extends Controller
 
         // Get the data from the database
         try {
-            $data = user_bab_buku_kolaborasi::find($id);
+            $data = user_bab_buku_kolaborasi::with('user')->find($id);
 
             if (!$data) {
                 return response()->json([
@@ -379,6 +381,15 @@ class UserBabBukuKolaborasiController extends Controller
                 'file_bab' => 'file_buku_bab_kolaborasi/' . $filename,
                 'datetime_deadline' => null,
             ]);
+
+            // send notification to admin
+            $recipientAdmin = User::where('role', 'admin')->first();
+
+            Notification::make()
+                ->success()
+                ->title('Terdapat upload bab kolaborasi oleh user ' . $data->user->nama_lengkap . ', silahkan cek!')
+                ->sendToDatabase($recipientAdmin)
+                ->send();
 
             // Path to the PDF file
         } catch (\Exception $e) {

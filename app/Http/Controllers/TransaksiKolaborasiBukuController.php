@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\bab_buku_kolaborasi;
 use App\Models\transaksi_kolaborasi_buku;
+use App\Models\User;
 use Carbon\Carbon;
+use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -244,7 +246,7 @@ class TransaksiKolaborasiBukuController extends Controller
     {
         // Upload bukti pembayaran
         try {
-            $trx = transaksi_kolaborasi_buku::find($id);
+            $trx = transaksi_kolaborasi_buku::with('user')->find($id);
 
             // validate request
             $validatedData = Validator::make($request->all(), [
@@ -282,6 +284,15 @@ class TransaksiKolaborasiBukuController extends Controller
                 'date_time_exp' => null,
                 'status' => 'UPLOADED',
             ]);
+
+            // send notification to admin
+            $recipientAdmin = User::where('role', 'admin')->first();
+
+            Notification::make()
+                ->success()
+                ->title('Terdapat pembelian kolaborasi oleh user ' . $trx->user->nama_lengkap . ' dan sudah upload bukti pembayaran!')
+                ->sendToDatabase($recipientAdmin)
+                ->send();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
