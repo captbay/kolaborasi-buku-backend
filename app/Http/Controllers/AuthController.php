@@ -55,7 +55,7 @@ class AuthController extends Controller
             }
 
             // create token
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $token = $user->createToken('auth_token', ['*'], now()->addDay())->plainTextToken;
 
             // check password
             if (Hash::check($request->password, $user->password)) {
