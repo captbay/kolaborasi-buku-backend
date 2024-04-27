@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\penulis>
  */
-class PenulisFactory extends Factory
+class penulisFactory extends Factory
 {
     /**
      * Define the model's default state.
