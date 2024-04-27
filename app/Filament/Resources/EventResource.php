@@ -72,7 +72,7 @@ class EventResource extends Resource
                             ->openable()
                             ->image()
                             ->imageEditor()
-                            ->helperText('Gambar harus berukuran 1440px x 320px')
+                            ->helperText('Gambar direkomendasikan berukuran 1440 px x 320 px')
                             ->hidden(fn (Forms\Get $get) => $get('tipe') !== 'IMAGE')
                             ->directory('galeri_config_file/image'),
                     ])->description('Tipe file'),

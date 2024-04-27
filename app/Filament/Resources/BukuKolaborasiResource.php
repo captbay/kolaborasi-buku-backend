@@ -167,7 +167,7 @@ class BukuKolaborasiResource extends Resource
                         Forms\Components\Section::make('File')
                             ->schema([
                                 Forms\Components\FileUpload::make('cover_buku')
-                                    ->helperText('Gambar harus berukuran 192px x 192px')
+                                    ->helperText('Gambar direkomendasikan berukuran 192 px x 192px')
                                     ->required()
                                     ->openable()
                                     ->image()
@@ -309,7 +309,7 @@ class BukuKolaborasiResource extends Resource
                             ->required(),
 
                         Forms\Components\FileUpload::make('cover_buku')
-                            ->helperText('Gambar harus berukuran 192px x 192px')
+                            ->helperText('Gambar direkomendasikan berukuran 192 px x 192px')
                             ->required()
                             ->openable()
                             ->image()
