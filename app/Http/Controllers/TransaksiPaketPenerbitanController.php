@@ -69,22 +69,33 @@ class TransaksiPaketPenerbitanController extends Controller
     {
         // Create a new resource
         try {
+            // get user login
+            $user = Auth::user();
+
+            // if user role != MEMBER
+            if ($user->role != 'MEMBER') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kolaborasi Hanya Bisa Dilakukan Oleh Member, Silahkan Mendaftar Terlebih Dahulu Di Menu Akun!',
+                ], 404);
+            }
+
             // validate request
             $validatedData = Validator::make($request->all(), [
                 'paket_id' => 'required',
                 'judul_buku' => 'required|string',
                 'deskripsi_buku' => 'required|string',
-                'file_buku' => 'required|file|mimes:pdf,doc,docx|max:2048',
+                'file_buku' => 'required|file|mimes:pdf,doc,docx|max:20480',
                 'file_mou' => 'required|file|mimes:pdf|max:2048',
+            ], [
+                'file_buku.max' => 'File Buku Maksimal 20 MB',
+                'file_mou.max' => 'File MOU Maksimal 2 MB',
             ]);
 
             // if validation fails
             if ($validatedData->fails()) {
                 return response()->json(['message' => $validatedData->errors()], 422);
             }
-
-            // user login
-            $user = Auth::user();
 
             // set temp total harga
             $total_harga = 0;

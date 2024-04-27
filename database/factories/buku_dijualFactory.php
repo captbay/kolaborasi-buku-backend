@@ -32,7 +32,7 @@ class buku_dijualFactory extends Factory
             'cover_buku' => "/cover_buku_" . rand(1, 3) . ".jpg",
             'deskripsi' => $this->faker->paragraph(10),
             'jumlah_halaman' => $this->faker->numberBetween(100, 500),
-            'bahasa' => $this->faker->randomElement(['Indonesaia', 'Inggris', 'Spanyol']),
+            'bahasa' => $this->faker->randomElement(['Indonesaia', 'Inggris']),
             'penerbit' => $this->faker->company(),
             'nama_file_buku' => $this->faker->word() . '.pdf',
             'file_buku' => '/buku_' . rand(1, 10) . '.pdf',

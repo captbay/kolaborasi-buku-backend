@@ -84,6 +84,8 @@ class UserBabBukuKolaborasiController extends Controller
                 })
                 ->find($data->bab_buku_kolaborasi->buku_kolaborasi->id);
 
+            // dd($dataForTimeline);
+
             // set temp count for timeline
             $count_kontributor = 0;
             $count_upload = 0;
@@ -92,25 +94,28 @@ class UserBabBukuKolaborasiController extends Controller
 
             foreach ($dataForTimeline->bab_buku_kolaborasi as $key => $value) {
                 if (
-                    $value->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()
-                    || $value->user_bab_buku_kolaborasi->first()->status != "FAILED"
+                    $value->user_bab_buku_kolaborasi->first()
                 ) {
-                    $count_kontributor++;
-                }
+                    if (
+                        $value->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()
+                        || $value->user_bab_buku_kolaborasi->first()?->status != "FAILED"
+                    ) {
+                        $count_kontributor++;
+                    }
+                    // check if status is UPLOADED
+                    if ($value->user_bab_buku_kolaborasi->first()?->status == "UPLOADED" || $value->user_bab_buku_kolaborasi->first()?->status == "EDITING" || $value->user_bab_buku_kolaborasi->first()?->status == "DONE") {
+                        $count_upload++;
+                    }
 
-                // check if status is UPLOADED
-                if ($value->user_bab_buku_kolaborasi->first()->status == "UPLOADED") {
-                    $count_upload++;
-                }
+                    // check if status is EDITING
+                    if ($value->user_bab_buku_kolaborasi->first()?->status == "EDITING" || $value->user_bab_buku_kolaborasi->first()?->status == "DONE") {
+                        $count_editing++;
+                    }
 
-                // check if status is EDITING
-                if ($value->user_bab_buku_kolaborasi->first()->status == "EDITING") {
-                    $count_editing++;
-                }
-
-                // check if status is DONE
-                if ($value->user_bab_buku_kolaborasi->first()->status == "DONE") {
-                    $count_selesai++;
+                    // check if status is DONE
+                    if ($value->user_bab_buku_kolaborasi->first()?->status == "DONE") {
+                        $count_selesai++;
+                    }
                 }
             }
 
@@ -247,6 +252,8 @@ class UserBabBukuKolaborasiController extends Controller
             // validate request
             $validatedData = Validator::make($request->all(), [
                 'file_mou' => 'required|file|mimes:pdf|max:2048',
+            ], [
+                'file_mou.max' => 'File MOU Maksimal 2 MB',
             ]);
 
             // if validation fails
@@ -339,7 +346,9 @@ class UserBabBukuKolaborasiController extends Controller
 
             // validate request
             $validatedData = Validator::make($request->all(), [
-                'file_bab' => 'required|file|mimes:pdf,doc,docx|max:2048',
+                'file_bab' => 'required|file|mimes:pdf,doc,docx|max:20480',
+            ], [
+                'file_bab.max' => 'File BAB Maksimal 20 MB',
             ]);
 
             // if validation fails

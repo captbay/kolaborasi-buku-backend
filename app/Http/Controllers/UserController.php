@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
+use Filament\Notifications\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -154,6 +156,10 @@ class UserController extends Controller
                 'file_cv' => 'required|file|mimes:pdf,doc,docx|max:2048',
                 'file_ktp' => 'required|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:2048',
                 'file_ttd' => 'required|image|mimes:png|max:2048',
+            ], [
+                'file_cv.max' => 'File CV Maksimal 2 MB',
+                'file_ktp.max' => 'File KTP Maksimal 2 MB',
+                'file_ttd.max' => 'File Tanda Tangan Maksimal 2 MB',
             ]);
 
             // if validation fails
@@ -215,6 +221,17 @@ class UserController extends Controller
                 'file_ktp' => 'file_ktp/' . $filenameKtp,
                 'file_ttd' => 'file_ttd/' . $filenameTtd,
             ]);
+
+            // send notification to admin
+            $recipientAdmin = User::where('role', 'admin')->first();
+
+            Notification::make()
+                ->success()
+                ->title('Terdapat pengajuan member oleh user ' . $user->nama_lengkap . '!')
+                ->sendToDatabase($recipientAdmin)
+                ->send();
+
+            // event(new DatabaseNotificationsSent($recipientAdmin));
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -250,6 +267,8 @@ class UserController extends Controller
             // validate request
             $validatedData = Validator::make($request->all(), [
                 'foto_profil' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            ], [
+                'foto_profil.max' => 'Foto Profil Maksimal 2 MB',
             ]);
 
 

@@ -300,6 +300,36 @@ class BukuDijualController extends Controller
                 ->limit(10)
                 ->get();
 
+            // not have best seller show 10 newest buku
+            if ($data->count() == 0) {
+                $data = buku_dijual::with('kategori')
+                    ->limit(10)
+                    ->get();
+
+                $data = $data->map(function ($item) {
+                    // count avarage rating of all tesimoni_pembeli data
+                    $rating = round($item->testimoni_pembeli->avg('rating'), 1);
+
+                    return [
+                        'id' => $item->id,
+                        'slug' => $item->slug,
+                        'judul' => $item->judul,
+                        'harga' => $item->harga,
+                        'kategori' => $item->kategori->nama,
+                        'cover_buku' => $item->cover_buku,
+                        'pembeli' => 0,
+                        'rating' => $rating,
+                    ];
+                });
+
+                // return the resource
+                return response()->json([
+                    'success' => true,
+                    'message' => 'buku best seller retrieved successfully.',
+                    'data' => $data
+                ], 200);
+            }
+
             // filter only needed data
             $data = $data->map(function ($item) {
                 // count avarage rating of all tesimoni_pembeli data
@@ -327,7 +357,6 @@ class BukuDijualController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'error',
-                'data' => 'buku_dijual not found'
             ], 404);
         }
 

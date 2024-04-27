@@ -30,7 +30,7 @@ class buku_kolaborasiFactory extends Factory
             'cover_buku' => '/cover_buku_' . rand(1, 3) . '.jpg',
             'deskripsi' => $this->faker->paragraph(10),
             'jumlah_bab' => $this->faker->numberBetween(1, 10),
-            'bahasa' => $this->faker->word(),
+            'bahasa' => $this->faker->randomElement(['Indonesaia', 'Inggris']),
             'active_flag' => $this->faker->boolean(),
             'dijual' => 0,
         ];

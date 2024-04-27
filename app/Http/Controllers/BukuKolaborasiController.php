@@ -109,8 +109,11 @@ class BukuKolaborasiController extends Controller
                     => function ($query) {
                         $query->orderBy('created_at', 'desc');
                     }])
+                        ->with(['transaksi_kolaborasi_buku' => function ($query) {
+                            $query->orderBy('created_at', 'desc');
+                        }])
                         ->where('active_flag', 1)
-                        ->orderBy('created_at', 'desc');
+                        ->orderBy('no_bab', 'asc');
                 }])
                 ->where('slug', $slug)
                 ->where('active_flag', 1)
@@ -144,22 +147,27 @@ class BukuKolaborasiController extends Controller
                         $terjual = false;
                     }
 
-                    // check if status is UPLOADED
-                    if ($item->user_bab_buku_kolaborasi->first()->status == "UPLOADED") {
-                        $count_upload++;
-                    }
+                    // // check if status is UPLOADED
+                    // if ($item->user_bab_buku_kolaborasi->first()->status == "UPLOADED") {
+                    //     $count_upload++;
+                    // }
 
-                    // check if status is EDITING
-                    if ($item->user_bab_buku_kolaborasi->first()->status == "EDITING") {
-                        $count_editing++;
-                    }
+                    // // check if status is EDITING
+                    // if ($item->user_bab_buku_kolaborasi->first()->status == "EDITING") {
+                    //     $count_editing++;
+                    // }
 
-                    // check if status is DONE
-                    if ($item->user_bab_buku_kolaborasi->first()->status == "DONE") {
-                        $count_selesai++;
-                    }
+                    // // check if status is DONE
+                    // if ($item->user_bab_buku_kolaborasi->first()->status == "DONE") {
+                    //     $count_selesai++;
+                    // }
                 } else {
-                    $terjual = false;
+                    if ($item->transaksi_kolaborasi_buku->first()) {
+                        $terjual = true;
+                        $count_kontributor++;
+                    } else {
+                        $terjual = false;
+                    }
                 }
 
                 if (auth('sanctum')->check()) {
@@ -224,49 +232,49 @@ class BukuKolaborasiController extends Controller
                 $status_kolaborasi = "open";
             }
 
-            // set data for timeline kolaborasi
-            // Kontributor
-            // Upload Naskah
-            // Editing Oleh Editor
-            // Naskah Selesai
-            // Input ISBN
-            // Buku Publish
-            $timeline_kolaborasi = [
-                [
-                    'id' => 1,
-                    'judul' => 'Kontributor',
-                    'count' => $count_kontributor . '/' . $data->jumlah_bab,
-                    'status' => $count_kontributor >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-                ],
-                [
-                    'id' => 2,
-                    'judul' => 'Upload Naskah',
-                    'count' => $count_upload . '/' . $data->jumlah_bab,
-                    'status' => $count_upload >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-                ],
-                [
-                    'id' => 3,
-                    'judul' => 'Editing Oleh Editor',
-                    'count' => $count_editing . '/' . $data->jumlah_bab,
-                    'status' => $count_editing >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-                ],
-                [
-                    'id' => 4,
-                    'judul' => 'Naskah Selesai',
-                    'count' => $count_selesai . '/' . $data->jumlah_bab,
-                    'status' => $count_selesai >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-                ],
-                [
-                    'id' => 5,
-                    'judul' => 'Input ISBN',
-                    'status' => $count_selesai == $data->jumlah_bab ? 'proses' : 'menunggu'
-                ],
-                [
-                    'id' => 6,
-                    'judul' => 'Buku Publish',
-                    'status' => $data->dijual == 1 ? 'selesai' : 'menunggu'
-                ],
-            ];
+            // // set data for timeline kolaborasi
+            // // Kontributor
+            // // Upload Naskah
+            // // Editing Oleh Editor
+            // // Naskah Selesai
+            // // Input ISBN
+            // // Buku Publish
+            // $timeline_kolaborasi = [
+            //     [
+            //         'id' => 1,
+            //         'judul' => 'Kontributor',
+            //         'count' => $count_kontributor . '/' . $data->jumlah_bab,
+            //         'status' => $count_kontributor >= $data->jumlah_bab ? 'selesai' : 'menunggu'
+            //     ],
+            //     [
+            //         'id' => 2,
+            //         'judul' => 'Upload Naskah',
+            //         'count' => $count_upload . '/' . $data->jumlah_bab,
+            //         'status' => $count_upload >= $data->jumlah_bab ? 'selesai' : 'menunggu'
+            //     ],
+            //     [
+            //         'id' => 3,
+            //         'judul' => 'Editing Oleh Editor',
+            //         'count' => $count_editing . '/' . $data->jumlah_bab,
+            //         'status' => $count_editing >= $data->jumlah_bab ? 'selesai' : 'menunggu'
+            //     ],
+            //     [
+            //         'id' => 4,
+            //         'judul' => 'Naskah Selesai',
+            //         'count' => $count_selesai . '/' . $data->jumlah_bab,
+            //         'status' => $count_selesai >= $data->jumlah_bab ? 'selesai' : 'menunggu'
+            //     ],
+            //     [
+            //         'id' => 5,
+            //         'judul' => 'Input ISBN',
+            //         'status' => $count_selesai == $data->jumlah_bab ? 'proses' : 'menunggu'
+            //     ],
+            //     [
+            //         'id' => 6,
+            //         'judul' => 'Buku Publish',
+            //         'status' => $data->dijual == 1 ? 'selesai' : 'menunggu'
+            //     ],
+            // ];
 
             // filter only needed data
             $data = [
@@ -279,7 +287,7 @@ class BukuKolaborasiController extends Controller
                 'jumlah_bab' => $data->jumlah_bab,
                 'status_kolaborasi' => $status_kolaborasi,
                 'bab' => $bab_buku,
-                'timeline_kolaborasi' => $timeline_kolaborasi
+                // 'timeline_kolaborasi' => $timeline_kolaborasi
             ];
         } catch (\Exception $e) {
             return response()->json([

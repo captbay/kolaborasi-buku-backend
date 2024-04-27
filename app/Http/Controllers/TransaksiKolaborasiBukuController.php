@@ -253,7 +253,7 @@ class TransaksiKolaborasiBukuController extends Controller
                 'foto_bukti_bayar.required' => 'Foto bukti bayar harus diisi',
                 'foto_bukti_bayar.file' => 'Foto bukti bayar harus berupa file',
                 'foto_bukti_bayar.mimes' => 'Foto bukti bayar harus berupa file gambar dengan format jpeg, png, jpg',
-                'foto_bukti_bayar.max' => 'Foto bukti bayar maksimal 2MB',
+                'foto_bukti_bayar.max' => 'Foto bukti bayar Maksimal 2MB',
             ]);
 
             // if validation fails

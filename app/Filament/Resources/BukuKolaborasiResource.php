@@ -7,6 +7,7 @@ use App\Models\bab_buku_kolaborasi;
 use App\Models\buku_kolaborasi;
 use App\Models\kategori;
 use App\Models\buku_dijual;
+use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -136,7 +137,7 @@ class BukuKolaborasiResource extends Resource
 
                                                 return $data;
                                             })
-                                            ->hiddenOn('create')
+                                            ->hiddenOn(['create', 'edit'])
                                             ->columnSpan('full'),
 
 
@@ -277,6 +278,10 @@ class BukuKolaborasiResource extends Resource
                         ])
                             ->where('buku_kolaborasi_id', $buku_kolaborasi->id)
                             ->get();
+
+                        if ($bab_buku_kolaborasi->count() == 0) {
+                            return true;
+                        }
 
                         // for rech to check if user_bab_buku_kolaborasi is array []
                         foreach ($bab_buku_kolaborasi as $key => $babData) {
