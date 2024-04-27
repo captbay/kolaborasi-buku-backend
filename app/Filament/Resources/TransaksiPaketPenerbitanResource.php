@@ -125,7 +125,6 @@ class TransaksiPaketPenerbitanResource extends Resource
 
                                 Forms\Components\FileUpload::make('cover_buku')
                                     ->label('Draft Cover Buku')
-                                    ->required()
                                     ->openable()
                                     ->image()
                                     ->imageEditor()

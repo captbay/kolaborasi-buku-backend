@@ -72,6 +72,7 @@ class BukuDijualResource extends Resource
                                     ->openable()
                                     ->image()
                                     ->imageEditor()
+                                    ->helperText('Gambar harus berukuran 192px x 192 px')
                                     ->directory('cover_buku_dijual'),
 
                                 Forms\Components\FileUpload::make('file_buku')
@@ -88,6 +89,7 @@ class BukuDijualResource extends Resource
                                     ->schema([
                                         Forms\Components\FileUpload::make('nama_generate')
                                             ->label('Upload Gambar untuk preview buku')
+                                            ->helperText('Gambar harus berukuran 192px x 192px')
                                             ->required()
                                             ->openable()
                                             ->image()

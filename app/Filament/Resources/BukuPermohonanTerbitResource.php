@@ -53,6 +53,7 @@ class BukuPermohonanTerbitResource extends Resource
                             ->openable()
                             ->image()
                             ->imageEditor()
+                            ->helperText('Gambar harus berukuran 192px x 192px')
                             ->directory('cover_buku_permohonan_terbit'),
 
                         Forms\Components\FileUpload::make('file_buku')
