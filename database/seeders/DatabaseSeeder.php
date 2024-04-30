@@ -43,59 +43,59 @@ class DatabaseSeeder extends Seeder
         // kategori::factory(10)->create();
         $this->call(KategoriSeeder::class);
 
-        // buku dijual
-        penulis::factory(20)->create();
-        buku_dijual::factory(50)->create();
+        // // buku dijual
+        // penulis::factory(20)->create();
+        // buku_dijual::factory(50)->create();
         // testimoni_pembeli::factory(20)->create();
-        bukudijual_penulis_pivot::factory(50)->create();
+        // bukudijual_penulis_pivot::factory(50)->create();
         // keranjang::factory(20)->create();
         // buku_lunas_user::factory(20)->create();
-        storage_buku_dijual::factory(50)->create();
+        // storage_buku_dijual::factory(50)->create();
         // transaksi_penjualan_buku::factory(20)->create();
         // list_transaksi_buku::factory(30)->create();
 
-        // config web
+        // // config web
         // konten_event::factory(10)->create();
-        $this->call(KontenEventSeeder::class);
+        // $this->call(KontenEventSeeder::class);
         // konten_faq::factory(10)->create();
         $this->call(KontenFaqSeeder::class);
         // config_web::factory(10)->create();
 
-        // jasa tambahan
+        // // jasa tambahan
         jasa_tambahan::factory(10)->create();
 
-        // paket penerbitan
+        // // paket penerbitan
         paket_penerbitan::factory(10)->create();
         jasa_paket_penerbitan::factory(20)->create();
         // buku_permohonan_terbit::factory(30)->create();
         // transaksi_paket_penerbitan::factory(30)->create();
         // trx_jasa_penerbitan::factory(30)->create();
 
-        // buku kolaborasi
-        buku_kolaborasi::factory(10)->create();
+        // // buku kolaborasi
+        // buku_kolaborasi::factory(10)->create();
         // bab_buku_kolaborasi::factory(10)->create();
         // user_bab_buku_kolaborasi::factory(10)->create();
         // transaksi_kolaborasi_buku::factory(20)->create();
 
         // mou
-        DB::table('mou')->insert([
-            'id' => \Ramsey\Uuid\Uuid::uuid4(),
-            'nama' => "MOU Template Kolaborasi",
-            'kategori' => "kolaborasi",
-            'file_mou' => '/mou_file/contoh_mou_kolaborasi.pdf',
-            'active_flag' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // DB::table('mou')->insert([
+        //     'id' => \Ramsey\Uuid\Uuid::uuid4(),
+        //     'nama' => "MOU Template Kolaborasi",
+        //     'kategori' => "kolaborasi",
+        //     'file_mou' => '/mou_file/contoh_mou_kolaborasi.pdf',
+        //     'active_flag' => 1,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
 
-        DB::table('mou')->insert([
-            'id' => \Ramsey\Uuid\Uuid::uuid4(),
-            'nama' => "MOU Template Penerbitan",
-            'kategori' => "paket penerbitan",
-            'file_mou' => '/mou_file/contoh_mou_penerbitan.pdf',
-            'active_flag' => 1,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // DB::table('mou')->insert([
+        //     'id' => \Ramsey\Uuid\Uuid::uuid4(),
+        //     'nama' => "MOU Template Penerbitan",
+        //     'kategori' => "paket penerbitan",
+        //     'file_mou' => '/mou_file/contoh_mou_penerbitan.pdf',
+        //     'active_flag' => 1,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
     }
 }
