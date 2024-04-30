@@ -26,7 +26,7 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         ResetPassword::createUrlUsing(function (User $user, string $token) {
-            return 'http://localhost:3000/reset-password?token=' . $token . '&email=' . $user->email; //pake link di FE, habistu di FE baru pake API buat ganti
+            return 'https://ta-ages-kolaborasi.vercel.app/reset-password?token=' . $token . '&email=' . $user->email; //pake link di FE, habistu di FE baru pake API buat ganti
         });
 
         VerifyEmail::toMailUsing(function (User $user, string $url) {

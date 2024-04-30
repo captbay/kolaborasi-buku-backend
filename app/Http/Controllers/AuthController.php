@@ -361,7 +361,7 @@ class AuthController extends Controller
 
             // return response()->json(["message" => "Email Anda Berhasil di Verifikasi."], 200);
             // redirect another link
-            return redirect('http://localhost:3000/login');
+            return redirect('https://ta-ages-kolaborasi.vercel.app/login');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
