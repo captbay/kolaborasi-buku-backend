@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\KeranjangResource\Pages;
 use App\Filament\Resources\KeranjangResource\RelationManagers;
-use App\Models\Keranjang;
+use App\Models\keranjang;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class KeranjangResource extends Resource
 {
-    protected static ?string $model = Keranjang::class;
+    protected static ?string $model = keranjang::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-shopping-cart';
 
@@ -23,9 +23,9 @@ class KeranjangResource extends Resource
 
     protected static ?string $label = 'Keranjang';
 
-    protected static ?string $slug = 'keranjang';
+    protected static ?string $slug = 'Keranjang';
 
-    protected static ?string $title = 'Keranjang';
+    protected static ?string $title = 'keranjang';
 
     protected static ?int $navigationSort = 3;
 
@@ -43,9 +43,9 @@ class KeranjangResource extends Resource
             ->defaultGroup(
                 Tables\Grouping\Group::make('user.nama_lengkap')
                     ->collapsible()
-                    ->getDescriptionFromRecordUsing(function (Keranjang $record) {
+                    ->getDescriptionFromRecordUsing(function (keranjang $record) {
                         // count total buku_dijual in keranjang
-                        $data = Keranjang::with('buku_dijual')->where('user_id', $record->user_id)->get();
+                        $data = keranjang::with('buku_dijual')->where('user_id', $record->user_id)->get();
 
                         return 'Total Buku : ' . count($data->toArray()) . ' Buku';
                     })

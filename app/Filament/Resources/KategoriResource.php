@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\KategoriResource\Pages;
 use App\Filament\Resources\KategoriResource\RelationManagers;
-use App\Models\Kategori;
+use App\Models\kategori;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -19,7 +19,7 @@ use function Livewire\wrap;
 
 class KategoriResource extends Resource
 {
-    protected static ?string $model = Kategori::class;
+    protected static ?string $model = kategori::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-rectangle-stack';
 
@@ -32,7 +32,7 @@ class KategoriResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama')
-                    ->unique(Kategori::class, 'nama', ignoreRecord: true)
+                    ->unique(kategori::class, 'nama', ignoreRecord: true)
                     ->required()->minLength(1)->maxLength(150)
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {

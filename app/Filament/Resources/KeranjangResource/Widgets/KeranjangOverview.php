@@ -12,8 +12,8 @@ class KeranjangOverview extends BaseWidget
     protected function getStats(): array
     {
         // count % kenaikan total keranjang dibandingkan bulan lalu
-        $totalKeranjangBulanLalu = Keranjang::whereMonth('created_at', date('m', strtotime('-1 month')))->count();
-        $totalKeranjangBulanIni = Keranjang::whereMonth('created_at', date('m'))->count();
+        $totalKeranjangBulanLalu = keranjang::whereMonth('created_at', date('m', strtotime('-1 month')))->count();
+        $totalKeranjangBulanIni = keranjang::whereMonth('created_at', date('m'))->count();
 
         $kenaikan = ($totalKeranjangBulanIni - $totalKeranjangBulanLalu);
         if ($totalKeranjangBulanLalu == 0) {
@@ -25,7 +25,7 @@ class KeranjangOverview extends BaseWidget
         return [
             Stat::make(
                 'Total Keranjang Bulan Ini',
-                Keranjang::whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->count()
+                keranjang::whereMonth('created_at', date('m'))->whereYear('created_at', date('Y'))->count()
             )
                 ->description('Meningkat ' . $kenaikan . '% dari bulan lalu')
                 ->descriptionIcon('heroicon-m-arrow-trending-up')
@@ -37,7 +37,7 @@ class KeranjangOverview extends BaseWidget
             ),
             Stat::make(
                 'Total Buku Yang Ingin Dibeli',
-                Keranjang::whereHas('buku_dijual')->count()
+                keranjang::whereHas('buku_dijual')->count()
             ),
         ];
     }
