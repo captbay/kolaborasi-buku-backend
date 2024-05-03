@@ -42,7 +42,9 @@ class ConfigWebResource extends Resource
                     ->required()
                     ->columnSpan('full')
                     ->maxLength(255)
-                    ->unique(config_web::class, 'key', ignoreRecord: true),
+                    ->helperText('*Key harus unik dan berhati hati dalam penamaan karena akan terintegrasi dengan website client')
+                    ->unique(config_web::class, 'key', ignoreRecord: true)
+                    ->hiddenOn('edit'),
 
                 Forms\Components\Select::make('tipe')
                     ->columnSpan('full')
@@ -51,6 +53,7 @@ class ConfigWebResource extends Resource
                         'TEXT' => 'Text',
                     ])
                     ->live(onBlur: true)
+                    ->hiddenOn('edit')
                     ->required(),
 
                 Forms\Components\Section::make('Value')
@@ -117,14 +120,14 @@ class ConfigWebResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()->slideOver(),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    // Tables\Actions\DeleteAction::make(),
                 ])->iconButton()
             ])
             ->recordUrl(false)
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 

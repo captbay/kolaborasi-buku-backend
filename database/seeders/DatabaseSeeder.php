@@ -57,8 +57,9 @@ class DatabaseSeeder extends Seeder
         // // config web
         // konten_event::factory(10)->create();
         // $this->call(KontenEventSeeder::class);
-        // konten_faq::factory(10)->create();
         $this->call(KontenFaqSeeder::class);
+        // konten_faq::factory(10)->create();
+        $this->call(ConfigWebSeeder::class);
         // config_web::factory(10)->create();
 
         // // jasa tambahan

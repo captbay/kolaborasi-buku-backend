@@ -8,42 +8,59 @@ use Illuminate\Http\Request;
 class ConfigWebController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the getRekening.
      */
-    public function index()
+    public function getRekening()
     {
-        //
-    }
+        try {
+            $config = config_web::where('key', 'like', '%_rek%')
+                ->where('tipe', 'TEXT')
+                ->get();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+            if ($config->count() == 0) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'data not found.',
+                    'data' => [
+                        "no_rek" => "92031903901923",
+                        "bank_rek" => "BANK SEJAHTERA",
+                        "nama_rek" => "PT PENERBITAN BUKU",
+                    ],
+                ], 200);
+            }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(config_web $config_web)
-    {
-        //
-    }
+            $no_rek = "";
+            $bank_rek = "";
+            $nama_rek = "";
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, config_web $config_web)
-    {
-        //
-    }
+            $data = $config->map(function ($data) use (&$no_rek, &$bank_rek, &$nama_rek) {
+                if ($data->key == 'no_rek') {
+                    $no_rek = $data->value;
+                } elseif ($data->key == 'bank_rek') {
+                    $bank_rek = $data->value;
+                } elseif ($data->key == 'nama_rek') {
+                    $nama_rek = $data->value;
+                }
+            });
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(config_web $config_web)
-    {
-        //
+            // return needed data
+            $data = [
+                "no_rek" => $no_rek,
+                "bank_rek" => $bank_rek,
+                "nama_rek" => $nama_rek,
+            ];
+
+            // return the resource
+            return response()->json([
+                'success' => true,
+                'message' => 'data retrieved successfully.',
+                'data' => $data,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

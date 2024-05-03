@@ -5,6 +5,7 @@ use App\Http\Controllers\BukuDijualController;
 use App\Http\Controllers\BukuKolaborasiController;
 use App\Http\Controllers\BukuLunasUserController;
 use App\Http\Controllers\BukuPermohonanTerbitController;
+use App\Http\Controllers\ConfigWebController;
 use App\Http\Controllers\JasaTambahanController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KeranjangController;
@@ -175,6 +176,12 @@ Route::group(['prefix' => 'koleksi-buku-penerbitan-user', 'middleware' => ['auth
 Route::group(['prefix' => 'mou', 'middleware' => ['auth:sanctum', 'verified']], function () {
     // download file mou
     Route::get('downloadMou/{filter}', [UserBabBukuKolaborasiController::class, 'downloadMou']);
+});
+
+// config
+Route::group(['prefix' => 'config', 'middleware' => ['auth:sanctum', 'verified']], function () {
+    // download file mou
+    Route::get('getRekening', [ConfigWebController::class, 'getRekening']);
 });
 
 // buku
