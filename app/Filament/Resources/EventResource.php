@@ -116,8 +116,9 @@ class EventResource extends Resource
                         return Carbon::parse($event->waktu_mulai)->format('d F Y // H:i');
                     })
                     ->searchable()
-                    ->sortable(),                Tables\Columns\TextColumn::make('waktu_selesai')
-                    ->label('Tanggal Waktu Mulai')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('waktu_selesai')
+                    ->label('Tanggal Waktu Selesai')
                     ->formatStateUsing(function (konten_event $event) {
                         return Carbon::parse($event->waktu_selesai)->format('d F Y // H:i');
                     })
