@@ -155,7 +155,7 @@ class PaketPenerbitanResource extends Resource
                 Tables\Columns\TextColumn::make('waktu_selesai')
                     ->label('Tanggal Waktu Selesai')
                     ->formatStateUsing(function (paket_penerbitan $paket) {
-                        return Carbon::parse($paket->datetime_deadline)->format('d F Y // H:i');
+                        return Carbon::parse($paket->waktu_selesai)->format('d F Y // H:i');
                     })
                     ->searchable()
                     ->sortable(),

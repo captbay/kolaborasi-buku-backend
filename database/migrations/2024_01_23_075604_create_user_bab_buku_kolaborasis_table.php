@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('note')->nullable();
             $table->string('file_bab')->nullable();
             $table->string('file_mou')->nullable();
-            $table->timestamp('datetime_deadline')->nullable();
+            $table->dateTime('datetime_deadline')->nullable();
             $table->timestamps();
         });
     }
