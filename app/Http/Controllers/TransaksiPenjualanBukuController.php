@@ -133,7 +133,7 @@ class TransaksiPenjualanBukuController extends Controller
 
             // delete keranjang if $buku_dijual_array is more than 1
             if (
-                count($buku_dijual_array) > 1
+                count($buku_dijual_array) > 0
             ) {
                 // delete keranjang
                 foreach ($buku_dijual_array as $key => $value) {
