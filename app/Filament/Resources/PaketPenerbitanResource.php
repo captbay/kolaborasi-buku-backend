@@ -56,7 +56,7 @@ class PaketPenerbitanResource extends Resource
                                     ->minValue(1)
                                     ->required(),
 
-                                Forms\Components\TextArea::make('deskripsi')
+                                Forms\Components\Textarea::make('deskripsi')
                                     ->columnSpan('full')
                                     ->required(),
                             ])->columns(2),

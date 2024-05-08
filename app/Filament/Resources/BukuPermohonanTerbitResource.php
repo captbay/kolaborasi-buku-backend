@@ -44,7 +44,7 @@ class BukuPermohonanTerbitResource extends Resource
                                     ->maxLength(255)
                                     ->unique(buku_permohonan_terbit::class, 'judul', ignoreRecord: true),
 
-                                Forms\Components\TextArea::make('deskripsi')
+                                Forms\Components\Textarea::make('deskripsi')
                                     ->required(),
                             ]),
 

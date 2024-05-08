@@ -146,6 +146,10 @@ class UserResource extends Resource
                                 return true;
                             }
 
+                            if ($user->file_cv == null || $user->file_ktp == null || $user->file_ttd == null) {
+                                return true;
+                            }
+
                             if ($user->role == 'MEMBER') {
                                 return true;
                             }
