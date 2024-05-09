@@ -36,7 +36,15 @@ class AuthController extends Controller
             }
 
             // find user
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->withTrashed()->first();
+
+            // if user deleted
+            if ($user->deleted_at != null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Akun kamu sedang diblokir oleh admin!, hubungi admin untuk info lebih lanjut',
+                ], 404);
+            }
 
             // if user not found
             if (!$user) {
