@@ -7,6 +7,7 @@ use App\Models\transaksi_kolaborasi_buku;
 use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BukuKolaborasiController extends Controller
 {
@@ -310,5 +311,38 @@ class BukuKolaborasiController extends Controller
             'message' => 'kolaborasi retrieved successfully.',
             'data' => $data
         ], 200);
+    }
+
+    // downloadFileHakCipta
+    public function downloadFileHakCipta($id)
+    {
+        try {
+            $data = buku_kolaborasi::find($id);
+
+            if (!$data) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Buku Kolaborasi not found',
+                ], 404);
+            }
+
+            // Path to the PDF file
+            $path = Storage::disk('public')->path($data->file_hak_cipta);
+
+            // Check if the file exists
+            if (!Storage::disk('public')->exists($data->file_hak_cipta)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File buku tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->download($path, $data->judul . '.pdf');
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }

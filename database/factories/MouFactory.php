@@ -17,7 +17,10 @@ class mouFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'nama' => $this->faker->word(),
+            'kategori' => $this->faker->word(),
+            'file_mou' => $this->faker->word(),
+            'active_flag' => $this->faker->numberBetween(0, 1),
         ];
     }
 }

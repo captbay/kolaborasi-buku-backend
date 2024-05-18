@@ -39,6 +39,7 @@ class BukuLunasUserController extends Controller
                     'cover_buku' => $item->buku_dijual->cover_buku,
                     'judul' => $item->buku_dijual->judul,
                     'kategori' => $item->buku_dijual->kategori->nama,
+                    'active_flag' => $item->buku_dijual->active_flag
                 ];
             });
 

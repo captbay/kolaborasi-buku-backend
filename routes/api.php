@@ -156,6 +156,8 @@ Route::group(['prefix' => 'koleksi-buku-kolaborasi-user', 'middleware' => ['auth
     Route::get('detail/{id}', [UserBabBukuKolaborasiController::class, 'show']);
     // upload file mou
     Route::post('uploadMou/{id}', [UserBabBukuKolaborasiController::class, 'uploadMou']);
+    // download file_hak_cipta
+    Route::get('downloadFileHakCipta/{id}', [BukuKolaborasiController::class, 'downloadFileHakCipta']);
     // gagal bcs time exp
     Route::put('failedKolaborasi/{id}', [UserBabBukuKolaborasiController::class, 'failedKolaborasi']);
     // upload bab file

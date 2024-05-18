@@ -23,8 +23,8 @@ class user_bab_buku_kolaborasiFactory extends Factory
             'bab_buku_kolaborasi_id' => bab_buku_kolaborasi::all()->random()->id,
             'status' => $this->faker->randomElement(['DONE', 'PROGRESS', 'EDITING', 'REJECTED', 'UPLOADED', 'FAILED']),
             'note' => $this->faker->randomElement([$this->faker->paragraph(), null]),
-            'file_bab' => '/buku_' . rand(1, 10) . '.pdf',
-            'file_mou' => '/buku_' . rand(1, 10) . '.pdf',
+            'file_bab' => '/buku.pdf',
+            'file_mou' => '/buku.pdf',
             'datetime_deadline' => $this->faker->dateTimeBetween('now', '+1 years'),
         ];
     }

@@ -55,6 +55,8 @@ return [
     |
     */
     'app_name' => env('APP_NAME'),
+    'front_end_web' => env('FRONT_END_WEB'),
+    'email_penerbitan_admin' => env('EMAIL_PENERBITAN_ADMIN'),
     'url' => env('APP_URL', 'http://localhost'),
 
     'asset_url' => env('ASSET_URL'),

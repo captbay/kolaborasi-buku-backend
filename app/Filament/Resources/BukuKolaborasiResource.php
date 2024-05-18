@@ -7,6 +7,7 @@ use App\Models\bab_buku_kolaborasi;
 use App\Models\buku_kolaborasi;
 use App\Models\kategori;
 use App\Models\buku_dijual;
+use App\Models\buku_lunas_user;
 use App\Models\user_bab_buku_kolaborasi;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -18,6 +19,7 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Get;
+use Filament\Notifications\Events\DatabaseNotificationsSent;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\File;
 
@@ -157,6 +159,7 @@ class BukuKolaborasiResource extends Resource
                                     ->afterStateUpdated(function ($state, Forms\Set $set) {
                                         $set('jumlah_bab', count($state));
                                     })
+                                    ->hiddenOn('edit')
                                     ->required(),
                             ])
                     ])
@@ -174,6 +177,16 @@ class BukuKolaborasiResource extends Resource
                                     ->imageEditor()
                                     ->directory('cover_buku_kolaborasi'),
                             ]),
+
+                        Forms\Components\Section::make('File Hak Cipta')
+                            ->schema([
+                                Forms\Components\FileUpload::make('file_hak_cipta')
+                                    ->helperText('Diupload saat sudah menciptakan buku dijual')
+                                    ->openable()
+                                    ->downloadable()
+                                    ->disabled()
+                            ])
+                            ->hiddenOn(['edit', 'create']),
 
                         Forms\Components\Section::make('Kategori')
                             ->schema([
@@ -289,6 +302,11 @@ class BukuKolaborasiResource extends Resource
                             if (count($babData->user_bab_buku_kolaborasi) == 0) {
                                 return true;
                             }
+                            foreach ($babData->user_bab_buku_kolaborasi as $key => $user_bab_buku_kolaborasi) {
+                                if ($user_bab_buku_kolaborasi->user == null) {
+                                    return true;
+                                }
+                            }
                         }
 
                         return false;
@@ -343,6 +361,12 @@ class BukuKolaborasiResource extends Resource
                             ->acceptedFileTypes(['application/pdf'])
                             ->storeFileNamesIn('nama_file_buku')
                             ->directory('buku_final_storage'),
+
+                        Forms\Components\FileUpload::make('file_hak_cipta')
+                            ->label('Upload File Hak Cipta PDF (optional)')
+                            ->openable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('hak_cipta'),
                     ])
                     ->action(
                         function (buku_kolaborasi $buku_kolaborasi, array $data): void {
@@ -385,8 +409,17 @@ class BukuKolaborasiResource extends Resource
                                     if ($bab_buku->status == 'DONE') {
                                         $hargaCount += $babData->harga;
 
-                                        $penulis[] = $bab_buku->user->nama_lengkap;
-                                        $userPenulisArray[] = $bab_buku->user;
+                                        if ($bab_buku->user != null) {
+                                            $penulis[] = $bab_buku->user->nama_lengkap;
+                                            $userPenulisArray[] = $bab_buku->user;
+                                        } else {
+                                            Notification::make()
+                                                ->danger()
+                                                ->title('Ada User Yang Tekena Suspen Akun!')
+                                                ->send();
+
+                                            return;
+                                        }
                                     } else {
                                         Notification::make()
                                             ->danger()
@@ -443,13 +476,167 @@ class BukuKolaborasiResource extends Resource
                                     'dijual' => 1,
                                 ]);
 
+                                $userPenulisArray = array_unique($userPenulisArray);
+
+                                if ($data['file_hak_cipta']) {
+                                    $buku_kolaborasi->update([
+                                        'file_hak_cipta' => $data['file_hak_cipta'],
+                                    ]);
+
+
+                                    foreach ($userPenulisArray as $key => $value) {
+
+                                        $recipientUser = $value;
+
+                                        Notification::make()
+                                            ->success()
+                                            ->title(
+                                                'Buku kolaborasi ' . $buku_dijual->judul . ' sudah diterbitkan, silahkan melihat pada koleksi buku Anda dan download hak cipta anda pada koleksi kolaborasi'
+                                            )
+                                            ->sendToDatabase($recipientUser);
+
+                                        event(new DatabaseNotificationsSent($recipientUser));
+
+                                        buku_lunas_user::create([
+                                            "user_id" => $value->id,
+                                            "buku_dijual_id" => $buku_dijual->id
+                                        ]);
+                                    }
+                                } else {
+
+                                    foreach ($userPenulisArray as $key => $value) {
+
+                                        $recipientUser = $value;
+
+                                        Notification::make()
+                                            ->success()
+                                            ->title(
+                                                'Buku kolaborasi ' . $buku_dijual->judul . ' sudah diterbitkan, silahkan melihat pada koleksi buku Anda'
+                                            )
+                                            ->sendToDatabase($recipientUser);
+
+                                        event(new DatabaseNotificationsSent($recipientUser));
+
+                                        buku_lunas_user::create([
+                                            "user_id" => $value->id,
+                                            "buku_dijual_id" => $buku_dijual->id
+                                        ]);
+                                    }
+                                }
+
                                 Notification::make()
                                     ->success()
                                     ->title('Buku berhasil diterbitkan, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
                                     ->send();
 
+                                return;
+                            }
+
+                            Notification::make()
+                                ->danger()
+                                ->title('Proses Gagal, coba ulangi beberapa saat lagi')
+                                ->send();
+
+                            return;
+                        }
+                    ),
+                Tables\Actions\Action::make('Upload Hak Cipta')
+                    ->hidden(function (buku_kolaborasi $buku_kolaborasi, array $data) {
+                        if ($buku_kolaborasi->dijual != 1) {
+                            return true;
+                        }
+
+                        if ($buku_kolaborasi->file_hak_cipta) {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    ->requiresConfirmation()
+                    ->modalHeading('Upload Hak Cipta')
+                    ->modalDescription('Upload hak cipta buku')
+                    ->modalSubmitActionLabel('Upload')
+                    ->color('success')
+                    ->modalIcon('heroicon-o-book-open')
+                    ->icon('heroicon-o-book-open')
+                    ->modalIconColor('success')
+                    ->form([
+                        Forms\Components\FileUpload::make('file_hak_cipta')
+                            ->label('Upload File Hak Cipta PDF (optional)')
+                            ->openable()
+                            ->acceptedFileTypes(['application/pdf'])
+                            ->directory('hak_cipta'),
+                    ])
+                    ->action(
+                        function (buku_kolaborasi $buku_kolaborasi, array $data): void {
+                            if ($buku_kolaborasi->dijual != 1) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Buku harus diterbitkan terlebih dahulu')
+                                    ->send();
+
+                                return;
+                            }
+
+                            // get bab_buku_kolaborasi
+                            $bab_buku_kolaborasi = bab_buku_kolaborasi::with([
+                                'user_bab_buku_kolaborasi' => fn ($query) => $query->where('status', 'DONE')
+                            ])
+                                ->where('buku_kolaborasi_id', $buku_kolaborasi->id)
+                                ->get();
+
+                            // for rech to check if user_bab_buku_kolaborasi is array []
+                            foreach ($bab_buku_kolaborasi as $key => $babData) {
+                                if (count($babData->user_bab_buku_kolaborasi) == 0) {
+                                    Notification::make()
+                                        ->danger()
+                                        ->title('Bab buku belum lengkap')
+                                        ->send();
+
+                                    return;
+                                }
+                            }
+
+                            $penulis = array();
+                            $userPenulisArray = array();
+
+                            // forech $bab_buku_kolaborasi to merge pdf file_buku in user_bab_buku_kolaborasi
+                            foreach ($bab_buku_kolaborasi as $key => $babData) {
+                                foreach ($babData->user_bab_buku_kolaborasi as $key => $bab_buku) {
+                                    if ($bab_buku->status == 'DONE') {
+                                        if ($bab_buku->user != null) {
+                                            $penulis[] = $bab_buku->user->nama_lengkap;
+                                            $userPenulisArray[] = $bab_buku->user;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if ($data['file_hak_cipta']) {
+                                $buku_kolaborasi->update([
+                                    'file_hak_cipta' => $data['file_hak_cipta'],
+                                ]);
+
+                                Notification::make()
+                                    ->success()
+                                    ->title('Hak Cipta Buku Berhasil Diupload')
+                                    ->send();
+
                                 $userPenulisArray = array_unique($userPenulisArray);
 
+                                foreach ($userPenulisArray as $key => $value) {
+
+                                    $recipientUser = $value;
+
+                                    Notification::make()
+                                        ->success()
+                                        ->title(
+                                            'Buku kolaborasi ' . $buku_kolaborasi->judul . ' Hak Cipta Berhasil Diupload, silahkan cek pada menu kolaborasi buku Anda'
+                                        )
+                                        ->sendToDatabase($recipientUser);
+
+                                    event(new DatabaseNotificationsSent($recipientUser));
+                                }
 
                                 return;
                             }
@@ -465,7 +652,29 @@ class BukuKolaborasiResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()->slideOver(),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->hidden(function (buku_kolaborasi $buku_kolaborasi, array $data) {
+                            // get bab_buku_kolaborasi
+                            $bab_buku_kolaborasi = bab_buku_kolaborasi::with([
+                                'user_bab_buku_kolaborasi' => fn ($query) => $query->where('status', 'DONE')
+                            ])
+                                ->where('buku_kolaborasi_id', $buku_kolaborasi->id)
+                                ->get();
+
+                            // for rech to check if user_bab_buku_kolaborasi is array []
+                            foreach ($bab_buku_kolaborasi as $key => $babData) {
+                                if (count($babData->user_bab_buku_kolaborasi) != 0) {
+                                    return true;
+                                }
+                                foreach ($babData->user_bab_buku_kolaborasi as $key => $user_bab_buku_kolaborasi) {
+                                    if ($user_bab_buku_kolaborasi->user != null) {
+                                        return true;
+                                    }
+                                }
+                            }
+
+                            return false;
+                        }),
                 ])->iconButton()
             ])
             ->recordUrl(false)

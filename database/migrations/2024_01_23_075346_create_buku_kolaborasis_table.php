@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('jumlah_bab');
             $table->string('bahasa');
             $table->boolean('active_flag');
+            $table->string('file_hak_cipta')->nullable();
             $table->boolean('dijual')->default(0);
             $table->timestamps();
         });

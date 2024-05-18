@@ -78,7 +78,7 @@ class TransaksiPaketPenerbitanController extends Controller
             if ($user->role != 'MEMBER') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Kolaborasi Hanya Bisa Dilakukan Oleh Member, Silahkan Mendaftar Terlebih Dahulu Di Menu Akun!',
+                    'message' => 'Penerbitan Hanya Bisa Dilakukan Oleh Member, Silahkan Mendaftar Terlebih Dahulu Di Menu Akun!',
                 ], 404);
             }
 

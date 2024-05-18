@@ -38,6 +38,8 @@ class ListBukuKolaborasis extends ListRecords
                             }
                         ]);
 
+                        $dude->where('dijual', 0);
+
                         $dude->whereHas('bab_buku_kolaborasi.user_bab_buku_kolaborasi', function ($query) {
                             $query->where('status', 'DONE');
                         }, '=', $buku_kolaborasi->bab_buku_kolaborasi->count());
@@ -55,6 +57,10 @@ class ListBukuKolaborasis extends ListRecords
                         ]);
 
                         $dude->where('dijual', 0);
+
+                        $dude->whereHas('bab_buku_kolaborasi.user_bab_buku_kolaborasi', function ($query) {
+                            $query->where('status', 'DONE');
+                        });
 
                         $dude->whereDoesntHave('bab_buku_kolaborasi', function ($query) {
                             $query->whereDoesntHave('user_bab_buku_kolaborasi', function ($query) {

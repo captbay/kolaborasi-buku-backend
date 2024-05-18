@@ -176,6 +176,7 @@ class UserBabBukuKolaborasiController extends Controller
                 'deskripsi_buku' => $data->bab_buku_kolaborasi->buku_kolaborasi->deskripsi,
                 'kategori_buku' => $data->bab_buku_kolaborasi->buku_kolaborasi->kategori->nama,
                 'file_mou' => $data->file_mou,
+                'file_hak_cipta' => $data->bab_buku_kolaborasi->buku_kolaborasi->file_hak_cipta,
                 'timeline_kolaborasi' => $timeline_kolaborasi,
                 'buku_kolaborasi_id' => $data->bab_buku_kolaborasi->buku_kolaborasi->id,
             ];

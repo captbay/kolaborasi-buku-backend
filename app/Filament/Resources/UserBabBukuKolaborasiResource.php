@@ -127,12 +127,13 @@ class UserBabBukuKolaborasiResource extends Resource
                             ->default('PROGRESS')
                             ->options([
                                 'PROGRESS' => 'Progress',
-                                'UPLOADED' => 'Uploaded',
-                                'EDITING' => 'Editing',
-                                'DONE' => 'Done',
-                                'REJECTED' => 'Rejected',
-                                'FAILED' => 'Failed',
+                                // 'UPLOADED' => 'Uploaded',
+                                // 'EDITING' => 'Editing',
+                                // 'DONE' => 'Done',
+                                // 'REJECTED' => 'Rejected',
+                                // 'FAILED' => 'Failed',
                             ])
+                            ->disabled()
                             ->live()
                             ->required(),
                     ]),

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransaksiPaketPenerbitanResource\Pages;
 use App\Models\buku_dijual;
+use App\Models\buku_lunas_user;
 use App\Models\jasa_tambahan;
 use App\Models\paket_penerbitan;
 use App\Models\transaksi_paket_penerbitan;
@@ -293,6 +294,10 @@ class TransaksiPaketPenerbitanResource extends Resource
                                 return true;
                             }
 
+                            if ($transaksi->user == null) {
+                                return true;
+                            }
+
                             // if dijual == 1
                             if ($transaksi->buku_permohonan_terbit->dijual == 1) {
                                 return true;
@@ -457,6 +462,12 @@ class TransaksiPaketPenerbitanResource extends Resource
                                     // update status transaksi_paket_penerbitan
                                     $transaksi->update([
                                         'status' => 'SUDAH TERBIT',
+                                    ]);
+
+                                    // add buku to user_buku_lunas
+                                    buku_lunas_user::create([
+                                        'user_id' => $transaksi->user_id,
+                                        'buku_dijual_id' => $buku_dijual->id,
                                     ]);
 
                                     $recipientAdmin = auth()->user();

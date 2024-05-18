@@ -21,7 +21,7 @@ class storage_buku_dijualFactory extends Factory
             'buku_dijual_id' => buku_dijual::all()->random()->id,
             'tipe' => "IMAGE",
             'nama_file' => 'cover_buku.jpg',
-            'nama_generate' => '/cover_buku_2.jpg',
+            'nama_generate' => '/cover_buku.png',
         ];
     }
 }

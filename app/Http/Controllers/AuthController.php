@@ -38,19 +38,19 @@ class AuthController extends Controller
             // find user
             $user = User::where('email', $request->email)->withTrashed()->first();
 
-            // if user deleted
-            if ($user->deleted_at != null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Akun kamu sedang diblokir oleh admin!, hubungi admin untuk info lebih lanjut',
-                ], 404);
-            }
-
             // if user not found
             if (!$user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Email atau password kamu salah!',
+                ], 404);
+            }
+
+            // if user deleted
+            if ($user->deleted_at != null) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Akun kamu sedang diblokir oleh admin!, hubungi admin untuk info lebih lanjut',
                 ], 404);
             }
 
@@ -369,7 +369,7 @@ class AuthController extends Controller
 
             // return response()->json(["message" => "Email Anda Berhasil di Verifikasi."], 200);
             // redirect another link
-            return redirect('http://103.175.219.173/login');
+            return redirect(config('app.front_end_web') + '/login');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

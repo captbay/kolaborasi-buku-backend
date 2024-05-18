@@ -19,7 +19,7 @@ class konten_eventFactory extends Factory
     {
         return [
             'tipe' => 'IMAGE',
-            'file' => '/galeri_config_file/image/event_' . rand(1, 4) . '.jpg',
+            'file' => '/cover_buku.png',
             'waktu_mulai' => Carbon::now(),
             'waktu_selesai' => Carbon::now()->addDays(30),
             'active_flag' => $this->faker->numberBetween(0, 1),

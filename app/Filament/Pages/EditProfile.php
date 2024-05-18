@@ -51,10 +51,8 @@ class EditProfile extends Page implements HasForms
                             ->required(),
                         Forms\Components\TextInput::make('nama_belakang')
                             ->required(),
-                        Forms\Components\TextInput::make('email')
-                            ->email()
-                            ->required()
-                            ->unique(ignoreRecord: true),
+                        Forms\Components\TextInput::make('no_telepon')
+                            ->required(),
                     ]),
             ])
             ->model($this->getUser())

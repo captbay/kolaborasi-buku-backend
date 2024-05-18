@@ -44,7 +44,7 @@ return new class extends Migration
             'id' => \Ramsey\Uuid\Uuid::uuid4(),
             'nama_depan' => 'admin',
             'nama_belakang' => 'penerbitan',
-            'email' => 'admin@admin.com',
+            'email' => config('app.email_penerbitan_admin'),
             'password' => Hash::make('admin'),
             'no_telepon' => '081234567890',
             'status_verif_email' => 1,
