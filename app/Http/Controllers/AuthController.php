@@ -369,7 +369,7 @@ class AuthController extends Controller
 
             // return response()->json(["message" => "Email Anda Berhasil di Verifikasi."], 200);
             // redirect another link
-            return redirect(config('app.front_end_web') + '/login');
+            return redirect(config('app.front_end_web') . '/login');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
