@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Arunika Budi Agung Abadi')
             ->brandLogo(asset('images/logo.png'))
             ->brandLogoHeight('3rem')
-            ->favicon(asset('favicon.ico'))
+            ->favicon(asset('images/favicon.png'))
             ->darkMode(false)
             ->sidebarCollapsibleOnDesktop(true)
             ->id('admin')
