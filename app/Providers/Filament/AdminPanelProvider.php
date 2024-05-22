@@ -27,6 +27,11 @@ class AdminPanelProvider extends PanelProvider
     {
         return $panel
             ->default()
+            ->brandName('Arunika Budi Agung Abadi')
+            ->brandLogo(asset('images/logo.png'))
+            ->brandLogoHeight('3rem')
+            ->favicon(asset('favicon.ico'))
+            ->darkMode(false)
             ->sidebarCollapsibleOnDesktop(true)
             ->id('admin')
             ->path('admin')
