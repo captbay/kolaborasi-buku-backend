@@ -262,6 +262,15 @@ class AuthController extends Controller
                 return response()->json(['message' => $validatedData->errors(), 'success' => false], 422);
             }
 
+            if ($request->email == config('app.email_penerbitan_admin')) {
+                // insert delay
+                sleep(5);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Jika Benar Email Terdaftar, Link Reset Kata Sandi Akan Dikirim Ke Email Anda!',
+                ], 200);
+            }
+
             $status = Password::sendResetLink(
                 $request->only('email')
             );
