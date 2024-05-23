@@ -34,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
             ->darkMode(false)
             ->sidebarCollapsibleOnDesktop(true)
             ->id('admin')
-            ->path('admin')
+            ->path('')
             ->login()
             ->profile()
             ->userMenuItems([

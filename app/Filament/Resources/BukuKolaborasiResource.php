@@ -524,9 +524,12 @@ class BukuKolaborasiResource extends Resource
                                     }
                                 }
 
+                                $recipientAdmin = auth()->user();
+
                                 Notification::make()
                                     ->success()
                                     ->title('Buku berhasil diterbitkan, Silahkan menambah data selengkapnya di menu buku dijual sebelum upload')
+                                    ->sendToDatabase($recipientAdmin)
                                     ->send();
 
                                 return;
