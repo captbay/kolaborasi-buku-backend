@@ -81,8 +81,10 @@ class EventResource extends Resource
                     ->schema([
                         Forms\Components\DateTimePicker::make('waktu_mulai')
                             ->label(false)
-                            ->after(Carbon::now())
                             ->before('waktu_selesai')
+                            ->validationMessages([
+                                'before' => ':attribute harus sebelum tanggal waktu Selesai',
+                            ])
                             ->required(),
                     ]),
 
@@ -90,7 +92,10 @@ class EventResource extends Resource
                     ->schema([
                         Forms\Components\DateTimePicker::make('waktu_selesai')
                             ->label(false)
-                            ->after(Carbon::parse('tomorrow'))
+                            ->after('waktu_mulai')
+                            ->validationMessages([
+                                'after' => ':attribute harus sesudah tanggal waktu mulai',
+                            ])
                             ->required(),
                     ]),
 
