@@ -31,17 +31,6 @@ class RequestPasswordReset extends BaseRequestPasswordReset
 
     public function request(): void
     {
-        // $user = User::where('email', $this->form->getState()['email'])->first();
-
-        // if ($user->role != "ADMIN") {
-        //     Notification::make()
-        //         ->title("Fitur Password Reset Belum Tersedia")
-        //         ->danger()
-        //         ->send();
-
-        //     return;
-        // }
-
         try {
             $this->rateLimit(2);
         } catch (TooManyRequestsException $exception) {
@@ -64,7 +53,6 @@ class RequestPasswordReset extends BaseRequestPasswordReset
             'email' => config('app.email_penerbitan_admin'),
         ];
 
-        // $data = $this->form->getState();
         $data = $email;
 
         $status = Password::broker(Filament::getAuthPasswordBroker())->sendResetLink(

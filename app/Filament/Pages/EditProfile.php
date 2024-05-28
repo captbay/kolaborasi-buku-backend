@@ -43,9 +43,9 @@ class EditProfile extends Page implements HasForms
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Profile Information')
+                Forms\Components\Section::make('Informasi Profil')
                     ->aside() // This is the magic line!
-                    ->description('Update your account\'s profile information and email address.')
+                    ->description('Perbarui informasi profil Anda.')
                     ->schema([
                         Forms\Components\TextInput::make('nama_depan')
                             ->required(),
@@ -63,16 +63,17 @@ class EditProfile extends Page implements HasForms
     {
         return  $form
             ->schema([
-                Forms\Components\Section::make('Update Password')
+                Forms\Components\Section::make('Update Kata Sandi')
                     ->aside()
-                    ->description('Ensure your account is using long, random password to stay secure.')
+                    ->description('Pastikan akun Anda menggunakan kata sandi yang panjang dan acak agar tetap aman.')
                     ->schema([
                         FilamentPasswordInputPassword::make('Current password')
+                            ->label('Kata Sandi Sekarang')
                             ->password()
                             ->required()
                             ->currentPassword(),
                         FilamentPasswordInputPassword::make('password')
-                            ->label('New Password')
+                            ->label('Kata Sandi Baru')
                             ->password()
                             ->required()
                             ->rule(Password::default())
@@ -81,7 +82,7 @@ class EditProfile extends Page implements HasForms
                             ->live(debounce: 500)
                             ->same('passwordConfirmation'),
                         FilamentPasswordInputPassword::make('passwordConfirmation')
-                            ->label('New Password Confirmation')
+                            ->label('Konfirmasi Kata Sandi Baru')
                             ->password()
                             ->required()
                             ->dehydrated(false),
