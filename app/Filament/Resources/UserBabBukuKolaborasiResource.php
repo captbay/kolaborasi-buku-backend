@@ -124,7 +124,6 @@ class UserBabBukuKolaborasiResource extends Resource
                         Forms\Components\Select::make('status')
                             ->label(false)
                             ->searchable()
-                            ->default('PROGRESS')
                             ->options([
                                 'PROGRESS' => 'Progress',
                                 // 'UPLOADED' => 'Uploaded',
@@ -133,7 +132,6 @@ class UserBabBukuKolaborasiResource extends Resource
                                 // 'REJECTED' => 'Rejected',
                                 // 'FAILED' => 'Failed',
                             ])
-                            ->disabled()
                             ->live()
                             ->required(),
                     ]),
@@ -406,6 +404,7 @@ class UserBabBukuKolaborasiResource extends Resource
                         })
                         ->form([
                             Forms\Components\Textarea::make('note')
+                                ->required()
                                 ->label(false)
                                 ->live(onBlur: true)
                                 ->helperText('* Note atau pemberitahuan untuk member')
@@ -439,7 +438,18 @@ class UserBabBukuKolaborasiResource extends Resource
                         }),
                     Tables\Actions\DeleteAction::make()
                         ->hidden(function (user_bab_buku_kolaborasi $record) {
-                            if ($record->status != 'PROGRESS' && $record->status != 'FAILED') {
+                            if ($record->status == 'FAILED') {
+                                return false;
+                            }
+
+                            // get bab_buku_kolaborasi
+                            $data = user_bab_buku_kolaborasi::with(
+                                'bab_buku_kolaborasi.transaksi_kolaborasi_buku'
+                            )
+                                ->find($record->id);
+
+                            // for rech to check if user_bab_buku_kolaborasi is array []
+                            if (count($data->bab_buku_kolaborasi->transaksi_kolaborasi_buku) > 0) {
                                 return true;
                             }
 

@@ -255,6 +255,7 @@ class TransaksiPaketPenerbitanResource extends Resource
                         })
                         ->form([
                             Forms\Components\Textarea::make('note')
+                                ->required()
                                 ->label(false)
                                 ->live(onBlur: true)
                                 ->helperText('* Note atau pemberitahuan untuk member')

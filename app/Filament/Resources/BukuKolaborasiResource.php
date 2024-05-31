@@ -658,9 +658,9 @@ class BukuKolaborasiResource extends Resource
                     Tables\Actions\DeleteAction::make()
                         ->hidden(function (buku_kolaborasi $buku_kolaborasi, array $data) {
                             // get bab_buku_kolaborasi
-                            $bab_buku_kolaborasi = bab_buku_kolaborasi::with([
-                                'user_bab_buku_kolaborasi' => fn ($query) => $query->where('status', 'DONE')
-                            ])
+                            $bab_buku_kolaborasi = bab_buku_kolaborasi::with(
+                                'user_bab_buku_kolaborasi'
+                            )
                                 ->where('buku_kolaborasi_id', $buku_kolaborasi->id)
                                 ->get();
 
