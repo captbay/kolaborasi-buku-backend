@@ -40,12 +40,12 @@ class HubungiKamiResource extends Resource
                 Tables\Columns\TextColumn::make('email')
                     ->sortable()
                     ->wrap()
-                    ->label('Nama User')
+                    ->label('Email User')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('subjek')
                     ->sortable()
                     ->wrap()
-                    ->label('Nama User')
+                    ->label('Subjek')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('pesan')
                     ->wrap()
