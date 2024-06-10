@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\TransaksiPaketPenerbitanResource\Pages;
+use App\Jobs\CheckIsDeadline;
 use App\Models\buku_dijual;
 use App\Models\buku_lunas_user;
 use App\Models\jasa_tambahan;
@@ -555,6 +556,8 @@ class TransaksiPaketPenerbitanResource extends Resource
 
                                     $recipientUser = $transaksi->user;
 
+                                    CheckIsDeadline::dispatch($transaksi->id, 'paket')->delay($transaksi->date_time_exp);
+
                                     // send notif to user yang bayar
                                     Notification::make()
                                         ->success()
@@ -905,6 +908,8 @@ class TransaksiPaketPenerbitanResource extends Resource
                                     ->send();
 
                                 $recipientUser = $transaksi->user;
+
+                                CheckIsDeadline::dispatch($transaksi->id, 'paket')->delay($transaksi->date_time_exp);
 
                                 // send notif to user yang bayar
                                 Notification::make()

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CheckIsDeadline;
 use App\Models\bab_buku_kolaborasi;
 use App\Models\transaksi_kolaborasi_buku;
 use App\Models\User;
@@ -128,6 +129,8 @@ class TransaksiKolaborasiBukuController extends Controller
             ]);
 
             if ($data) {
+                CheckIsDeadline::dispatch($data->id, 'kolaborasi')->delay($data->date_time_exp);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Melanjutkan ke halaman pembayaran',
