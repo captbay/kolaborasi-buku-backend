@@ -140,7 +140,7 @@ class BukuKolaborasiController extends Controller
                     // compere datetime_deadline to get is_terjual true or false
                     if (
                         $item->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()
-                        || $item->user_bab_buku_kolaborasi->first()->status != "FAILED"
+                        || $item->user_bab_buku_kolaborasi->first()->status == "FAILED"
                     ) {
                         $terjual = true;
                         $count_kontributor++;
@@ -163,7 +163,7 @@ class BukuKolaborasiController extends Controller
                     //     $count_selesai++;
                     // }
                 } else {
-                    if ($item->transaksi_kolaborasi_buku->first()) {
+                    if ($item->transaksi_kolaborasi_buku->first()->status != "FAILED") {
                         $terjual = true;
                         $count_kontributor++;
                     } else {
