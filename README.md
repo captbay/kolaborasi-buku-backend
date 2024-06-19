@@ -3,20 +3,7 @@
 Project Tugas Akhir I Putu Agestya Pramana / 200710994 dengan membuat aplikasi pembuatan buku dengan konsep berkolaborasi lalu buku yang sudah jadi diterbitkan dan dijual di platform ini juga. User juga bisa mengajukan penerbitan untuk bukunya pribadi.
 
 ## Features API (DONE)
-
--   Login
--   Register
--   Logout
-
-(kalo mau custom emails untuk verif dan reset password cek dokumentasi laravel)
-https://laravel.com/docs/10.x/passwords ||
-https://laravel.com/docs/10.x/verification
-
--   Verifikasi Email Register
--   Kirim Ulang Verifikasi Email
--   Email Lupa Password
--   Reset Password
--   Ganti Password
+## Filament CMS (DONE)
 
 ## Installation
 
