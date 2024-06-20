@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\buku_dijual;
 use App\Models\buku_permohonan_terbit;
 use App\Models\jasa_tambahan;
 use App\Models\paket_penerbitan;
@@ -97,6 +98,15 @@ class TransaksiPaketPenerbitanController extends Controller
             // if validation fails
             if ($validatedData->fails()) {
                 return response()->json(['message' => $validatedData->errors()], 422);
+            }
+
+            // get all data buku dijual compare with $request->judul_buku
+            $buku_dijual = buku_dijual::where('judul', $request->judul_buku)->first();
+            if ($buku_dijual) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Judul Buku Sudah Ada',
+                ], 422);
             }
 
             // set temp total harga
