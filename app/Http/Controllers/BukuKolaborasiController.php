@@ -123,49 +123,30 @@ class BukuKolaborasiController extends Controller
 
             // set temp count for timeline
             $count_kontributor = 0;
-            $count_upload = 0;
-            $count_editing = 0;
-            $count_selesai = 0;
 
             // bab buku
             $bab_buku = $data->bab_buku_kolaborasi->map(function ($item)
             use (
                 &$count_kontributor,
-                &$count_upload,
-                &$count_editing,
-                &$count_selesai,
             ) {
                 // check if user_bab_buku_kolaborasi is exist
                 if ($item->user_bab_buku_kolaborasi->first()) {
                     // compere datetime_deadline to get is_terjual true or false
                     if (
                         $item->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()
-                        || $item->user_bab_buku_kolaborasi->first()->status == "FAILED"
+                        && $item->user_bab_buku_kolaborasi->first()->status != "FAILED"
                     ) {
                         $terjual = true;
                         $count_kontributor++;
                     } else {
                         $terjual = false;
                     }
-
-                    // // check if status is UPLOADED
-                    // if ($item->user_bab_buku_kolaborasi->first()->status == "UPLOADED") {
-                    //     $count_upload++;
-                    // }
-
-                    // // check if status is EDITING
-                    // if ($item->user_bab_buku_kolaborasi->first()->status == "EDITING") {
-                    //     $count_editing++;
-                    // }
-
-                    // // check if status is DONE
-                    // if ($item->user_bab_buku_kolaborasi->first()->status == "DONE") {
-                    //     $count_selesai++;
-                    // }
                 } else {
-                    if ($item->transaksi_kolaborasi_buku->first()->status != "FAILED") {
-                        $terjual = true;
-                        $count_kontributor++;
+                    if ($item->transaksi_kolaborasi_buku->first()) {
+                        if ($item->transaksi_kolaborasi_buku->first()->status != "FAILED") {
+                            $terjual = true;
+                            $count_kontributor++;
+                        }
                     } else {
                         $terjual = false;
                     }
@@ -232,50 +213,6 @@ class BukuKolaborasiController extends Controller
             } else {
                 $status_kolaborasi = "open";
             }
-
-            // // set data for timeline kolaborasi
-            // // Kontributor
-            // // Upload Naskah
-            // // Editing Oleh Editor
-            // // Naskah Selesai
-            // // Input ISBN
-            // // Buku Publish
-            // $timeline_kolaborasi = [
-            //     [
-            //         'id' => 1,
-            //         'judul' => 'Kontributor',
-            //         'count' => $count_kontributor . '/' . $data->jumlah_bab,
-            //         'status' => $count_kontributor >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-            //     ],
-            //     [
-            //         'id' => 2,
-            //         'judul' => 'Upload Naskah',
-            //         'count' => $count_upload . '/' . $data->jumlah_bab,
-            //         'status' => $count_upload >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-            //     ],
-            //     [
-            //         'id' => 3,
-            //         'judul' => 'Editing Oleh Editor',
-            //         'count' => $count_editing . '/' . $data->jumlah_bab,
-            //         'status' => $count_editing >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-            //     ],
-            //     [
-            //         'id' => 4,
-            //         'judul' => 'Naskah Selesai',
-            //         'count' => $count_selesai . '/' . $data->jumlah_bab,
-            //         'status' => $count_selesai >= $data->jumlah_bab ? 'selesai' : 'menunggu'
-            //     ],
-            //     [
-            //         'id' => 5,
-            //         'judul' => 'Input ISBN',
-            //         'status' => $count_selesai == $data->jumlah_bab ? 'proses' : 'menunggu'
-            //     ],
-            //     [
-            //         'id' => 6,
-            //         'judul' => 'Buku Publish',
-            //         'status' => $data->dijual == 1 ? 'selesai' : 'menunggu'
-            //     ],
-            // ];
 
             // filter only needed data
             $data = [

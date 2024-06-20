@@ -57,17 +57,17 @@ class DatabaseSeeder extends Seeder
         // // config web
         // konten_event::factory(10)->create();
         // $this->call(KontenEventSeeder::class);
-        $this->call(KontenFaqSeeder::class);
+        // $this->call(KontenFaqSeeder::class);
         // konten_faq::factory(10)->create();
-        $this->call(ConfigWebSeeder::class);
+        // $this->call(ConfigWebSeeder::class);
         // config_web::factory(10)->create();
 
         // // jasa tambahan
-        jasa_tambahan::factory(10)->create();
+        // jasa_tambahan::factory(10)->create();
 
         // // paket penerbitan
-        paket_penerbitan::factory(10)->create();
-        jasa_paket_penerbitan::factory(20)->create();
+        // paket_penerbitan::factory(10)->create();
+        // jasa_paket_penerbitan::factory(20)->create();
         // buku_permohonan_terbit::factory(30)->create();
         // transaksi_paket_penerbitan::factory(30)->create();
         // trx_jasa_penerbitan::factory(30)->create();
