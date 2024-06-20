@@ -143,12 +143,12 @@ class BukuKolaborasiResource extends Resource
                                             ->columnSpan('full'),
 
 
-
                                         Forms\Components\Toggle::make('active_flag')
-                                            ->label('Dipublish atau tidak')
-                                            ->helperText('Jika tidak aktif maka bab ini akan disembunyikan pada tampilan kolaborasi buku')
+                                            ->label('Dipublish')
                                             ->columnSpan('full')
-                                            ->default(0),
+                                            ->default(1)
+                                            ->disabled()
+                                            ->dehydrated(),
                                     ])
                                     ->defaultItems(0)
                                     ->hiddenLabel()

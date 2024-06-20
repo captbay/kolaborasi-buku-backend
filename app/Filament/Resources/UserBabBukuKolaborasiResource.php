@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\UserBabBukuKolaborasiResource\Pages;
 use App\Filament\Resources\UserBabBukuKolaborasiResource\RelationManagers;
+use App\Jobs\CheckIsDeadline;
 use App\Models\bab_buku_kolaborasi;
 use App\Models\user_bab_buku_kolaborasi;
 use Illuminate\Database\Eloquent\Model;
@@ -301,11 +302,11 @@ class UserBabBukuKolaborasiResource extends Resource
                         ->icon('heroicon-s-document-check')
                         ->modalIconColor('success')
                         ->hidden(function (user_bab_buku_kolaborasi $record) {
-                            if ($record->status != 'UPLOADED' && $record->status != 'REJECTED') {
-                                return true;
+                            if ($record->status == 'UPLOADED') {
+                                return false;
                             }
 
-                            return false;
+                            return true;
                         })
                         ->action(function (user_bab_buku_kolaborasi $record) {
                             $record->update([
@@ -368,7 +369,7 @@ class UserBabBukuKolaborasiResource extends Resource
                             $record->update([
                                 'status' => 'REJECTED',
                                 'note' => $data['note'],
-                                'datetime_deadline' => Carbon::now()->addDays($final_day)->format('Y-m-d H:i:s'),
+                                'datetime_deadline' => Carbon::now()->addDays($final_day),
                             ]);
 
                             Notification::make()
@@ -379,6 +380,8 @@ class UserBabBukuKolaborasiResource extends Resource
                                 ->send();
 
                             $recipientUser = $record->user;
+
+                            CheckIsDeadline::dispatch($record->id, 'userbabkolaborasi')->delay($record->datetime_deadline);
 
                             // send notif to user yang bayar
                             Notification::make()

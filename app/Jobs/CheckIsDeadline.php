@@ -5,6 +5,8 @@ namespace App\Jobs;
 use App\Models\transaksi_kolaborasi_buku;
 use App\Models\transaksi_paket_penerbitan;
 use App\Models\transaksi_penjualan_buku;
+use App\Models\user_bab_buku_kolaborasi;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -62,6 +64,18 @@ class CheckIsDeadline implements ShouldQueue
                         'date_time_exp' => null,
                     ]);
                 }
+                break;
+
+            case 'userbabkolaborasi':
+                $data = user_bab_buku_kolaborasi::find($this->id);
+
+                if ($data->datetime_deadline == Carbon::now()) {
+                    $data->update([
+                        'status' => 'FAILED',
+                        'datetime_deadline' => null,
+                    ]);
+                }
+
                 break;
 
             default:
