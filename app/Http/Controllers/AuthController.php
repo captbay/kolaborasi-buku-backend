@@ -110,7 +110,7 @@ class AuthController extends Controller
                     ->numbers()
                     ->symbols()
                     ->uncompromised()],
-                'no_telepon' => 'required|min:9|starts_with:08,+62',
+                'no_telepon' => 'required|min:9|starts_with:08,62',
             ], [
                 'password.min' => 'Password minimal 6 karakter',
                 'password.letters' => 'Password minimal memiliki 1 huruf',

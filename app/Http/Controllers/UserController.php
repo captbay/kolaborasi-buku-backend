@@ -74,7 +74,7 @@ class UserController extends Controller
                     'email:rfc,dns',
                     Rule::unique('users')->ignore($user->id),
                 ],
-                'no_telepon' => 'required|min:9|starts_with:08,+62',
+                'no_telepon' => 'required|min:9|starts_with:08,62',
                 'nama_depan' => 'required|min:3',
                 'nama_belakang' => 'required|min:3',
                 'tgl_lahir' => 'required|date|before:today',
