@@ -37,32 +37,46 @@ class CheckIsDeadline implements ShouldQueue
         switch ($this->type) {
             case 'buku':
                 $data = transaksi_penjualan_buku::find($this->id);
-                $data->update([
-                    'date_time_exp' => null,
-                    'status' => 'FAILED',
-                ]);
+
+                if ($data->date_time_exp == Carbon::now()) { // expired
+                    $data->update([
+                        'date_time_exp' => null,
+                        'status' => 'FAILED',
+                    ]);
+                }
+
                 break;
 
             case 'kolaborasi':
                 $data = transaksi_kolaborasi_buku::find($this->id);
-                $data->update([
-                    'date_time_exp' => null,
-                    'status' => 'FAILED',
-                ]);
+
+                if ($data->date_time_exp == Carbon::now()) {
+                    $data->update([
+                        'date_time_exp' => null,
+                        'status' => 'FAILED',
+                    ]);
+                }
+
                 break;
 
             case 'paket':
                 $data = transaksi_paket_penerbitan::find($this->id);
                 if ($data->status == "TERIMA DRAFT") {
-                    $data->update([
-                        'status' => 'DP TIDAK SAH',
-                        'date_time_exp' => null,
-                    ]);
+
+                    if ($data->date_time_exp == Carbon::now()) {
+                        $data->update([
+                            'status' => 'DP TIDAK SAH',
+                            'date_time_exp' => null,
+                        ]);
+                    }
                 } else if ($data->status == "DRAFT SELESAI") {
-                    $data->update([
-                        'status' => 'PELUNASAN TIDAK SAH',
-                        'date_time_exp' => null,
-                    ]);
+
+                    if ($data->date_time_exp == Carbon::now()) {
+                        $data->update([
+                            'status' => 'PELUNASAN TIDAK SAH',
+                            'date_time_exp' => null,
+                        ]);
+                    }
                 }
                 break;
 

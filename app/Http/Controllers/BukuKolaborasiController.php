@@ -139,12 +139,24 @@ class BukuKolaborasiController extends Controller
                         $terjual = true;
                         $count_kontributor++;
                     } else {
-                        $terjual = false;
+                        if ($item->transaksi_kolaborasi_buku->first()) {
+                            if (
+                                $item->transaksi_kolaborasi_buku->first()->date_time_exp > Carbon::now()
+                                || $item->transaksi_kolaborasi_buku->first()->status != "FAILED"
+                            ) {
+                                $terjual = true;
+                                $count_kontributor++;
+                            } else {
+                                $terjual = false;
+                            }
+                        } else {
+                            $terjual = false;
+                        }
                     }
                 } else {
                     if ($item->transaksi_kolaborasi_buku->first()) {
                         if (
-                            $item->transaksi_kolaborasi_buku->first()->datetime_deadline > Carbon::now()
+                            $item->transaksi_kolaborasi_buku->first()->date_time_exp > Carbon::now()
                             || $item->transaksi_kolaborasi_buku->first()->status != "FAILED"
                         ) {
                             $terjual = true;
@@ -160,6 +172,7 @@ class BukuKolaborasiController extends Controller
                 if (auth('sanctum')->check()) {
                     $alreadyBuy = user_bab_buku_kolaborasi::where('bab_buku_kolaborasi_id', $item->id)
                         ->where('user_id', auth('sanctum')->user()->id)
+                        ->where('status', '!=', 'FAILED')
                         ->orderBy('created_at', 'desc')
                         ->first();
 
@@ -180,7 +193,19 @@ class BukuKolaborasiController extends Controller
                         }
 
                         if ($alreadyTransaksi) {
-                            $isTransaksi = true;
+                            if (
+                                $alreadyTransaksi->date_time_exp > Carbon::now() || $alreadyTransaksi->status != "FAILED"
+                            ) {
+                                $isTransaksi = true;
+                            } else {
+                                $isTransaksi = false;
+
+                                // update $already transaksi
+                                $alreadyTransaksi->update([
+                                    'date_time_exp' => null,
+                                    'status' => 'FAILED',
+                                ]);
+                            }
                         } else {
                             $isTransaksi = false;
                         }
