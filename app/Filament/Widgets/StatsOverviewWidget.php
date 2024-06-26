@@ -145,6 +145,15 @@ class StatsOverviewWidget extends BaseWidget
         $revenueLastMonth = $revenueLastMonth == 0 ? 1 : $revenueLastMonth;
         $percentageRevenue = ($kenaikan / $revenueLastMonth) * 100;
 
+        // if percentageRevenue is less than 0, set percentageRevenue to 0
+        if ($percentageRevenue < 0) {
+            $percentageRevenue = 0;
+        } else if ($percentageRevenue > 100) {
+            $percentageRevenue = 100;
+        } else {
+            $percentageRevenue = $percentageRevenue;
+        }
+
         $formatNumberRupiah = function ($number): string {
             // format uang dalam rupiah agar tidak panjang 0 nya
             return 'Rp' . number_format($number, 0, ',', '.');
@@ -174,6 +183,15 @@ class StatsOverviewWidget extends BaseWidget
         $kenaikan = $countUsers - $countUsersLastMonth;
         $countUsersLastMonth = $countUsersLastMonth == 0 ? 1 : $countUsersLastMonth;
         $percentageUsers = ($kenaikan / $countUsersLastMonth) * 100;
+
+        // if percentageUsers is less than 0, set percentageUsers to 0
+        if ($percentageUsers < 0) {
+            $percentageUsers = 0;
+        } else if ($percentageUsers > 100) {
+            $percentageUsers = 100;
+        } else {
+            $percentageUsers = $percentageUsers;
+        }
 
         return [
             Stat::make('Total Pendapatan Penjualan Buku', $formatNumberRupiah($revenuePenjualanBuku)),
