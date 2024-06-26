@@ -133,8 +133,34 @@ class BukuKolaborasiController extends Controller
                 if ($item->user_bab_buku_kolaborasi->first()) {
                     // compere datetime_deadline to get is_terjual true or false
                     if (
-                        $item->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now()
-                        || $item->user_bab_buku_kolaborasi->first()->status != "FAILED"
+                        $item->user_bab_buku_kolaborasi->first()->datetime_deadline < Carbon::now() &&
+                        $item->user_bab_buku_kolaborasi->first()->datetime_deadline != null
+                    ) {
+                        if ($item->transaksi_kolaborasi_buku->first()) {
+                            if (
+                                $item->transaksi_kolaborasi_buku->first()->date_time_exp > Carbon::now()
+                            ) {
+                                $terjual = true;
+                                $count_kontributor++;
+                            } else if ($item->transaksi_kolaborasi_buku->first()->status == "UPLOADED" || $item->transaksi_kolaborasi_buku->first()->status == "DONE") {
+                                if (
+                                    $item->user_bab_buku_kolaborasi->first()->datetime_deadline < Carbon::now() &&
+                                    $item->transaksi_kolaborasi_buku->first()->status != "UPLOADED"
+                                ) {
+                                    $terjual = false;
+                                } else {
+                                    $terjual = true;
+                                    $count_kontributor++;
+                                }
+                            } else {
+                                $terjual = false;
+                            }
+                        } else {
+                            $terjual = false;
+                        }
+                    } else if (
+                        $item->user_bab_buku_kolaborasi->first()->datetime_deadline > Carbon::now() ||
+                        $item->user_bab_buku_kolaborasi->first()->status != "FAILED"
                     ) {
                         $terjual = true;
                         $count_kontributor++;
@@ -142,10 +168,19 @@ class BukuKolaborasiController extends Controller
                         if ($item->transaksi_kolaborasi_buku->first()) {
                             if (
                                 $item->transaksi_kolaborasi_buku->first()->date_time_exp > Carbon::now()
-                                || $item->transaksi_kolaborasi_buku->first()->status != "FAILED"
                             ) {
                                 $terjual = true;
                                 $count_kontributor++;
+                            } else if ($item->transaksi_kolaborasi_buku->first()->status == "UPLOADED" || $item->transaksi_kolaborasi_buku->first()->status == "DONE") {
+                                if (
+                                    $item->user_bab_buku_kolaborasi->first()->datetime_deadline < Carbon::now() &&
+                                    $item->transaksi_kolaborasi_buku->first()->status != "UPLOADED"
+                                ) {
+                                    $terjual = false;
+                                } else {
+                                    $terjual = true;
+                                    $count_kontributor++;
+                                }
                             } else {
                                 $terjual = false;
                             }
@@ -157,8 +192,10 @@ class BukuKolaborasiController extends Controller
                     if ($item->transaksi_kolaborasi_buku->first()) {
                         if (
                             $item->transaksi_kolaborasi_buku->first()->date_time_exp > Carbon::now()
-                            || $item->transaksi_kolaborasi_buku->first()->status != "FAILED"
                         ) {
+                            $terjual = true;
+                            $count_kontributor++;
+                        } else if ($item->transaksi_kolaborasi_buku->first()->status == "UPLOADED" || $item->transaksi_kolaborasi_buku->first()->status == "DONE") {
                             $terjual = true;
                             $count_kontributor++;
                         } else {
@@ -194,9 +231,23 @@ class BukuKolaborasiController extends Controller
 
                         if ($alreadyTransaksi) {
                             if (
-                                $alreadyTransaksi->date_time_exp > Carbon::now() || $alreadyTransaksi->status != "FAILED"
+                                $alreadyTransaksi->date_time_exp > Carbon::now()
                             ) {
+                                $terjual = false;
                                 $isTransaksi = true;
+                            } else if ($alreadyTransaksi->status == "UPLOADED" || $alreadyTransaksi->status == "DONE") {
+                                if (
+                                    $alreadyBuy?->datetime_deadline < Carbon::now() && $alreadyTransaksi->status == "DONE"
+                                ) {
+                                    if ($alreadyBuy?->datetime_deadline == null && $alreadyBuy) {
+                                        $isTransaksi = true;
+                                    } else {
+                                        $isDibeli = false;
+                                        $isTransaksi = false;
+                                    }
+                                } else {
+                                    $isTransaksi = true;
+                                }
                             } else {
                                 $isTransaksi = false;
 
