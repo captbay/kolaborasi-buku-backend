@@ -173,7 +173,7 @@ class TransaksiPaketPenerbitanResource extends Resource
                                     ]),
                             ]),
 
-                        Forms\Components\Section::make('Keterangan Untuk Member (optional)')
+                        Forms\Components\Section::make('Keterangan Untuk Member (Opsional)')
                             ->schema([
                                 Forms\Components\Textarea::make('note')
                                     ->label(false)

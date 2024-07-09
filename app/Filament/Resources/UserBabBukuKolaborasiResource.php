@@ -246,7 +246,7 @@ class UserBabBukuKolaborasiResource extends Resource
                         ->form([
                             Forms\Components\FileUpload::make('file_bab')
                                 ->label(false)
-                                ->helperText('* Optional')
+                                ->helperText('* Opsional')
                                 ->openable()
                                 ->downloadable()
                                 ->acceptedFileTypes(['application/pdf'])

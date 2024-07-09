@@ -355,7 +355,7 @@ class BukuKolaborasiResource extends Resource
                             ->required(),
 
                         Forms\Components\FileUpload::make('file_buku')
-                            ->label('Upload File Buku PDF (final version)')
+                            ->label('Upload File Buku PDF (versi final)')
                             ->required()
                             ->openable()
                             ->acceptedFileTypes(['application/pdf'])
@@ -363,7 +363,7 @@ class BukuKolaborasiResource extends Resource
                             ->directory('buku_final_storage'),
 
                         Forms\Components\FileUpload::make('file_hak_cipta')
-                            ->label('Upload File Hak Cipta PDF (optional)')
+                            ->label('Upload File Hak Cipta PDF (Opsional)')
                             ->openable()
                             ->acceptedFileTypes(['application/pdf'])
                             ->directory('hak_cipta'),
@@ -565,7 +565,7 @@ class BukuKolaborasiResource extends Resource
                     ->modalIconColor('success')
                     ->form([
                         Forms\Components\FileUpload::make('file_hak_cipta')
-                            ->label('Upload File Hak Cipta PDF (optional)')
+                            ->label('Upload File Hak Cipta PDF (Opsional)')
                             ->openable()
                             ->acceptedFileTypes(['application/pdf'])
                             ->directory('hak_cipta'),
