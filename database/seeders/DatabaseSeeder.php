@@ -40,8 +40,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Add SuperAdminSeeder
+        $this->call(SuperAdminSeeder::class);
+        
         // kategori::factory(10)->create();
-        $this->call(KategoriSeeder::class);
+        // $this->call(KategoriSeeder::class);
 
         // // buku dijual
         // penulis::factory(20)->create();
